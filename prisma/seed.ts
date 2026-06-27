@@ -42,6 +42,7 @@ async function main() {
 
   const passwordHash = await bcrypt.hash("password123", 10);
 
+  const listings: { id: string }[] = [];
   for (const p of PROVIDERS) {
     const user = await prisma.user.create({
       data: {
@@ -55,7 +56,7 @@ async function main() {
       },
       include: { provider: true },
     });
-    await prisma.listing.create({
+    const listing = await prisma.listing.create({
       data: {
         providerId: user.provider!.id,
         categoryId: catIdBySlug[p.cat],
@@ -69,14 +70,46 @@ async function main() {
         active: true,
       },
     });
+    listings.push(listing);
   }
 
-  // A demo customer for testing the booking flow.
-  await prisma.user.create({
+  // A demo customer for testing the booking + review flow.
+  const customer = await prisma.user.create({
     data: { name: "Demo Customer", email: "customer@demo.bg", passwordHash, role: "CUSTOMER" },
   });
 
-  console.log(`Seeded ${CATEGORIES.length} categories, ${PROVIDERS.length} providers/listings, 1 customer.`);
+  // Completed bookings with reviews → seeds ratings across the site.
+  const reviewed: Array<{ idx: number; rating: number; comment: string }> = [
+    { idx: 0, rating: 5, comment: "Spotless and right on time — highly recommend!" },
+    { idx: 2, rating: 4, comment: "Fixed the leak fast. Professional and friendly." },
+    { idx: 3, rating: 5, comment: "Brilliant tutor — my daughter's grades jumped." },
+  ];
+  for (const r of reviewed) {
+    const booking = await prisma.booking.create({
+      data: { listingId: listings[r.idx].id, customerId: customer.id, status: "COMPLETED" },
+    });
+    await prisma.review.create({
+      data: { bookingId: booking.id, listingId: listings[r.idx].id, authorId: customer.id, rating: r.rating, comment: r.comment },
+    });
+  }
+
+  // A completed booking the customer can still review (to demo the review form).
+  await prisma.booking.create({
+    data: { listingId: listings[1].id, customerId: customer.id, status: "COMPLETED" },
+  });
+  // A pending request (shows in the provider's dashboard).
+  await prisma.booking.create({
+    data: {
+      listingId: listings[5].id,
+      customerId: customer.id,
+      status: "REQUESTED",
+      message: "Could you come by this weekend?",
+    },
+  });
+
+  console.log(
+    `Seeded ${CATEGORIES.length} categories, ${PROVIDERS.length} providers/listings, 1 customer, ${reviewed.length} reviews, 2 extra bookings.`,
+  );
   console.log("Demo login password for all accounts: password123");
 }
 

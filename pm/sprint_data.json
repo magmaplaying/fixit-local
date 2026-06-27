@@ -312,7 +312,7 @@
         "Review submission remains the last gap in the core loop"
       ],
       "action_items": [
-        { "id": "AI-006", "description": "Add review submission after completed bookings (closes the loop)", "owner": "Aleksandar", "priority": "high", "due_date": "2026-07-11", "status": "not_started", "created_sprint": 3, "category": "feature", "effort_estimate": "medium" },
+        { "id": "AI-006", "description": "Add review submission after completed bookings (closes the loop)", "owner": "Aleksandar", "priority": "high", "due_date": "2026-07-11", "status": "completed", "created_sprint": 3, "completed_sprint": 3, "category": "feature", "effort_estimate": "medium" },
         { "id": "AI-007", "description": "Add Vitest tests for listing + booking server actions", "owner": "Aleksandar", "priority": "medium", "due_date": "2026-07-11", "status": "not_started", "created_sprint": 3, "category": "technical", "effort_estimate": "medium" }
       ]
     }
