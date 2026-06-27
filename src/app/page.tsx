@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
-import { formatPrice, averageRating } from "@/lib/format";
+import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
 
 export default async function Home() {
   const [categories, listings] = await Promise.all([
@@ -32,6 +32,7 @@ export default async function Home() {
     providerName: l.provider.user.name,
     rating: averageRating(l.reviews),
     reviewCount: l.reviews.length,
+    imageUrl: parsePhotos(l.photos)[0] ?? null,
   }));
 
   return (

@@ -170,6 +170,34 @@
         "sprint_review": { "attendance_rate": 1.0, "engagement_score": 0.9 },
         "retrospective": { "attendance_rate": 1.0, "engagement_score": 0.95 }
       }
+    },
+    {
+      "sprint_number": 3,
+      "sprint_name": "Sprint 2 — Provider Listings",
+      "start_date": "2026-06-30",
+      "end_date": "2026-07-04",
+      "planned_points": 21,
+      "completed_points": 21,
+      "added_points": 0,
+      "removed_points": 0,
+      "carry_over_points": 0,
+      "team_capacity": 40,
+      "working_days": 5,
+      "team_size": 1,
+      "stories": [
+        { "id": "FX-11", "title": "Listing create/edit/delete server actions (auth + ownership)", "points": 8, "status": "completed", "assigned_to": "Aleksandar", "created_date": "2026-06-30", "completed_date": "2026-07-01", "blocked_days": 0, "priority": "high" },
+        { "id": "FX-12", "title": "Listing form + new/edit pages", "points": 5, "status": "completed", "assigned_to": "Aleksandar", "created_date": "2026-06-30", "completed_date": "2026-07-02", "blocked_days": 0, "priority": "high" },
+        { "id": "FX-13", "title": "Dashboard CRUD wiring + success banners", "points": 2, "status": "completed", "assigned_to": "Aleksandar", "created_date": "2026-07-02", "completed_date": "2026-07-02", "blocked_days": 0, "priority": "medium" },
+        { "id": "FX-14", "title": "Public provider profile page", "points": 3, "status": "completed", "assigned_to": "Aleksandar", "created_date": "2026-07-03", "completed_date": "2026-07-03", "blocked_days": 0, "priority": "medium" },
+        { "id": "FX-15", "title": "Listing images (form + card/detail display + seed)", "points": 3, "status": "completed", "assigned_to": "Aleksandar", "created_date": "2026-07-03", "completed_date": "2026-07-04", "blocked_days": 0, "priority": "low" }
+      ],
+      "blockers": [],
+      "ceremonies": {
+        "daily_standup": { "attendance_rate": 1.0, "engagement_score": 0.91 },
+        "sprint_planning": { "attendance_rate": 1.0, "engagement_score": 0.93 },
+        "sprint_review": { "attendance_rate": 1.0, "engagement_score": 0.91 },
+        "retrospective": { "attendance_rate": 1.0, "engagement_score": 0.95 }
+      }
     }
   ],
   "retrospectives": [
@@ -265,6 +293,27 @@
           "category": "feature",
           "effort_estimate": "high"
         }
+      ]
+    },
+    {
+      "sprint_number": 3,
+      "date": "2026-07-04",
+      "facilitator": "Aleksandar",
+      "attendees": ["Aleksandar"],
+      "duration_minutes": 30,
+      "went_well": [
+        "Providers can now self-serve listings end to end (create/edit/delete)",
+        "Listing images lifted the visual quality a lot",
+        "Velocity stabilised after the Sprint 0 to 1 swing"
+      ],
+      "to_improve": [
+        "Image handling is URL-only — real file upload still pending",
+        "Still no automated tests around listing/booking flows",
+        "Review submission remains the last gap in the core loop"
+      ],
+      "action_items": [
+        { "id": "AI-006", "description": "Add review submission after completed bookings (closes the loop)", "owner": "Aleksandar", "priority": "high", "due_date": "2026-07-11", "status": "not_started", "created_sprint": 3, "category": "feature", "effort_estimate": "medium" },
+        { "id": "AI-007", "description": "Add Vitest tests for listing + booking server actions", "owner": "Aleksandar", "priority": "medium", "due_date": "2026-07-11", "status": "not_started", "created_sprint": 3, "category": "technical", "effort_estimate": "medium" }
       ]
     }
   ]

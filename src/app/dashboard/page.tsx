@@ -3,12 +3,16 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { setBookingStatus } from "@/app/_actions/bookings";
+import { deleteListing } from "@/app/_actions/listings";
 import { StatusBadge } from "@/components/booking/status-badge";
 import { formatPrice } from "@/lib/format";
 
-export default async function DashboardPage() {
+type SearchParams = Promise<{ created?: string; updated?: string; deleted?: string }>;
+
+export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/dashboard");
+  const sp = await searchParams;
 
   const profile = await prisma.providerProfile.findUnique({
     where: { userId: user.id },
@@ -52,6 +56,12 @@ export default async function DashboardPage() {
         {pending.length === 1 ? "" : "s"}
       </p>
 
+      {(sp.created || sp.updated || sp.deleted) && (
+        <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-800 dark:bg-teal-950/40 dark:text-teal-200">
+          {sp.created ? "✓ Listing published." : sp.updated ? "✓ Listing updated." : "✓ Listing deleted."}
+        </p>
+      )}
+
       {/* Incoming bookings */}
       <h2 className="mt-8 text-lg font-semibold">Incoming requests</h2>
       {bookings.length === 0 ? (
@@ -93,33 +103,58 @@ export default async function DashboardPage() {
       {/* Listings */}
       <div className="mt-10 flex items-center justify-between">
         <h2 className="text-lg font-semibold">My listings</h2>
-        <span
-          className="cursor-not-allowed rounded-lg border border-dashed border-black/15 px-3 py-1.5 text-sm text-black/40 dark:border-white/15 dark:text-white/40"
-          title="Listing creation lands in the next sprint"
+        <Link
+          href="/dashboard/listings/new"
+          className="rounded-lg bg-teal-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-teal-700"
         >
-          + New listing (soon)
-        </span>
+          + New listing
+        </Link>
       </div>
-      <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-        {profile.listings.map((l) => (
-          <li key={l.id} className="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-black/45 dark:text-white/45">
-                {l.category.icon} {l.category.name}
-              </span>
-              <span className="font-semibold text-teal-700 dark:text-teal-400">
-                {formatPrice(l.priceType, l.price)}
-              </span>
-            </div>
-            <Link href={`/listing/${l.id}`} className="mt-1 block font-medium hover:text-teal-600">
-              {l.title}
-            </Link>
-            <p className="mt-1 text-xs text-black/45 dark:text-white/45">
-              {l._count.bookings} bookings · {l._count.reviews} reviews
-            </p>
-          </li>
-        ))}
-      </ul>
+      {profile.listings.length === 0 ? (
+        <p className="mt-3 text-black/50 dark:text-white/50">
+          No listings yet — <Link href="/dashboard/listings/new" className="font-medium text-teal-600 hover:underline">create your first one</Link>.
+        </p>
+      ) : (
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+          {profile.listings.map((l) => (
+            <li key={l.id} className="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-black/45 dark:text-white/45">
+                  {l.category.icon} {l.category.name}
+                </span>
+                <span className="font-semibold text-teal-700 dark:text-teal-400">
+                  {formatPrice(l.priceType, l.price)}
+                </span>
+              </div>
+              <Link href={`/listing/${l.id}`} className="mt-1 block font-medium hover:text-teal-600">
+                {l.title}
+              </Link>
+              <p className="mt-1 text-xs text-black/45 dark:text-white/45">
+                {l._count.bookings} bookings · {l._count.reviews} reviews
+              </p>
+              <div className="mt-3 flex items-center gap-2 border-t border-black/5 pt-3 dark:border-white/10">
+                <Link
+                  href={`/dashboard/listings/${l.id}/edit`}
+                  className="rounded-lg border border-black/10 px-3 py-1 text-xs font-medium transition hover:border-teal-500/40 dark:border-white/15"
+                >
+                  Edit
+                </Link>
+                <form action={deleteListing}>
+                  <input type="hidden" name="id" value={l.id} />
+                  <button className="rounded-lg border border-black/10 px-3 py-1 text-xs font-medium text-black/60 transition hover:border-red-300 hover:text-red-600 dark:border-white/15 dark:text-white/60">
+                    Delete
+                  </button>
+                </form>
+                {!l.active && (
+                  <span className="rounded-lg bg-black/5 px-2 py-1 text-xs text-black/50 dark:bg-white/10 dark:text-white/50">
+                    Hidden
+                  </span>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

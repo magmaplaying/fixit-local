@@ -14,15 +14,27 @@ export const loginSchema = z.object({
 
 export const PRICE_TYPES = ["HOURLY", "FIXED", "QUOTE"] as const;
 
-export const listingSchema = z.object({
-  title: z.string().min(4, "Title is too short").max(80),
-  categoryId: z.string().min(1, "Choose a category"),
-  description: z.string().min(20, "Describe your service (at least 20 characters)"),
-  priceType: z.enum(PRICE_TYPES),
-  price: z.coerce.number().positive("Enter a valid price").optional(),
-  city: z.string().min(2, "City is required"),
-  area: z.string().optional(),
-});
+export const listingSchema = z
+  .object({
+    title: z.string().min(4, "Title is too short").max(80),
+    categoryId: z.string().min(1, "Choose a category"),
+    description: z.string().min(20, "Describe your service (at least 20 characters)"),
+    priceType: z.enum(PRICE_TYPES),
+    price: z.preprocess(
+      (v) => (v === "" || v === null || v === undefined ? undefined : v),
+      z.coerce.number().positive("Enter a valid price").optional(),
+    ),
+    city: z.string().min(2, "City is required"),
+    area: z.string().optional(),
+    imageUrl: z.preprocess(
+      (v) => (typeof v === "string" ? v.trim() : v),
+      z.union([z.url("Enter a valid image URL"), z.literal("")]).optional(),
+    ),
+  })
+  .refine((d) => d.priceType === "QUOTE" || d.price != null, {
+    message: "Enter a price, or set pricing to “Quote on request”",
+    path: ["price"],
+  });
 
 export const bookingSchema = z.object({
   listingId: z.string().min(1),

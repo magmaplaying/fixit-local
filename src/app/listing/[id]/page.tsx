@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
-import { formatPrice, averageRating, initials } from "@/lib/format";
+import { formatPrice, averageRating, initials, parsePhotos } from "@/lib/format";
 import { requestBooking } from "@/app/_actions/bookings";
 
 type Params = Promise<{ id: string }>;
@@ -23,6 +23,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
   const user = await getCurrentUser();
   const rating = averageRating(listing.reviews);
   const isOwner = user != null && listing.provider.userId === user.id;
+  const photo = parsePhotos(listing.photos)[0];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -43,12 +44,19 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
             {listing.city}
           </p>
 
+          {photo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photo} alt={listing.title} className="mt-6 aspect-[16/9] w-full rounded-xl object-cover" />
+          )}
+
           <div className="mt-6 flex items-center gap-3 rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-100 font-semibold text-teal-700 dark:bg-teal-900/50 dark:text-teal-300">
               {initials(listing.provider.user.name)}
             </div>
             <div>
-              <p className="font-medium">{listing.provider.user.name}</p>
+              <Link href={`/providers/${listing.provider.id}`} className="font-medium hover:text-teal-600">
+                {listing.provider.user.name}
+              </Link>
               <p className="text-sm text-black/50 dark:text-white/50">
                 {listing.provider.verified ? "✓ Verified provider" : "Provider"}
                 {listing.provider.bio ? ` · ${listing.provider.bio}` : ""}

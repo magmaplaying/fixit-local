@@ -65,6 +65,7 @@ async function main() {
         price: p.price,
         city: "Sofia",
         area: p.area,
+        photos: JSON.stringify([`https://picsum.photos/seed/fixit-${p.email.split("@")[0]}/800/600`]),
         active: true,
       },
     });

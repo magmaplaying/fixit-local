@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
-import { formatPrice, averageRating } from "@/lib/format";
+import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
 
 type SearchParams = Promise<{ q?: string; category?: string; city?: string }>;
 
@@ -39,6 +39,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
     providerName: l.provider.user.name,
     rating: averageRating(l.reviews),
     reviewCount: l.reviews.length,
+    imageUrl: parsePhotos(l.photos)[0] ?? null,
   }));
 
   const activeCategory = sp.category;

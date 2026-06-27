@@ -40,14 +40,14 @@ Demo accounts (password `password123` for all):
 ## What works today (MVP slice)
 
 - **Auth**: register (as customer or provider), login, logout; protected routes via `src/proxy.ts`.
-- **Discovery**: home page (categories + featured), `/services` browse with category + keyword filters, listing detail pages with reviews.
+- **Discovery**: home page (categories + featured), `/services` browse with category + keyword filters, listing detail pages with images + reviews, and public provider profiles (`/providers/[id]`).
+- **Provider tools**: onboarding, plus full **listing CRUD** — create, edit, and delete your services (with images) from the dashboard.
 - **Booking loop**: a customer can request a booking; the provider accepts / declines / completes it from their dashboard; the customer can cancel and see status in `/bookings`.
-- **Provider onboarding**: create a provider profile.
 
 ## Not yet built (next sprints)
 
-- Provider **listing CRUD** (create/edit service listings) — _Sprint 2_
 - **Review submission** after a completed booking (display already works) — _Sprint 4_
+- Real image **upload** (listings currently take an image URL) — _later_
 - Payments / commission (Stripe Connect), in-app chat, maps/geo search, notifications — _Phase 2_
 - Production database (Postgres) + deploy — _Phase 2_
 
