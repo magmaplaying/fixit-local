@@ -1,0 +1,271 @@
+{
+  "team_info": {
+    "name": "FixIt Local",
+    "size": 1,
+    "scrum_master": "Aleksandar",
+    "product_owner": "Aleksandar"
+  },
+  "sprints": [
+    {
+      "sprint_number": 1,
+      "sprint_name": "Sprint 0 — Setup",
+      "start_date": "2026-06-16",
+      "end_date": "2026-06-20",
+      "planned_points": 14,
+      "completed_points": 14,
+      "added_points": 0,
+      "removed_points": 0,
+      "carry_over_points": 0,
+      "team_capacity": 40,
+      "working_days": 5,
+      "team_size": 1,
+      "stories": [
+        {
+          "id": "FX-1",
+          "title": "Scaffold Next.js 16 + TypeScript + Tailwind v4",
+          "points": 3,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-16",
+          "completed_date": "2026-06-16",
+          "blocked_days": 0,
+          "priority": "high"
+        },
+        {
+          "id": "FX-2",
+          "title": "Prisma 7 schema + SQLite + libSQL adapter + first migration",
+          "points": 5,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-16",
+          "completed_date": "2026-06-18",
+          "blocked_days": 1,
+          "priority": "high"
+        },
+        {
+          "id": "FX-3",
+          "title": "Seed categories + demo providers and listings",
+          "points": 3,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-18",
+          "completed_date": "2026-06-19",
+          "blocked_days": 0,
+          "priority": "medium"
+        },
+        {
+          "id": "FX-4",
+          "title": "App shell (nav/footer) + home skeleton",
+          "points": 3,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-19",
+          "completed_date": "2026-06-20",
+          "blocked_days": 0,
+          "priority": "medium"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "BLK-1",
+          "description": "npm 11 install-script approval gate blocked Prisma engine + esbuild binaries",
+          "created_date": "2026-06-17",
+          "resolved_date": "2026-06-17",
+          "resolution_days": 0,
+          "affected_stories": ["FX-2"],
+          "category": "technical"
+        }
+      ],
+      "ceremonies": {
+        "daily_standup": { "attendance_rate": 1.0, "engagement_score": 0.9 },
+        "sprint_planning": { "attendance_rate": 1.0, "engagement_score": 0.9 },
+        "sprint_review": { "attendance_rate": 1.0, "engagement_score": 0.9 },
+        "retrospective": { "attendance_rate": 1.0, "engagement_score": 0.95 }
+      }
+    },
+    {
+      "sprint_number": 2,
+      "sprint_name": "Sprint 1 — Foundation, Auth & Discovery",
+      "start_date": "2026-06-23",
+      "end_date": "2026-06-27",
+      "planned_points": 19,
+      "completed_points": 22,
+      "added_points": 3,
+      "removed_points": 0,
+      "carry_over_points": 5,
+      "team_capacity": 40,
+      "working_days": 5,
+      "team_size": 1,
+      "stories": [
+        {
+          "id": "FX-5",
+          "title": "Custom JWT auth (jose) + bcrypt + roles + route proxy",
+          "points": 8,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-23",
+          "completed_date": "2026-06-24",
+          "blocked_days": 0,
+          "priority": "high"
+        },
+        {
+          "id": "FX-6",
+          "title": "Register / login / logout flows",
+          "points": 3,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-23",
+          "completed_date": "2026-06-24",
+          "blocked_days": 0,
+          "priority": "high"
+        },
+        {
+          "id": "FX-7",
+          "title": "Home wired to DB (categories + featured listings)",
+          "points": 3,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-24",
+          "completed_date": "2026-06-25",
+          "blocked_days": 0,
+          "priority": "medium"
+        },
+        {
+          "id": "FX-8",
+          "title": "Browse /services with category + keyword filters",
+          "points": 5,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-24",
+          "completed_date": "2026-06-26",
+          "blocked_days": 0,
+          "priority": "high"
+        },
+        {
+          "id": "FX-9",
+          "title": "Listing detail page + reviews display",
+          "points": 3,
+          "status": "completed",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-25",
+          "completed_date": "2026-06-27",
+          "blocked_days": 0,
+          "priority": "medium"
+        },
+        {
+          "id": "FX-10",
+          "title": "Booking loop (request + provider accept/decline)",
+          "points": 5,
+          "status": "in_progress",
+          "assigned_to": "Aleksandar",
+          "created_date": "2026-06-26",
+          "blocked_days": 0,
+          "priority": "high"
+        }
+      ],
+      "blockers": [],
+      "ceremonies": {
+        "daily_standup": { "attendance_rate": 1.0, "engagement_score": 0.9 },
+        "sprint_planning": { "attendance_rate": 1.0, "engagement_score": 0.92 },
+        "sprint_review": { "attendance_rate": 1.0, "engagement_score": 0.9 },
+        "retrospective": { "attendance_rate": 1.0, "engagement_score": 0.95 }
+      }
+    }
+  ],
+  "retrospectives": [
+    {
+      "sprint_number": 1,
+      "date": "2026-06-20",
+      "facilitator": "Aleksandar",
+      "attendees": ["Aleksandar"],
+      "duration_minutes": 30,
+      "went_well": [
+        "Toolchain bootstrapped from zero (Node, Prisma 7, libSQL) in one sitting",
+        "Schema modelled the full marketplace domain up front",
+        "Seed data unblocked UI work immediately"
+      ],
+      "to_improve": [
+        "npm install-script approval gate cost time — document the approve-scripts step",
+        "Pin the Prisma 7 SQLite adapter choice earlier to avoid native-build detours"
+      ],
+      "action_items": [
+        {
+          "id": "AI-001",
+          "description": "Document npm approve-scripts step in the README/runbook",
+          "owner": "Aleksandar",
+          "priority": "medium",
+          "due_date": "2026-06-23",
+          "status": "completed",
+          "created_sprint": 1,
+          "completed_sprint": 2,
+          "category": "process",
+          "effort_estimate": "low"
+        },
+        {
+          "id": "AI-002",
+          "description": "Standardise on the libSQL adapter for local SQLite",
+          "owner": "Aleksandar",
+          "priority": "high",
+          "due_date": "2026-06-20",
+          "status": "completed",
+          "created_sprint": 1,
+          "completed_sprint": 1,
+          "category": "technical",
+          "effort_estimate": "low"
+        }
+      ]
+    },
+    {
+      "sprint_number": 2,
+      "date": "2026-06-27",
+      "facilitator": "Aleksandar",
+      "attendees": ["Aleksandar"],
+      "duration_minutes": 30,
+      "went_well": [
+        "Custom auth shipped fast and is Next 16-proof",
+        "Discovery (browse + filters) pulled forward ahead of plan",
+        "Production build green (typecheck + lint + compile)"
+      ],
+      "to_improve": [
+        "Booking epic slipped to in_progress — sprint scope was optimistic",
+        "No automated tests yet for booking status transitions",
+        "Visual preview blocked by tooling PATH — verify rendering earlier"
+      ],
+      "action_items": [
+        {
+          "id": "AI-003",
+          "description": "Finish the booking loop and add review submission",
+          "owner": "Aleksandar",
+          "priority": "high",
+          "due_date": "2026-07-04",
+          "status": "in_progress",
+          "created_sprint": 2,
+          "category": "feature",
+          "effort_estimate": "medium"
+        },
+        {
+          "id": "AI-004",
+          "description": "Add Vitest tests for booking status transitions",
+          "owner": "Aleksandar",
+          "priority": "medium",
+          "due_date": "2026-07-04",
+          "status": "not_started",
+          "created_sprint": 2,
+          "category": "technical",
+          "effort_estimate": "medium"
+        },
+        {
+          "id": "AI-005",
+          "description": "Build provider listing CRUD (Sprint 2 goal)",
+          "owner": "Aleksandar",
+          "priority": "high",
+          "due_date": "2026-07-04",
+          "status": "not_started",
+          "created_sprint": 2,
+          "category": "feature",
+          "effort_estimate": "high"
+        }
+      ]
+    }
+  ]
+}

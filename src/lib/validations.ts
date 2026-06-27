@@ -1,0 +1,37 @@
+import { z } from "zod";
+
+export const registerSchema = z.object({
+  name: z.string().min(2, "Please enter your name"),
+  email: z.email("Enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["CUSTOMER", "PROVIDER"]),
+});
+
+export const loginSchema = z.object({
+  email: z.email("Enter a valid email"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const PRICE_TYPES = ["HOURLY", "FIXED", "QUOTE"] as const;
+
+export const listingSchema = z.object({
+  title: z.string().min(4, "Title is too short").max(80),
+  categoryId: z.string().min(1, "Choose a category"),
+  description: z.string().min(20, "Describe your service (at least 20 characters)"),
+  priceType: z.enum(PRICE_TYPES),
+  price: z.coerce.number().positive("Enter a valid price").optional(),
+  city: z.string().min(2, "City is required"),
+  area: z.string().optional(),
+});
+
+export const bookingSchema = z.object({
+  listingId: z.string().min(1),
+  message: z.string().max(500).optional(),
+  scheduledFor: z.string().optional(),
+});
+
+export const reviewSchema = z.object({
+  bookingId: z.string().min(1),
+  rating: z.coerce.number().int().min(1).max(5),
+  comment: z.string().max(500).optional(),
+});

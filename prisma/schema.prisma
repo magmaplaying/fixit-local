@@ -1,0 +1,103 @@
+// FixIt Local — hyperlocal services marketplace
+// SQLite for dev (no native enums / no scalar lists → String fields + JSON text).
+// Allowed string values are documented inline and enforced in app code (Zod/TS unions).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("CUSTOMER") // CUSTOMER | PROVIDER | ADMIN
+  createdAt    DateTime @default(now())
+
+  provider ProviderProfile?
+  bookings Booking[]        @relation("CustomerBookings")
+  reviews  Review[]
+}
+
+model ProviderProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio       String?
+  phone     String?
+  city      String
+  area      String?
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  listings Listing[]
+}
+
+model Category {
+  id   String  @id @default(cuid())
+  name String
+  slug String  @unique
+  icon String?
+
+  listings Listing[]
+}
+
+model Listing {
+  id          String          @id @default(cuid())
+  providerId  String
+  provider    ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category        @relation(fields: [categoryId], references: [id])
+  title       String
+  description String
+  priceType   String          @default("HOURLY") // HOURLY | FIXED | QUOTE
+  price       Float?
+  city        String
+  area        String?
+  photos      String          @default("[]") // JSON-encoded array of image URLs
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+
+  bookings Booking[]
+  reviews  Review[]
+
+  @@index([categoryId])
+  @@index([city])
+}
+
+model Booking {
+  id           String    @id @default(cuid())
+  listingId    String
+  listing      Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  customerId   String
+  customer     User      @relation("CustomerBookings", fields: [customerId], references: [id], onDelete: Cascade)
+  status       String    @default("REQUESTED") // REQUESTED | ACCEPTED | DECLINED | COMPLETED | CANCELLED
+  scheduledFor DateTime?
+  message      String?
+  createdAt    DateTime  @default(now())
+
+  review Review?
+
+  @@index([listingId])
+  @@index([customerId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  rating    Int // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@index([listingId])
+}
