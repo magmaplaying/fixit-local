@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { hashПарола, verifyПарола, createSession, destroySession } from "@/lib/auth";
+import { hashPassword, verifyPassword, createSession, destroySession } from "@/lib/auth";
 import { registerSchema, loginSchema } from "@/lib/validations";
 
 export type AuthState = { error?: string };
@@ -23,7 +23,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (existing) return { error: "Вече съществува акаунт с този имейл." };
 
   const user = await prisma.user.create({
-    data: { name, email, passwordHash: await hashПарола(password), role },
+    data: { name, email, passwordHash: await hashPassword(password), role },
   });
   await createSession({ id: user.id, email: user.email, name: user.name, role });
 
@@ -41,7 +41,7 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
 
   const { email, password } = parsed.data;
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !(await verifyПарола(password, user.passwordHash))) {
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
     return { error: "Грешен имейл или парола." };
   }
 
