@@ -10,7 +10,7 @@ export default async function ProviderOnboardingPage() {
   const profile = await prisma.providerProfile.findUnique({ where: { userId: user.id } });
 
   const inputClass =
-    "w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/15 dark:bg-white/5";
+    "w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5";
 
   return (
     <div className="mx-auto max-w-lg px-4 py-12">
@@ -44,7 +44,7 @@ export default async function ProviderOnboardingPage() {
         </label>
         <button
           type="submit"
-          className="w-full rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white transition hover:bg-teal-700"
+          className="w-full rounded-lg bg-cobble-600 px-4 py-2.5 font-medium text-white transition hover:bg-cobble-700"
         >
           {profile ? "Save profile" : "Create profile"}
         </button>

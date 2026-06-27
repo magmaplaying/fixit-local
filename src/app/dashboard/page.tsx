@@ -33,7 +33,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         </p>
         <Link
           href="/onboarding/provider"
-          className="mt-6 inline-block rounded-lg bg-teal-600 px-5 py-2.5 font-medium text-white transition hover:bg-teal-700"
+          className="mt-6 inline-block rounded-lg bg-cobble-600 px-5 py-2.5 font-medium text-white transition hover:bg-cobble-700"
         >
           Set up my profile
         </Link>
@@ -57,7 +57,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
       </p>
 
       {(sp.created || sp.updated || sp.deleted) && (
-        <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-800 dark:bg-teal-950/40 dark:text-teal-200">
+        <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
           {sp.created ? "✓ Listing published." : sp.updated ? "✓ Listing updated." : "✓ Listing deleted."}
         </p>
       )}
@@ -105,14 +105,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         <h2 className="text-lg font-semibold">My listings</h2>
         <Link
           href="/dashboard/listings/new"
-          className="rounded-lg bg-teal-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-teal-700"
+          className="rounded-lg bg-cobble-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700"
         >
           + New listing
         </Link>
       </div>
       {profile.listings.length === 0 ? (
         <p className="mt-3 text-black/50 dark:text-white/50">
-          No listings yet — <Link href="/dashboard/listings/new" className="font-medium text-teal-600 hover:underline">create your first one</Link>.
+          No listings yet — <Link href="/dashboard/listings/new" className="font-medium text-cobble-600 hover:underline">create your first one</Link>.
         </p>
       ) : (
         <ul className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -122,11 +122,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 <span className="text-xs text-black/45 dark:text-white/45">
                   {l.category.icon} {l.category.name}
                 </span>
-                <span className="font-semibold text-teal-700 dark:text-teal-400">
+                <span className="font-semibold text-cobble-700 dark:text-cobble-400">
                   {formatPrice(l.priceType, l.price)}
                 </span>
               </div>
-              <Link href={`/listing/${l.id}`} className="mt-1 block font-medium hover:text-teal-600">
+              <Link href={`/listing/${l.id}`} className="mt-1 block font-medium hover:text-cobble-600">
                 {l.title}
               </Link>
               <p className="mt-1 text-xs text-black/45 dark:text-white/45">
@@ -135,7 +135,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
               <div className="mt-3 flex items-center gap-2 border-t border-black/5 pt-3 dark:border-white/10">
                 <Link
                   href={`/dashboard/listings/${l.id}/edit`}
-                  className="rounded-lg border border-black/10 px-3 py-1 text-xs font-medium transition hover:border-teal-500/40 dark:border-white/15"
+                  className="rounded-lg border border-black/10 px-3 py-1 text-xs font-medium transition hover:border-cobble-500/40 dark:border-white/15"
                 >
                   Edit
                 </Link>
@@ -172,7 +172,7 @@ function StatusButton({
 }) {
   const cls =
     variant === "primary"
-      ? "rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-teal-700"
+      ? "rounded-lg bg-cobble-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700"
       : "rounded-lg border border-black/10 px-3 py-1.5 text-sm text-black/60 transition hover:border-red-300 hover:text-red-600 dark:border-white/15 dark:text-white/60";
   return (
     <form action={setBookingStatus}>

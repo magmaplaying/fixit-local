@@ -27,7 +27,7 @@ const PRICE_LABELS: Record<string, string> = {
 };
 
 const inputClass =
-  "w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/15 dark:bg-white/5";
+  "w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5";
 
 export function ListingForm({
   mode,
@@ -112,7 +112,7 @@ export function ListingForm({
 
       {mode === "edit" && (
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="active" defaultChecked={d.active ?? true} className="h-4 w-4 accent-teal-600" />
+          <input type="checkbox" name="active" defaultChecked={d.active ?? true} className="h-4 w-4 accent-cobble-600" />
           Active (visible to customers)
         </label>
       )}
@@ -127,7 +127,7 @@ export function ListingForm({
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-teal-600 px-5 py-2.5 font-medium text-white transition hover:bg-teal-700 disabled:opacity-60"
+          className="rounded-lg bg-cobble-600 px-5 py-2.5 font-medium text-white transition hover:bg-cobble-700 disabled:opacity-60"
         >
           {pending ? "Saving…" : mode === "create" ? "Publish listing" : "Save changes"}
         </button>

@@ -12,7 +12,7 @@ export function ReviewForm({ bookingId }: { bookingId: string }) {
           id={`rating-${bookingId}`}
           name="rating"
           defaultValue="5"
-          className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-sm outline-none focus:border-teal-500 dark:border-white/15 dark:bg-white/5"
+          className="rounded-lg border border-black/10 bg-white px-2 py-1.5 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
         >
           <option value="5">★★★★★ (5)</option>
           <option value="4">★★★★ (4)</option>
@@ -25,9 +25,9 @@ export function ReviewForm({ bookingId }: { bookingId: string }) {
         name="comment"
         rows={2}
         placeholder="How was it? (optional)"
-        className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-teal-500 dark:border-white/15 dark:bg-white/5"
+        className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
       />
-      <button className="rounded-lg bg-teal-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-teal-700">
+      <button className="rounded-lg bg-cobble-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700">
         Submit review
       </button>
     </form>

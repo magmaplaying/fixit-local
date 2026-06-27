@@ -15,12 +15,13 @@ export type ListingCardData = {
 };
 
 export function ListingCard({ l }: { l: ListingCardData }) {
+  const meta = `${l.categoryName} · ${l.area ?? l.city}`.toUpperCase();
   return (
     <Link
       href={`/listing/${l.id}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-black/5 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-teal-500/40 hover:shadow-md dark:border-white/10 dark:bg-white/5"
+      className="group flex flex-col overflow-hidden rounded-xl border border-black/10 bg-white transition hover:-translate-y-0.5 hover:border-cobble-500/50 hover:shadow-[0_8px_24px_-14px_rgba(28,26,23,0.35)]"
     >
-      <div className="aspect-[16/10] w-full overflow-hidden bg-teal-50 dark:bg-teal-950/30">
+      <div className="aspect-[16/10] w-full overflow-hidden bg-cobble-50">
         {l.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -36,26 +37,21 @@ export function ListingCard({ l }: { l: ListingCardData }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <div className="mb-3 flex items-center justify-between">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
-            <span aria-hidden>{l.categoryIcon}</span>
-            {l.categoryName}
-          </span>
+        <div className="font-mono text-[11px] tracking-[0.08em] text-cobble-900/70">{meta}</div>
+        <h3 className="mt-1.5 font-display text-lg font-semibold leading-snug transition group-hover:text-cobble-800">
+          {l.title}
+        </h3>
+        <div className="mt-1 flex items-center gap-2 text-sm text-black/55">
+          <span>{l.providerName}</span>
           <Rating rating={l.rating} count={l.reviewCount} />
         </div>
 
-        <h3 className="font-semibold leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400">
-          {l.title}
-        </h3>
-        <p className="mt-1 text-sm text-black/55 dark:text-white/55">
-          {l.providerName} · {l.area ? `${l.area}, ` : ""}
-          {l.city}
-        </p>
-
-        <div className="mt-4 flex items-center justify-between border-t border-black/5 pt-3 dark:border-white/10">
-          <span className="font-semibold text-teal-700 dark:text-teal-400">{l.priceLabel}</span>
-          <span className="text-sm text-black/40 transition group-hover:text-teal-600 dark:text-white/40">
-            View →
+        <div className="mt-4 flex items-center justify-between border-t border-dashed border-black/20 pt-3">
+          <span className="rounded-md bg-cobble-100 px-2.5 py-1 font-mono text-sm font-medium text-cobble-900">
+            {l.priceLabel}
+          </span>
+          <span className="font-mono text-xs tracking-wide text-black/40 transition group-hover:text-cobble-700">
+            VIEW →
           </span>
         </div>
       </div>
@@ -64,16 +60,14 @@ export function ListingCard({ l }: { l: ListingCardData }) {
 }
 
 function Rating({ rating, count }: { rating: number | null; count: number }) {
-  if (rating == null) {
-    return <span className="text-xs text-black/40 dark:text-white/40">No reviews yet</span>;
-  }
+  if (rating == null) return <span className="font-mono text-[11px] text-black/35">· NEW</span>;
   return (
-    <span className="inline-flex items-center gap-1 text-sm">
-      <span className="text-amber-500" aria-hidden>
+    <span className="inline-flex items-center gap-1">
+      <span className="text-cobble-500" aria-hidden>
         ★
       </span>
-      <span className="font-medium">{rating.toFixed(1)}</span>
-      <span className="text-xs text-black/40 dark:text-white/40">({count})</span>
+      <span className="font-mono text-xs font-medium">{rating.toFixed(1)}</span>
+      <span className="font-mono text-[11px] text-black/35">({count})</span>
     </span>
   );
 }

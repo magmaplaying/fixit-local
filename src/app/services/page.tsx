@@ -60,9 +60,9 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           type="text"
           defaultValue={sp.q ?? ""}
           placeholder="What do you need done?"
-          className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/15 dark:bg-white/5"
+          className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5"
         />
-        <button type="submit" className="rounded-xl bg-teal-600 px-6 py-2.5 font-medium text-white transition hover:bg-teal-700">
+        <button type="submit" className="rounded-xl bg-cobble-600 px-6 py-2.5 font-medium text-white transition hover:bg-cobble-700">
           Search
         </button>
       </form>
@@ -85,7 +85,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           <div className="rounded-2xl border border-dashed border-black/10 p-12 text-center text-black/50 dark:border-white/15 dark:text-white/50">
             <p className="text-lg font-medium">No services match your search.</p>
             <p className="mt-1 text-sm">Try a different category or clear your filters.</p>
-            <Link href="/services" className="mt-4 inline-block text-sm font-medium text-teal-600 hover:underline">
+            <Link href="/services" className="mt-4 inline-block text-sm font-medium text-cobble-600 hover:underline">
               Clear filters
             </Link>
           </div>
@@ -123,8 +123,8 @@ function FilterChip({
       href={href}
       className={
         active
-          ? "rounded-full bg-teal-600 px-3.5 py-1.5 text-sm font-medium text-white"
-          : "rounded-full border border-black/10 px-3.5 py-1.5 text-sm transition hover:border-teal-500/40 dark:border-white/15"
+          ? "rounded-full bg-cobble-600 px-3.5 py-1.5 text-sm font-medium text-white"
+          : "rounded-full border border-black/10 px-3.5 py-1.5 text-sm transition hover:border-cobble-500/40 dark:border-white/15"
       }
     >
       {children}

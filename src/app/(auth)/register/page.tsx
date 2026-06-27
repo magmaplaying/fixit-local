@@ -13,7 +13,7 @@ export default async function RegisterPage() {
       <AuthForm mode="register" action={registerAction} />
       <p className="mt-4 text-center text-sm text-black/60 dark:text-white/60">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-teal-600 hover:underline">
+        <Link href="/login" className="font-medium text-cobble-600 hover:underline">
           Sign in
         </Link>
       </p>

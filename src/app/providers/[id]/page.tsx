@@ -43,20 +43,20 @@ export default async function ProviderProfilePage({ params }: { params: Params }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <Link href="/services" className="text-sm text-black/50 hover:text-teal-600 dark:text-white/50">
+      <Link href="/services" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
         ← Back to browse
       </Link>
 
       {/* Header */}
       <div className="mt-4 flex items-start gap-4 rounded-2xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-white/5">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xl font-semibold text-teal-700 dark:bg-teal-900/50 dark:text-teal-300">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cobble-100 text-xl font-semibold text-cobble-700 dark:bg-cobble-900/50 dark:text-cobble-300">
           {initials(profile.user.name)}
         </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">{profile.user.name}</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight">{profile.user.name}</h1>
             {profile.verified && (
-              <span className="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
+              <span className="rounded-full bg-cobble-50 px-2.5 py-1 text-xs font-medium text-cobble-700 dark:bg-cobble-950/40 dark:text-cobble-300">
                 ✓ Verified
               </span>
             )}

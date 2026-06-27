@@ -28,12 +28,12 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
       <h1 className="text-2xl font-bold tracking-tight">My bookings</h1>
 
       {sp.requested && (
-        <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-800 dark:bg-teal-950/40 dark:text-teal-200">
+        <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
           ✓ Request sent! The provider will confirm shortly.
         </p>
       )}
       {sp.reviewed && (
-        <p className="mt-4 rounded-xl bg-teal-50 px-4 py-3 text-sm text-teal-800 dark:bg-teal-950/40 dark:text-teal-200">
+        <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
           ✓ Thanks for your review!
         </p>
       )}
@@ -41,7 +41,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
       {bookings.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-black/10 p-12 text-center dark:border-white/15">
           <p className="text-lg font-medium">No bookings yet.</p>
-          <Link href="/services" className="mt-3 inline-block text-sm font-medium text-teal-600 hover:underline">
+          <Link href="/services" className="mt-3 inline-block text-sm font-medium text-cobble-600 hover:underline">
             Browse services →
           </Link>
         </div>
@@ -52,7 +52,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Link href={`/listing/${b.listingId}`} className="font-medium hover:text-teal-600">
+                    <Link href={`/listing/${b.listingId}`} className="font-medium hover:text-cobble-600">
                       {b.listing.title}
                     </Link>
                     <StatusBadge status={b.status} />

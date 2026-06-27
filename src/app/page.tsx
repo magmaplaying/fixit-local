@@ -38,13 +38,13 @@ export default async function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="border-b border-black/5 bg-gradient-to-b from-teal-50/70 to-transparent dark:border-white/10 dark:from-teal-950/20">
+      <section className="border-b border-black/5 bg-gradient-to-b from-cobble-50/70 to-transparent dark:border-white/10 dark:from-cobble-950/20">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
-          <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
-            Trusted local help, <span className="text-teal-600">a few taps away.</span>
+          <h1 className="max-w-2xl font-display text-4xl font-bold tracking-tight sm:text-5xl">
+            Trusted help, <span className="text-cobble-600">street by street.</span>
           </h1>
-          <p className="mt-4 max-w-xl text-lg text-black/60 dark:text-white/60">
-            Book vetted cleaners, handymen, tutors, movers and more across Sofia. Real people, real reviews.
+          <p className="mt-4 max-w-xl text-lg text-black/60">
+            Vetted cleaners, handymen, tutors, movers and more — in your Sofia neighbourhood. Real people, real reviews.
           </p>
 
           <form action="/services" className="mt-8 flex max-w-2xl flex-col gap-3 sm:flex-row">
@@ -52,18 +52,18 @@ export default async function Home() {
               name="q"
               type="text"
               placeholder="What do you need done?"
-              className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/15 dark:bg-white/5"
+              className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5"
             />
             <select
               name="city"
               defaultValue="Sofia"
-              className="rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-teal-500 dark:border-white/15 dark:bg-white/5"
+              className="rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
             >
               <option value="Sofia">Sofia</option>
             </select>
             <button
               type="submit"
-              className="rounded-xl bg-teal-600 px-6 py-3 font-medium text-white transition hover:bg-teal-700"
+              className="rounded-xl bg-cobble-600 px-6 py-3 font-medium text-white transition hover:bg-cobble-700"
             >
               Search
             </button>
@@ -79,7 +79,7 @@ export default async function Home() {
             <Link
               key={c.id}
               href={`/services?category=${c.slug}`}
-              className="flex flex-col items-center gap-2 rounded-xl border border-black/5 bg-white p-5 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-teal-500/40 hover:shadow-md dark:border-white/10 dark:bg-white/5"
+              className="flex flex-col items-center gap-2 rounded-xl border border-black/5 bg-white p-5 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-cobble-500/40 hover:shadow-md dark:border-white/10 dark:bg-white/5"
             >
               <span className="text-3xl" aria-hidden>
                 {c.icon}
@@ -95,7 +95,7 @@ export default async function Home() {
       <section className="mx-auto max-w-6xl px-4 pb-20">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Featured services</h2>
-          <Link href="/services" className="text-sm font-medium text-teal-600 hover:underline">
+          <Link href="/services" className="text-sm font-medium text-cobble-600 hover:underline">
             See all →
           </Link>
         </div>

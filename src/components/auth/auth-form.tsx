@@ -50,7 +50,7 @@ export function AuthForm({ mode, action }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-teal-600 px-4 py-2.5 font-medium text-white transition hover:bg-teal-700 disabled:opacity-60"
+        className="w-full rounded-lg bg-cobble-600 px-4 py-2.5 font-medium text-white transition hover:bg-cobble-700 disabled:opacity-60"
       >
         {pending ? "Please wait…" : isRegister ? "Create account" : "Sign in"}
       </button>
@@ -59,7 +59,7 @@ export function AuthForm({ mode, action }: Props) {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/15 dark:bg-white/5";
+  "w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -84,7 +84,7 @@ function RoleOption({
   return (
     <label className="relative cursor-pointer">
       <input type="radio" name="role" value={value} defaultChecked={defaultChecked} className="peer sr-only" />
-      <div className="rounded-lg border border-black/10 p-3 text-sm transition peer-checked:border-teal-500 peer-checked:bg-teal-50 dark:border-white/15 dark:peer-checked:bg-teal-950/30">
+      <div className="rounded-lg border border-black/10 p-3 text-sm transition peer-checked:border-cobble-500 peer-checked:bg-cobble-50 dark:border-white/15 dark:peer-checked:bg-cobble-950/30">
         <div className="font-medium">{label}</div>
         <div className="text-xs text-black/50 dark:text-white/50">{hint}</div>
       </div>

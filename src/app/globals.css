@@ -1,22 +1,33 @@
 @import "tailwindcss";
 
+/* Pavé is a warm, light identity — gate dark mode behind an explicit .dark class
+   (which we never add) so the OS dark preference doesn't flip the palette. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf7ee; /* warm paper */
+  --foreground: #1c1a17; /* ink */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-bricolage);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* "Cobblestone" ochre — Sofia's yellow paving stones — replaces the old teal accent. */
+  --color-cobble-50: #fbf3df;
+  --color-cobble-100: #f6e4b8;
+  --color-cobble-200: #efd08a;
+  --color-cobble-300: #e8bc5c;
+  --color-cobble-400: #e4ab35;
+  --color-cobble-500: #e0a019;
+  --color-cobble-600: #c98a12;
+  --color-cobble-700: #a37010;
+  --color-cobble-800: #7c540c;
+  --color-cobble-900: #5a3d0a;
+  --color-cobble-950: #3a2806;
 }
 
 body {
