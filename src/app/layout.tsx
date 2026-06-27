@@ -21,9 +21,9 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "FixIt Local — trusted local help in Sofia",
+  title: "FixIt Local — доверена местна помощ в София",
   description:
-    "Find and book vetted local service providers — cleaners, handymen, tutors, movers and more — in your neighbourhood.",
+    "Намерете и заявете проверени местни майстори — за почистване, ремонти, уроци, преместване и още — във вашия квартал.",
 };
 
 export default function RootLayout({

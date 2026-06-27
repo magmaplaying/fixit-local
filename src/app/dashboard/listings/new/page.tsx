@@ -17,10 +17,10 @@ export default async function NewListingPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <Link href="/dashboard" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
-        ← Back to dashboard
+        ← Обратно към таблото
       </Link>
-      <h1 className="mt-3 text-2xl font-bold tracking-tight">New listing</h1>
-      <p className="mt-1 text-black/55 dark:text-white/55">Publish a service so customers can find and book you.</p>
+      <h1 className="mt-3 text-2xl font-bold tracking-tight">Нова обява</h1>
+      <p className="mt-1 text-black/55 dark:text-white/55">Публикувайте услуга, за да могат клиентите да ви намерят и заявят.</p>
 
       <div className="mt-8">
         <ListingForm

@@ -1,7 +1,7 @@
 export function formatPrice(priceType: string, price: number | null): string {
-  if (priceType === "QUOTE" || price == null) return "Quote on request";
+  if (priceType === "QUOTE" || price == null) return "По договаряне";
   const amount = `€${price % 1 === 0 ? price.toFixed(0) : price.toFixed(2)}`;
-  if (priceType === "HOURLY") return `${amount}/hr`;
+  if (priceType === "HOURLY") return `${amount}/час`;
   return amount; // FIXED
 }
 

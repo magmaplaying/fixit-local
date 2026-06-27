@@ -25,9 +25,9 @@ export default async function EditListingPage({ params }: { params: Params }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <Link href="/dashboard" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
-        ← Back to dashboard
+        ← Обратно към таблото
       </Link>
-      <h1 className="mt-3 text-2xl font-bold tracking-tight">Edit listing</h1>
+      <h1 className="mt-3 text-2xl font-bold tracking-tight">Редактиране на обява</h1>
 
       <div className="mt-8">
         <ListingForm

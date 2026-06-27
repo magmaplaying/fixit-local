@@ -44,7 +44,7 @@ export default async function ProviderProfilePage({ params }: { params: Params }
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <Link href="/services" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
-        ← Back to browse
+        ← Обратно към услугите
       </Link>
 
       {/* Header */}
@@ -57,7 +57,7 @@ export default async function ProviderProfilePage({ params }: { params: Params }
             <h1 className="font-display text-2xl font-bold tracking-tight">{profile.user.name}</h1>
             {profile.verified && (
               <span className="rounded-full bg-cobble-50 px-2.5 py-1 text-xs font-medium text-cobble-700 dark:bg-cobble-950/40 dark:text-cobble-300">
-                ✓ Verified
+                ✓ Проверен
               </span>
             )}
           </div>
@@ -72,10 +72,10 @@ export default async function ProviderProfilePage({ params }: { params: Params }
 
       {/* Listings */}
       <h2 className="mt-10 text-lg font-semibold">
-        Services by {profile.user.name.split(" ")[0]}
+        Услуги от {profile.user.name.split(" ")[0]}
       </h2>
       {cards.length === 0 ? (
-        <p className="mt-2 text-black/50 dark:text-white/50">No active listings right now.</p>
+        <p className="mt-2 text-black/50 dark:text-white/50">Все още няма активни обяви.</p>
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map((l) => (

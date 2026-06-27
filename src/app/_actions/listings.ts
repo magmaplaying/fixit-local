@@ -35,7 +35,7 @@ export async function createListing(
 ): Promise<ListingFormState> {
   const profile = await requireProvider();
   const parsed = listingSchema.safeParse(readForm(formData));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Невалидни данни" };
 
   const d = parsed.data;
   await prisma.listing.create({
@@ -68,7 +68,7 @@ export async function updateListing(
   if (!existing || existing.providerId !== profile.id) redirect("/dashboard");
 
   const parsed = listingSchema.safeParse(readForm(formData));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Невалидни данни" };
 
   const d = parsed.data;
   await prisma.listing.update({

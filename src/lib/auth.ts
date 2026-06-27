@@ -12,11 +12,11 @@ const secret = new TextEncoder().encode(
 export type Role = "CUSTOMER" | "PROVIDER" | "ADMIN";
 export type SessionUser = { id: string; email: string; name: string; role: Role };
 
-export async function hashPassword(password: string): Promise<string> {
+export async function hashПарола(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+export async function verifyПарола(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 

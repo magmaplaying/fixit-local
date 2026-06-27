@@ -41,31 +41,31 @@ export default async function Home() {
       <section className="border-b border-black/5 bg-gradient-to-b from-cobble-50/70 to-transparent dark:border-white/10 dark:from-cobble-950/20">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
           <h1 className="max-w-2xl font-display text-4xl font-bold tracking-tight sm:text-5xl">
-            Trusted help, <span className="text-cobble-600">street by street.</span>
+            Доверена помощ, <span className="text-cobble-600">квартал по квартал.</span>
           </h1>
           <p className="mt-4 max-w-xl text-lg text-black/60">
-            Vetted cleaners, handymen, tutors, movers and more — in your Sofia neighbourhood. Real people, real reviews.
+            Проверени майстори за почистване, ремонти, уроци, преместване и още — във вашия квартал в София. Истински хора, истински отзиви.
           </p>
 
           <form action="/services" className="mt-8 flex max-w-2xl flex-col gap-3 sm:flex-row">
             <input
               name="q"
               type="text"
-              placeholder="What do you need done?"
+              placeholder="Какво трябва да се свърши?"
               className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5"
             />
             <select
               name="city"
-              defaultValue="Sofia"
+              defaultValue="София"
               className="rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
             >
-              <option value="Sofia">Sofia</option>
+              <option value="София">София</option>
             </select>
             <button
               type="submit"
               className="rounded-xl bg-cobble-600 px-6 py-3 font-medium text-white transition hover:bg-cobble-700"
             >
-              Search
+              Търси
             </button>
           </form>
         </div>
@@ -73,7 +73,7 @@ export default async function Home() {
 
       {/* Categories */}
       <section className="mx-auto max-w-6xl px-4 py-12">
-        <h2 className="mb-6 text-xl font-semibold">Browse by category</h2>
+        <h2 className="mb-6 text-xl font-semibold">Разгледай по категория</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {categories.map((c) => (
             <Link
@@ -85,7 +85,7 @@ export default async function Home() {
                 {c.icon}
               </span>
               <span className="text-sm font-medium">{c.name}</span>
-              <span className="text-xs text-black/40 dark:text-white/40">{c._count.listings} pros</span>
+              <span className="text-xs text-black/40 dark:text-white/40">{c._count.listings} майстори</span>
             </Link>
           ))}
         </div>
@@ -94,13 +94,13 @@ export default async function Home() {
       {/* Featured */}
       <section className="mx-auto max-w-6xl px-4 pb-20">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Featured services</h2>
+          <h2 className="text-xl font-semibold">Препоръчани услуги</h2>
           <Link href="/services" className="text-sm font-medium text-cobble-600 hover:underline">
-            See all →
+            Виж всички →
           </Link>
         </div>
         {cards.length === 0 ? (
-          <p className="text-black/50 dark:text-white/50">No listings yet. Check back soon.</p>
+          <p className="text-black/50 dark:text-white/50">Все още няма обяви. Очаквайте скоро.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {cards.map((l) => (

@@ -28,7 +28,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <Link href="/services" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
-        ← Back to browse
+        ← Обратно към услугите
       </Link>
 
       <div className="mt-4 grid gap-8 lg:grid-cols-[1fr_22rem]">
@@ -58,18 +58,18 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                 {listing.provider.user.name}
               </Link>
               <p className="text-sm text-black/50 dark:text-white/50">
-                {listing.provider.verified ? "✓ Verified provider" : "Provider"}
+                {listing.provider.verified ? "✓ Проверен специалист" : "Специалист"}
                 {listing.provider.bio ? ` · ${listing.provider.bio}` : ""}
               </p>
             </div>
           </div>
 
-          <h2 className="mt-8 text-lg font-semibold">About this service</h2>
+          <h2 className="mt-8 text-lg font-semibold">За услугата</h2>
           <p className="mt-2 whitespace-pre-line text-black/70 dark:text-white/70">{listing.description}</p>
 
-          {/* Reviews */}
+          {/* Отзиви */}
           <h2 className="mt-8 text-lg font-semibold">
-            Reviews{" "}
+            Отзиви{" "}
             {rating != null && (
               <span className="ml-1 text-sm font-normal text-black/50 dark:text-white/50">
                 ★ {rating.toFixed(1)} · {listing.reviews.length}
@@ -77,7 +77,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
             )}
           </h2>
           {listing.reviews.length === 0 ? (
-            <p className="mt-2 text-black/50 dark:text-white/50">No reviews yet — be the first after your booking.</p>
+            <p className="mt-2 text-black/50 dark:text-white/50">Все още няма отзиви — бъдете първият след вашата заявка.</p>
           ) : (
             <ul className="mt-3 space-y-4">
               {listing.reviews.map((r) => (
@@ -105,9 +105,9 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
 
             {isOwner ? (
               <p className="mt-4 rounded-lg bg-black/[0.03] px-3 py-2 text-sm text-black/60 dark:bg-white/5 dark:text-white/60">
-                This is your listing. Manage requests from your{" "}
+                Това е вашата обява. Управлявайте заявките от вашето{" "}
                 <Link href="/dashboard" className="font-medium text-cobble-600 hover:underline">
-                  dashboard
+                  табло
                 </Link>
                 .
               </p>
@@ -115,7 +115,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
               <form action={requestBooking} className="mt-4 space-y-3">
                 <input type="hidden" name="listingId" value={listing.id} />
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium">When do you need it?</span>
+                  <span className="mb-1 block text-sm font-medium">Кога ви трябва?</span>
                   <input
                     type="date"
                     name="scheduledFor"
@@ -123,11 +123,11 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium">Message (optional)</span>
+                  <span className="mb-1 block text-sm font-medium">Съобщение (по избор)</span>
                   <textarea
                     name="message"
                     rows={3}
-                    placeholder="Describe what you need…"
+                    placeholder="Опишете какво ви трябва…"
                     className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
                   />
                 </label>
@@ -135,10 +135,10 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                   type="submit"
                   className="w-full rounded-lg bg-cobble-600 px-4 py-2.5 font-medium text-white transition hover:bg-cobble-700"
                 >
-                  Request booking
+                  Заяви услуга
                 </button>
                 <p className="text-center text-xs text-black/45 dark:text-white/45">
-                  No payment now — the provider confirms first.
+                  Без плащане сега — специалистът първо потвърждава.
                 </p>
               </form>
             ) : (
@@ -146,7 +146,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                 href={`/login?next=/listing/${listing.id}`}
                 className="mt-4 block rounded-lg bg-cobble-600 px-4 py-2.5 text-center font-medium text-white transition hover:bg-cobble-700"
               >
-                Sign in to book
+                Влез, за да заявиш
               </Link>
             )}
           </div>

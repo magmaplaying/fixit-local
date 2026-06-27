@@ -10,22 +10,22 @@ const adapter = new PrismaLibSql({
 const prisma = new PrismaClient({ adapter });
 
 const CATEGORIES = [
-  { name: "Tutoring", slug: "tutoring", icon: "📚" },
-  { name: "Cleaning", slug: "cleaning", icon: "🧹" },
-  { name: "Handyman", slug: "handyman", icon: "🔧" },
-  { name: "Moving", slug: "moving", icon: "📦" },
-  { name: "Plumbing", slug: "plumbing", icon: "🚰" },
-  { name: "Electrical", slug: "electrical", icon: "💡" },
+  { name: "Уроци", slug: "tutoring", icon: "📚" },
+  { name: "Почистване", slug: "cleaning", icon: "🧹" },
+  { name: "Майстор", slug: "handyman", icon: "🔧" },
+  { name: "Преместване", slug: "moving", icon: "📦" },
+  { name: "Водопровод", slug: "plumbing", icon: "🚰" },
+  { name: "Електро", slug: "electrical", icon: "💡" },
 ];
 
 const PROVIDERS = [
-  { name: "Maria Ivanova", email: "maria@demo.bg", cat: "cleaning", title: "Professional Home Cleaning", price: 25, priceType: "HOURLY", area: "Lozenets", bio: "10 years of sparkling homes.", desc: "Deep cleaning, regular cleaning, and move-in/out service. Eco-friendly products available on request." },
-  { name: "Georgi Petrov", email: "georgi@demo.bg", cat: "handyman", title: "Handyman & Small Repairs", price: 30, priceType: "HOURLY", area: "Mladost", bio: "Your go-to fixer.", desc: "Furniture assembly, TV mounting, drilling, and minor repairs around the home. Same-week availability." },
-  { name: "Ivan Dimitrov", email: "ivan@demo.bg", cat: "plumbing", title: "Licensed Plumber — Fast Response", price: 40, priceType: "HOURLY", area: "Center", bio: "Licensed plumber, 15 years experience.", desc: "Leaks, installations, boilers, and emergencies. Fast response across central Sofia." },
-  { name: "Elena Koleva", email: "elena@demo.bg", cat: "tutoring", title: "Math & Physics Tutor", price: 20, priceType: "HOURLY", area: "Studentski grad", bio: "MSc Physics, patient teacher.", desc: "High-school and university math & physics. Exam prep and clear, patient explanations." },
-  { name: "Dimitar Stoyanov", email: "dimitar@demo.bg", cat: "moving", title: "Two Men + Van Moving", price: 120, priceType: "FIXED", area: "Citywide", bio: "We move you stress-free.", desc: "Apartment and office moves within Sofia. Packing materials and careful handling included." },
-  { name: "Svetlin Marinov", email: "svetlin@demo.bg", cat: "electrical", title: "Certified Electrician", price: 35, priceType: "HOURLY", area: "Nadezhda", bio: "Certified electrician.", desc: "Wiring, sockets, lighting, and panel upgrades. Safety inspections for older apartments." },
-  { name: "Petya Hristova", email: "petya@demo.bg", cat: "cleaning", title: "Office & After-Party Cleaning", price: 28, priceType: "HOURLY", area: "Center", bio: "Reliable and thorough.", desc: "Office cleaning contracts and one-off deep cleans. Flexible evening and weekend slots." },
+  { name: "Мария Иванова", email: "maria@demo.bg", cat: "cleaning", title: "Професионално почистване на дома", price: 25, priceType: "HOURLY", area: "Лозенец", bio: "10 години блестящи домове.", desc: "Основно и поддържащо почистване, нанасяне и изнасяне. Еко препарати при заявка." },
+  { name: "Георги Петров", email: "georgi@demo.bg", cat: "handyman", title: "Майстор за дребни ремонти", price: 30, priceType: "HOURLY", area: "Младост", bio: "Вашият майстор за всичко.", desc: "Сглобяване на мебели, окачване на телевизори, пробиване и дребни ремонти вкъщи. Свободен в рамките на седмицата." },
+  { name: "Иван Димитров", email: "ivan@demo.bg", cat: "plumbing", title: "Лицензиран водопроводчик — бърза реакция", price: 40, priceType: "HOURLY", area: "Център", bio: "Лицензиран водопроводчик с 15 г. опит.", desc: "Течове, монтажи, бойлери и аварии. Бърза реакция в центъра на София." },
+  { name: "Елена Колева", email: "elena@demo.bg", cat: "tutoring", title: "Учител по математика и физика", price: 20, priceType: "HOURLY", area: "Студентски град", bio: "Магистър по физика, търпелив учител.", desc: "Математика и физика за ученици и студенти. Подготовка за изпити и ясни обяснения." },
+  { name: "Димитър Стоянов", email: "dimitar@demo.bg", cat: "moving", title: "Преместване — двама с бус", price: 120, priceType: "FIXED", area: "Цяла София", bio: "Местим ви без стрес.", desc: "Преместване на апартаменти и офиси в София. Опаковъчни материали и внимателно пренасяне." },
+  { name: "Светлин Маринов", email: "svetlin@demo.bg", cat: "electrical", title: "Сертифициран електротехник", price: 35, priceType: "HOURLY", area: "Надежда", bio: "Сертифициран електротехник.", desc: "Окабеляване, контакти, осветление и табла. Проверки на безопасността за стари апартаменти." },
+  { name: "Петя Христова", email: "petya@demo.bg", cat: "cleaning", title: "Почистване на офиси и след партита", price: 28, priceType: "HOURLY", area: "Център", bio: "Надеждна и старателна.", desc: "Договори за почистване на офиси и еднократно основно почистване. Гъвкави вечерни и съботно-неделни часове." },
 ];
 
 async function main() {
@@ -54,7 +54,7 @@ async function main() {
         passwordHash,
         role: "PROVIDER",
         provider: {
-          create: { city: "Sofia", area: p.area, bio: p.bio, phone: "+359 88 000 0000", verified: true },
+          create: { city: "София", area: p.area, bio: p.bio, phone: "+359 88 000 0000", verified: true },
         },
       },
       include: { provider: true },
@@ -67,7 +67,7 @@ async function main() {
         description: p.desc,
         priceType: p.priceType,
         price: p.price,
-        city: "Sofia",
+        city: "София",
         area: p.area,
         photos: JSON.stringify([`https://picsum.photos/seed/fixit-${p.email.split("@")[0]}/800/600`]),
         active: true,
@@ -76,16 +76,16 @@ async function main() {
     listings.push(listing);
   }
 
-  // A demo customer for testing the booking + review flow.
+  // Демо клиент за тестване на процеса по заявка и отзив.
   const customer = await prisma.user.create({
-    data: { name: "Demo Customer", email: "customer@demo.bg", passwordHash, role: "CUSTOMER" },
+    data: { name: "Демо клиент", email: "customer@demo.bg", passwordHash, role: "CUSTOMER" },
   });
 
-  // Completed bookings with reviews → seeds ratings across the site.
+  // Завършени заявки с отзиви → зарежда рейтинги в целия сайт.
   const reviewed: Array<{ idx: number; rating: number; comment: string }> = [
-    { idx: 0, rating: 5, comment: "Spotless and right on time — highly recommend!" },
-    { idx: 2, rating: 4, comment: "Fixed the leak fast. Professional and friendly." },
-    { idx: 3, rating: 5, comment: "Brilliant tutor — my daughter's grades jumped." },
+    { idx: 0, rating: 5, comment: "Безупречно и точно навреме — горещо препоръчвам!" },
+    { idx: 2, rating: 4, comment: "Поправи течта бързо. Професионално и любезно." },
+    { idx: 3, rating: 5, comment: "Страхотен учител — оценките на дъщеря ми скочиха." },
   ];
   for (const r of reviewed) {
     const booking = await prisma.booking.create({
@@ -96,17 +96,17 @@ async function main() {
     });
   }
 
-  // A completed booking the customer can still review (to demo the review form).
+  // Завършена заявка, която клиентът още може да оцени (за демонстрация на формата).
   await prisma.booking.create({
     data: { listingId: listings[1].id, customerId: customer.id, status: "COMPLETED" },
   });
-  // A pending request (shows in the provider's dashboard).
+  // Чакаща заявка (показва се в таблото на специалиста).
   await prisma.booking.create({
     data: {
       listingId: listings[5].id,
       customerId: customer.id,
       status: "REQUESTED",
-      message: "Could you come by this weekend?",
+      message: "Може ли да наминете този уикенд?",
     },
   });
 

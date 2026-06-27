@@ -8,13 +8,13 @@ export default async function RegisterPage() {
   if (await getCurrentUser()) redirect("/");
   return (
     <>
-      <h1 className="mb-1 text-xl font-semibold">Create your account</h1>
-      <p className="mb-6 text-sm text-black/60 dark:text-white/60">Join FixIt Local to book trusted help or offer your services.</p>
+      <h1 className="mb-1 text-xl font-semibold">Създайте акаунт</h1>
+      <p className="mb-6 text-sm text-black/60 dark:text-white/60">Присъединете се към FixIt Local, за да заявите доверена помощ или да предлагате услуги.</p>
       <AuthForm mode="register" action={registerAction} />
       <p className="mt-4 text-center text-sm text-black/60 dark:text-white/60">
-        Already have an account?{" "}
+        Вече имате акаунт?{" "}
         <Link href="/login" className="font-medium text-cobble-600 hover:underline">
-          Sign in
+          Вход
         </Link>
       </p>
     </>

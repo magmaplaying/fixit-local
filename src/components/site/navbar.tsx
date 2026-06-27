@@ -20,34 +20,34 @@ export async function Navbar() {
 
         <div className="flex items-center gap-1 text-sm sm:gap-3">
           <Link href="/services" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
-            Browse
+            Услуги
           </Link>
 
           {user ? (
             <>
               {user.role === "PROVIDER" && (
                 <Link href="/dashboard" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
-                  Dashboard
+                  Табло
                 </Link>
               )}
               <Link href="/bookings" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
-                My bookings
+                Моите заявки
               </Link>
-              <span className="hidden text-black/45 sm:inline">Hi, {user.name.split(" ")[0]}</span>
+              <span className="hidden text-black/45 sm:inline">Здравей, {user.name.split(" ")[0]}</span>
               <form action={logoutAction}>
-                <button className="rounded-lg px-3 py-1.5 text-black/70 hover:bg-black/[0.05]">Log out</button>
+                <button className="rounded-lg px-3 py-1.5 text-black/70 hover:bg-black/[0.05]">Изход</button>
               </form>
             </>
           ) : (
             <>
               <Link href="/login" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
-                Sign in
+                Вход
               </Link>
               <Link
                 href="/register"
                 className="rounded-lg bg-cobble-600 px-3.5 py-1.5 font-medium text-white transition hover:bg-cobble-700"
               >
-                Sign up
+                Регистрация
               </Link>
             </>
           )}

@@ -51,7 +51,7 @@ export function ListingCard({ l }: { l: ListingCardData }) {
             {l.priceLabel}
           </span>
           <span className="font-mono text-xs tracking-wide text-black/40 transition group-hover:text-cobble-700">
-            VIEW →
+            ВИЖ →
           </span>
         </div>
       </div>
@@ -60,7 +60,7 @@ export function ListingCard({ l }: { l: ListingCardData }) {
 }
 
 function Rating({ rating, count }: { rating: number | null; count: number }) {
-  if (rating == null) return <span className="font-mono text-[11px] text-black/35">· NEW</span>;
+  if (rating == null) return <span className="font-mono text-[11px] text-black/35">· НОВО</span>;
   return (
     <span className="inline-flex items-center gap-1">
       <span className="text-cobble-500" aria-hidden>

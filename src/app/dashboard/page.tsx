@@ -27,15 +27,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   if (!profile) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Become a provider</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Станете специалист</h1>
         <p className="mt-2 text-black/60 dark:text-white/60">
-          Set up your provider profile to start listing services and receiving bookings.
+          Създайте профил на специалист, за да публикувате услуги и да получавате заявки.
         </p>
         <Link
           href="/onboarding/provider"
           className="mt-6 inline-block rounded-lg bg-cobble-600 px-5 py-2.5 font-medium text-white transition hover:bg-cobble-700"
         >
-          Set up my profile
+          Създай профил
         </Link>
       </div>
     );
@@ -50,22 +50,21 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-2xl font-bold tracking-tight">Provider dashboard</h1>
+      <h1 className="font-display text-2xl font-bold tracking-tight">Табло на специалиста</h1>
       <p className="mt-1 text-black/55 dark:text-white/55">
-        {profile.listings.length} listing{profile.listings.length === 1 ? "" : "s"} · {pending.length} pending request
-        {pending.length === 1 ? "" : "s"}
+        {profile.listings.length} обяви · {pending.length} чакащи заявки
       </p>
 
       {(sp.created || sp.updated || sp.deleted) && (
         <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
-          {sp.created ? "✓ Listing published." : sp.updated ? "✓ Listing updated." : "✓ Listing deleted."}
+          {sp.created ? "✓ Обявата е публикувана." : sp.updated ? "✓ Обявата е обновена." : "✓ Обявата е изтрита."}
         </p>
       )}
 
       {/* Incoming bookings */}
-      <h2 className="mt-8 text-lg font-semibold">Incoming requests</h2>
+      <h2 className="mt-8 text-lg font-semibold">Входящи заявки</h2>
       {bookings.length === 0 ? (
-        <p className="mt-2 text-black/50 dark:text-white/50">No booking requests yet.</p>
+        <p className="mt-2 text-black/50 dark:text-white/50">Все още няма заявки.</p>
       ) : (
         <ul className="mt-3 space-y-3">
           {bookings.map((b) => (
@@ -81,18 +80,18 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 <p className="mt-0.5 text-sm text-black/55 dark:text-white/55">
                   {b.customer.name}
                   {b.scheduledFor ? ` · ${b.scheduledFor.toLocaleDateString()}` : ""}
-                  {b.message ? ` · “${b.message}”` : ""}
+                  {b.message ? ` · „${b.message}“` : ""}
                 </p>
               </div>
               <div className="flex gap-2">
                 {b.status === "REQUESTED" && (
                   <>
-                    <StatusButton bookingId={b.id} status="ACCEPTED" label="Accept" variant="primary" />
-                    <StatusButton bookingId={b.id} status="DECLINED" label="Decline" variant="ghost" />
+                    <StatusButton bookingId={b.id} status="ACCEPTED" label="Приеми" variant="primary" />
+                    <StatusButton bookingId={b.id} status="DECLINED" label="Откажи" variant="ghost" />
                   </>
                 )}
                 {b.status === "ACCEPTED" && (
-                  <StatusButton bookingId={b.id} status="COMPLETED" label="Mark complete" variant="primary" />
+                  <StatusButton bookingId={b.id} status="COMPLETED" label="Завърши" variant="primary" />
                 )}
               </div>
             </li>
@@ -102,17 +101,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
       {/* Listings */}
       <div className="mt-10 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">My listings</h2>
+        <h2 className="text-lg font-semibold">Моите обяви</h2>
         <Link
           href="/dashboard/listings/new"
           className="rounded-lg bg-cobble-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700"
         >
-          + New listing
+          + Нова обява
         </Link>
       </div>
       {profile.listings.length === 0 ? (
         <p className="mt-3 text-black/50 dark:text-white/50">
-          No listings yet — <Link href="/dashboard/listings/new" className="font-medium text-cobble-600 hover:underline">create your first one</Link>.
+          No listings yet — <Link href="/dashboard/listings/new" className="font-medium text-cobble-600 hover:underline">създайте първата</Link>.
         </p>
       ) : (
         <ul className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -130,24 +129,24 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 {l.title}
               </Link>
               <p className="mt-1 text-xs text-black/45 dark:text-white/45">
-                {l._count.bookings} bookings · {l._count.reviews} reviews
+                {l._count.bookings} заявки · {l._count.reviews} отзива
               </p>
               <div className="mt-3 flex items-center gap-2 border-t border-black/5 pt-3 dark:border-white/10">
                 <Link
                   href={`/dashboard/listings/${l.id}/edit`}
                   className="rounded-lg border border-black/10 px-3 py-1 text-xs font-medium transition hover:border-cobble-500/40 dark:border-white/15"
                 >
-                  Edit
+                  Редактирай
                 </Link>
                 <form action={deleteListing}>
                   <input type="hidden" name="id" value={l.id} />
                   <button className="rounded-lg border border-black/10 px-3 py-1 text-xs font-medium text-black/60 transition hover:border-red-300 hover:text-red-600 dark:border-white/15 dark:text-white/60">
-                    Delete
+                    Изтрий
                   </button>
                 </form>
                 {!l.active && (
                   <span className="rounded-lg bg-black/5 px-2 py-1 text-xs text-black/50 dark:bg-white/10 dark:text-white/50">
-                    Hidden
+                    Скрита
                   </span>
                 )}
               </div>

@@ -25,24 +25,24 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-2xl font-bold tracking-tight">My bookings</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Моите заявки</h1>
 
       {sp.requested && (
         <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
-          ✓ Request sent! The provider will confirm shortly.
+          ✓ Заявката е изпратена! Специалистът ще потвърди скоро.
         </p>
       )}
       {sp.reviewed && (
         <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
-          ✓ Thanks for your review!
+          ✓ Благодарим за отзива!
         </p>
       )}
 
       {bookings.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-black/10 p-12 text-center dark:border-white/15">
-          <p className="text-lg font-medium">No bookings yet.</p>
+          <p className="text-lg font-medium">Все още нямате заявки.</p>
           <Link href="/services" className="mt-3 inline-block text-sm font-medium text-cobble-600 hover:underline">
-            Browse services →
+            Разгледай услуги →
           </Link>
         </div>
       ) : (
@@ -67,7 +67,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
                     <input type="hidden" name="bookingId" value={b.id} />
                     <input type="hidden" name="status" value="CANCELLED" />
                     <button className="rounded-lg border border-black/10 px-3 py-1.5 text-sm text-black/60 transition hover:border-red-300 hover:text-red-600 dark:border-white/15 dark:text-white/60">
-                      Cancel
+                      Откажи
                     </button>
                   </form>
                 )}
@@ -81,7 +81,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
                       <span className="text-black/15 dark:text-white/15">{"★".repeat(5 - b.review.rating)}</span>
                     </span>{" "}
                     <span className="text-black/60 dark:text-white/60">
-                      Your review{b.review.comment ? `: “${b.review.comment}”` : ""}
+                      Вашият отзив{b.review.comment ? `: „${b.review.comment}“` : ""}
                     </span>
                   </p>
                 ) : (

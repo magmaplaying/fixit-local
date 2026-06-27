@@ -1,38 +1,38 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-  name: z.string().min(2, "Please enter your name"),
-  email: z.email("Enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  name: z.string().min(2, "Въведете вашето име"),
+  email: z.email("Въведете валиден имейл"),
+  password: z.string().min(6, "Паролата трябва да е поне 6 символа"),
   role: z.enum(["CUSTOMER", "PROVIDER"]),
 });
 
 export const loginSchema = z.object({
-  email: z.email("Enter a valid email"),
-  password: z.string().min(1, "Password is required"),
+  email: z.email("Въведете валиден имейл"),
+  password: z.string().min(1, "Въведете парола"),
 });
 
 export const PRICE_TYPES = ["HOURLY", "FIXED", "QUOTE"] as const;
 
 export const listingSchema = z
   .object({
-    title: z.string().min(4, "Title is too short").max(80),
-    categoryId: z.string().min(1, "Choose a category"),
-    description: z.string().min(20, "Describe your service (at least 20 characters)"),
+    title: z.string().min(4, "Заглавието е твърде кратко").max(80),
+    categoryId: z.string().min(1, "Изберете категория"),
+    description: z.string().min(20, "Опишете услугата (поне 20 символа)"),
     priceType: z.enum(PRICE_TYPES),
     price: z.preprocess(
       (v) => (v === "" || v === null || v === undefined ? undefined : v),
-      z.coerce.number().positive("Enter a valid price").optional(),
+      z.coerce.number().positive("Въведете валидна цена").optional(),
     ),
-    city: z.string().min(2, "City is required"),
+    city: z.string().min(2, "Градът е задължителен"),
     area: z.string().optional(),
     imageUrl: z.preprocess(
       (v) => (typeof v === "string" ? v.trim() : v),
-      z.union([z.url("Enter a valid image URL"), z.literal("")]).optional(),
+      z.union([z.url("Въведете валиден URL на снимка"), z.literal("")]).optional(),
     ),
   })
   .refine((d) => d.priceType === "QUOTE" || d.price != null, {
-    message: "Enter a price, or set pricing to “Quote on request”",
+    message: "Въведете цена или изберете „По договаряне„",
     path: ["price"],
   });
 

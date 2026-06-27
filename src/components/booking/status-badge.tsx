@@ -6,11 +6,18 @@ const STYLES: Record<string, string> = {
   CANCELLED: "bg-black/5 text-black/50 dark:bg-white/10 dark:text-white/50",
 };
 
+const LABELS: Record<string, string> = {
+  REQUESTED: "Заявена",
+  ACCEPTED: "Приета",
+  DECLINED: "Отказана",
+  COMPLETED: "Завършена",
+  CANCELLED: "Анулирана",
+};
+
 export function StatusBadge({ status }: { status: string }) {
-  const label = status.charAt(0) + status.slice(1).toLowerCase();
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STYLES[status] ?? STYLES.CANCELLED}`}>
-      {label}
+      {LABELS[status] ?? status}
     </span>
   );
 }

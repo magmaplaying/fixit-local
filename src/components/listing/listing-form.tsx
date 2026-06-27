@@ -21,9 +21,9 @@ export type ListingDefaults = {
 };
 
 const PRICE_LABELS: Record<string, string> = {
-  HOURLY: "Per hour",
-  FIXED: "Fixed price",
-  QUOTE: "Quote on request",
+  HOURLY: "На час",
+  FIXED: "Фиксирана цена",
+  QUOTE: "По договаряне",
 };
 
 const inputClass =
@@ -47,14 +47,14 @@ export function ListingForm({
     <form action={formAction} className="space-y-4">
       {mode === "edit" && d.id && <input type="hidden" name="id" value={d.id} />}
 
-      <Field label="Title">
-        <input name="title" defaultValue={d.title ?? ""} placeholder="e.g. Professional Home Cleaning" className={inputClass} />
+      <Field label="Заглавие">
+        <input name="title" defaultValue={d.title ?? ""} placeholder="напр. Професионално почистване на дома" className={inputClass} />
       </Field>
 
-      <Field label="Category">
+      <Field label="Категория">
         <select name="categoryId" defaultValue={d.categoryId ?? ""} className={inputClass}>
           <option value="" disabled>
-            Choose a category…
+            Изберете категория…
           </option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
@@ -64,18 +64,18 @@ export function ListingForm({
         </select>
       </Field>
 
-      <Field label="Description">
+      <Field label="Описание">
         <textarea
           name="description"
           rows={4}
           defaultValue={d.description ?? ""}
-          placeholder="What's included, your experience, availability…"
+          placeholder="Какво включва, вашият опит, наличност…"
           className={inputClass}
         />
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Pricing">
+        <Field label="Ценообразуване">
           <select name="priceType" defaultValue={d.priceType ?? "HOURLY"} className={inputClass}>
             {PRICE_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -84,36 +84,36 @@ export function ListingForm({
             ))}
           </select>
         </Field>
-        <Field label="Price (€)">
+        <Field label="Цена (€)">
           <input
             name="price"
             type="number"
             min="0"
             step="0.01"
             defaultValue={d.price ?? ""}
-            placeholder="Leave blank for quote"
+            placeholder="Празно за договаряне"
             className={inputClass}
           />
         </Field>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Field label="City">
-          <input name="city" defaultValue={d.city ?? "Sofia"} className={inputClass} />
+        <Field label="Град">
+          <input name="city" defaultValue={d.city ?? "София"} className={inputClass} />
         </Field>
-        <Field label="Area (optional)">
-          <input name="area" defaultValue={d.area ?? ""} placeholder="e.g. Lozenets" className={inputClass} />
+        <Field label="Квартал (по избор)">
+          <input name="area" defaultValue={d.area ?? ""} placeholder="напр. Лозенец" className={inputClass} />
         </Field>
       </div>
 
-      <Field label="Image URL (optional)">
+      <Field label="URL на снимка (по избор)">
         <input name="imageUrl" defaultValue={d.imageUrl ?? ""} placeholder="https://…" className={inputClass} />
       </Field>
 
       {mode === "edit" && (
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="active" defaultChecked={d.active ?? true} className="h-4 w-4 accent-cobble-600" />
-          Active (visible to customers)
+          Активна (видима за клиенти)
         </label>
       )}
 
@@ -129,13 +129,13 @@ export function ListingForm({
           disabled={pending}
           className="rounded-lg bg-cobble-600 px-5 py-2.5 font-medium text-white transition hover:bg-cobble-700 disabled:opacity-60"
         >
-          {pending ? "Saving…" : mode === "create" ? "Publish listing" : "Save changes"}
+          {pending ? "Запазване…" : mode === "create" ? "Публикувай обявата" : "Запази промените"}
         </button>
         <Link
           href="/dashboard"
           className="rounded-lg border border-black/10 px-5 py-2.5 text-sm font-medium text-black/60 transition hover:bg-black/[0.03] dark:border-white/15 dark:text-white/60 dark:hover:bg-white/5"
         >
-          Cancel
+          Откажи
         </Link>
       </div>
     </form>
