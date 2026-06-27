@@ -56,6 +56,12 @@ Demo accounts (password `password123` for all):
 SQLite has no native enums or array columns, so roles/statuses are validated `String`s and `Listing.photos`
 is a JSON-encoded string. See `prisma/schema.prisma`.
 
+## Deployment
+
+To put this online (Vercel + Turso), follow [`DEPLOY.md`](DEPLOY.md). Local dev uses a SQLite file; production
+uses a hosted Turso database through the same libSQL adapter, so the app code is unchanged — you just set
+`DATABASE_URL`, `TURSO_AUTH_TOKEN`, and `AUTH_SECRET`.
+
 ## Project management
 
 Sprint tracking lives in `pm/sprint_data.json` and is analysed with the bundled Scrum Master scripts —
