@@ -111,23 +111,58 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Categories — a typeset services directory (leader-dot index) */}
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="font-display text-3xl font-semibold tracking-tight">Разгледай по категория</h2>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {categories.map((c) => (
-            <Link
-              key={c.id}
-              href={`/services?category=${c.slug}`}
-              className="flex flex-col items-center gap-2 rounded-2xl border border-black/5 bg-white p-6 text-center transition hover:-translate-y-0.5 hover:border-cobble-500/40 hover:shadow-lg"
-            >
-              <span className="text-3xl" aria-hidden>
-                {c.icon}
-              </span>
-              <span className="font-medium">{c.name}</span>
-              <span className="font-mono text-[11px] text-black/40">{c._count.listings} майстори</span>
-            </Link>
-          ))}
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-600">Указател</p>
+            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight">Разгледай по категория</h2>
+          </div>
+          <Link
+            href="/services"
+            className="hidden shrink-0 font-mono text-xs uppercase tracking-wider text-black/45 transition hover:text-cobble-700 sm:block"
+          >
+            Всички услуги →
+          </Link>
+        </div>
+
+        <div className="mt-8 columns-1 [column-gap:3rem] sm:columns-2">
+          {categories.map((c) => {
+            const n = c._count.listings;
+            const label = n === 0 ? "скоро" : `${n} ${n === 1 ? "майстор" : "майстори"}`;
+            return (
+              <Link
+                key={c.id}
+                href={`/services?category=${c.slug}`}
+                className="group flex break-inside-avoid items-center gap-3 rounded-lg border-b border-black/10 px-3 py-3.5 outline-none transition-colors hover:bg-cobble-50 focus-visible:bg-cobble-50 focus-visible:ring-1 focus-visible:ring-cobble-500/40"
+              >
+                <span
+                  className="grid size-9 shrink-0 place-items-center rounded-md bg-cobble-100/70 text-lg transition-colors group-hover:bg-cobble-200"
+                  aria-hidden
+                >
+                  {c.icon}
+                </span>
+                <span className="font-display text-lg leading-none text-foreground transition-colors group-hover:text-cobble-900">
+                  {c.name}
+                </span>
+                <span
+                  className="flex-1 border-b border-dotted border-black/25 transition-colors group-hover:border-cobble-500/50"
+                  aria-hidden
+                />
+                <span
+                  className={`shrink-0 font-mono text-[11px] tracking-wide ${n === 0 ? "italic text-black/30" : "text-black/45"}`}
+                >
+                  {label}
+                </span>
+                <span
+                  className="shrink-0 font-mono text-sm text-black/25 transition-all group-hover:translate-x-0.5 group-hover:text-cobble-700"
+                  aria-hidden
+                >
+                  →
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
