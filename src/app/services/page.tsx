@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
 import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
+import { CITIES } from "@/lib/cities";
 
 type SearchParams = Promise<{ q?: string; category?: string; city?: string }>;
 
@@ -49,7 +50,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
       <h1 className="font-display text-2xl font-bold tracking-tight">Разгледай услуги</h1>
       <p className="mt-1 text-black/55 dark:text-white/55">
         {cards.length} {cards.length === 1 ? "резултат" : "резултата"}
-        {sp.q ? ` за „${sp.q}“` : ""} в {sp.city ?? "София"}
+        {sp.q ? ` за „${sp.q}“` : ""} в {sp.city || "България"}
       </p>
 
       {/* Search */}
@@ -62,6 +63,18 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           placeholder="Какво трябва да се свърши?"
           className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5"
         />
+        <select
+          name="city"
+          defaultValue={sp.city ?? ""}
+          className="rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
+        >
+          <option value="">Цяла България</option>
+          {CITIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
         <button type="submit" className="rounded-xl bg-cobble-600 px-6 py-2.5 font-medium text-white transition hover:bg-cobble-700">
           Търси
         </button>
