@@ -16,6 +16,14 @@ const CATEGORIES = [
   { name: "Преместване", slug: "moving", icon: "📦" },
   { name: "Водопровод", slug: "plumbing", icon: "🚰" },
   { name: "Електро", slug: "electrical", icon: "💡" },
+  { name: "Боядисване", slug: "painting", icon: "🎨" },
+  { name: "Климатици", slug: "ac", icon: "❄️" },
+  { name: "Градинарство", slug: "gardening", icon: "🌿" },
+  { name: "Детегледач", slug: "childcare", icon: "👶" },
+  { name: "Красота", slug: "beauty", icon: "💇" },
+  { name: "IT помощ", slug: "it", icon: "💻" },
+  { name: "Автосервиз", slug: "auto", icon: "🚗" },
+  { name: "Ключар", slug: "locksmith", icon: "🔑" },
 ];
 
 const PROVIDERS = [
@@ -26,6 +34,10 @@ const PROVIDERS = [
   { name: "Димитър Стоянов", email: "dimitar@demo.bg", cat: "moving", title: "Преместване — двама с бус", price: 120, priceType: "FIXED", city: "Бургас", area: "Център", bio: "Местим ви без стрес.", desc: "Преместване на апартаменти и офиси. Опаковъчни материали и внимателно пренасяне." },
   { name: "Светлин Маринов", email: "svetlin@demo.bg", cat: "electrical", title: "Сертифициран електротехник", price: 35, priceType: "HOURLY", city: "Русе", area: "Център", bio: "Сертифициран електротехник.", desc: "Окабеляване, контакти, осветление и табла. Проверки на безопасността за стари апартаменти." },
   { name: "Петя Христова", email: "petya@demo.bg", cat: "cleaning", title: "Почистване на офиси и след партита", price: 28, priceType: "HOURLY", city: "Пловдив", area: "Център", bio: "Надеждна и старателна.", desc: "Договори за почистване на офиси и еднократно основно почистване. Гъвкави вечерни и съботно-неделни часове." },
+  { name: "Николай Колев", email: "nikolay@demo.bg", cat: "painting", title: "Бояджийски услуги — апартаменти и офиси", price: 18, priceType: "HOURLY", city: "Пловдив", area: "Тракия", bio: "Чисто и бързо боядисване.", desc: "Латекс, гипсокартон, шпакловка и декоративни мазилки. Без прах и безпорядък." },
+  { name: "Стефан Ангелов", email: "stefan@demo.bg", cat: "ac", title: "Монтаж и профилактика на климатици", price: 50, priceType: "FIXED", city: "София", area: "Младост", bio: "Оторизиран техник.", desc: "Доставка, монтаж, зареждане и профилактика на климатици. Гаранция на труда." },
+  { name: "Виктория Тодорова", email: "viktoria@demo.bg", cat: "gardening", title: "Поддръжка на градини и дворове", price: 22, priceType: "HOURLY", city: "Варна", area: "Виница", bio: "Зелено и подредено.", desc: "Косене, оформяне на жив плет, засаждане и сезонна поддръжка на дворове." },
+  { name: "Мартин Иванов", email: "martin@demo.bg", cat: "it", title: "Компютърна помощ и настройки", price: 25, priceType: "HOURLY", city: "София", area: "Лозенец", bio: "IT помощ за дома и офиса.", desc: "Почистване от вируси, преинсталация, мрежи и Wi-Fi, настройка на устройства. Възможно и онлайн." },
 ];
 
 async function main() {
@@ -69,7 +81,7 @@ async function main() {
         price: p.price,
         city: p.city,
         area: p.area,
-        photos: JSON.stringify([`https://picsum.photos/seed/fixit-${p.email.split("@")[0]}/800/600`]),
+        photos: JSON.stringify([`https://picsum.photos/seed/podruka-${p.email.split("@")[0]}/800/600`]),
         active: true,
       },
     });

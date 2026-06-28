@@ -78,6 +78,18 @@ export default async function Home() {
               className="flex-1 rounded-xl bg-transparent px-4 py-3 text-sm outline-none placeholder:text-black/40"
             />
             <select
+              name="category"
+              defaultValue=""
+              className="rounded-xl bg-black/[0.04] px-3 py-3 text-sm outline-none"
+            >
+              <option value="">Всички категории</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.slug}>
+                  {c.icon} {c.name}
+                </option>
+              ))}
+            </select>
+            <select
               name="city"
               className="rounded-xl bg-black/[0.04] px-3 py-3 text-sm outline-none"
               defaultValue=""
