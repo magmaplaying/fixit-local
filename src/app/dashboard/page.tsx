@@ -84,6 +84,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 </p>
               </div>
               <div className="flex gap-2">
+                <Link
+                  href={`/chat/${b.id}`}
+                  className="rounded-lg border border-black/10 px-3 py-1.5 text-sm font-medium text-cobble-700 transition hover:border-cobble-500/40"
+                >
+                  Чат
+                </Link>
                 {b.status === "REQUESTED" && (
                   <>
                     <StatusButton bookingId={b.id} status="ACCEPTED" label="Приеми" variant="primary" />

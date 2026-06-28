@@ -61,6 +61,12 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
                     {b.listing.provider.user.name} · {formatPrice(b.listing.priceType, b.listing.price)}
                     {b.scheduledFor ? ` · ${b.scheduledFor.toLocaleDateString()}` : ""}
                   </p>
+                  <Link
+                    href={`/chat/${b.id}`}
+                    className="mt-1 inline-block text-xs font-medium text-cobble-700 hover:underline"
+                  >
+                    💬 Съобщения
+                  </Link>
                 </div>
                 {(b.status === "REQUESTED" || b.status === "ACCEPTED") && (
                   <form action={setBookingStatus}>

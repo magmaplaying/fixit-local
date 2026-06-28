@@ -22,6 +22,7 @@ model User {
   provider ProviderProfile?
   bookings Booking[]        @relation("CustomerBookings")
   reviews  Review[]
+  messages Message[]
 }
 
 model ProviderProfile {
@@ -81,7 +82,8 @@ model Booking {
   message      String?
   createdAt    DateTime  @default(now())
 
-  review Review?
+  review   Review?
+  messages Message[]
 
   @@index([listingId])
   @@index([customerId])
@@ -100,4 +102,16 @@ model Review {
   createdAt DateTime @default(now())
 
   @@index([listingId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
 }
