@@ -8,14 +8,8 @@ export async function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-background/85 backdrop-blur">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="grid grid-cols-2 gap-[2px]" aria-hidden>
-            <span className="h-2 w-2 rounded-[2px] bg-cobble-500"></span>
-            <span className="h-2 w-2 rounded-[2px] bg-cobble-500"></span>
-            <span className="h-2 w-2 rounded-[2px] bg-cobble-500"></span>
-            <span className="h-2 w-2 rounded-[2px] bg-cobble-700"></span>
-          </span>
-          <span className="font-display text-lg font-bold tracking-tight">FixIt Local</span>
+        <Link href="/" className="font-display text-xl font-semibold tracking-tight">
+          Под <span className="text-cobble-600">ръка</span>
         </Link>
 
         <div className="flex items-center gap-1 text-sm sm:gap-3">

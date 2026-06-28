@@ -48,7 +48,7 @@ export default async function Home() {
       <section className="relative isolate overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://picsum.photos/id/1015/1920/1080"
+          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80&auto=format&fit=crop"
           alt=""
           aria-hidden
           className="absolute inset-0 -z-10 h-full w-full object-cover [filter:sepia(0.5)_saturate(1.3)_brightness(0.66)]"

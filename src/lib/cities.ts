@@ -1,4 +1,4 @@
-// Major Bulgarian cities offered in the city pickers. Stored on profiles/listings
+// Bulgarian cities offered in the city pickers. Stored on profiles/listings
 // as plain Cyrillic strings; "" in a filter means "all of Bulgaria".
 export const CITIES = [
   "София",
@@ -8,7 +8,29 @@ export const CITIES = [
   "Русе",
   "Стара Загора",
   "Плевен",
-  "Велико Търново",
-  "Благоевград",
   "Сливен",
+  "Добрич",
+  "Шумен",
+  "Перник",
+  "Хасково",
+  "Ямбол",
+  "Пазарджик",
+  "Благоевград",
+  "Велико Търново",
+  "Враца",
+  "Габрово",
+  "Видин",
+  "Монтана",
+  "Кърджали",
+  "Казанлък",
+  "Кюстендил",
+  "Асеновград",
+  "Димитровград",
+  "Търговище",
+  "Силистра",
+  "Ловеч",
+  "Разград",
+  "Дупница",
+  "Свищов",
+  "Смолян",
 ];
