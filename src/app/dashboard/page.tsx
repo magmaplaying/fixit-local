@@ -6,6 +6,7 @@ import { setBookingStatus } from "@/app/_actions/bookings";
 import { deleteListing } from "@/app/_actions/listings";
 import { StatusBadge } from "@/components/booking/status-badge";
 import { formatPrice } from "@/lib/format";
+import { unreadInBooking } from "@/lib/unread";
 
 type SearchParams = Promise<{ created?: string; updated?: string; deleted?: string }>;
 
@@ -44,7 +45,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const bookings = await prisma.booking.findMany({
     where: { listing: { providerId: profile.id } },
     orderBy: { createdAt: "desc" },
-    include: { listing: true, customer: true },
+    include: {
+      listing: true,
+      customer: true,
+      messages: { where: { senderId: { not: user.id } }, select: { createdAt: true } },
+    },
   });
   const pending = bookings.filter((b) => b.status === "REQUESTED");
 
@@ -86,9 +91,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
               <div className="flex gap-2">
                 <Link
                   href={`/chat/${b.id}`}
-                  className="rounded-lg border border-black/10 px-3 py-1.5 text-sm font-medium text-cobble-700 transition hover:border-cobble-500/40"
+                  className="inline-flex items-center rounded-lg border border-black/10 px-3 py-1.5 text-sm font-medium text-cobble-700 transition hover:border-cobble-500/40"
                 >
                   Чат
+                  {unreadInBooking(b.messages, b.providerReadAt, b.createdAt) > 0 && (
+                    <span className="ml-1.5 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                      {unreadInBooking(b.messages, b.providerReadAt, b.createdAt)}
+                    </span>
+                  )}
                 </Link>
                 {b.status === "REQUESTED" && (
                   <>

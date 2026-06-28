@@ -28,6 +28,12 @@ export default async function ChatPage({ params }: { params: Params }) {
   const isProvider = booking.listing.provider.userId === user.id;
   if (!isCustomer && !isProvider) notFound();
 
+  // Mark this side as read (also keeps it read while the 5s poller refreshes).
+  await prisma.booking.update({
+    where: { id: bookingId },
+    data: isCustomer ? { customerReadAt: new Date() } : { providerReadAt: new Date() },
+  });
+
   const other = isCustomer ? booking.listing.provider.user : booking.customer;
   const backHref = isProvider ? "/dashboard" : "/bookings";
 

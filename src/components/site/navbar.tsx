@@ -1,9 +1,20 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { logoutAction } from "@/app/(auth)/actions";
+import { getUnreadCounts } from "@/lib/unread";
+
+function Badge({ n }: { n: number }) {
+  if (n <= 0) return null;
+  return (
+    <span className="ml-1.5 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+      {n}
+    </span>
+  );
+}
 
 export async function Navbar() {
   const user = await getCurrentUser();
+  const unread = user ? await getUnreadCounts(user.id) : null;
 
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-background/85 backdrop-blur">
@@ -20,12 +31,20 @@ export async function Navbar() {
           {user ? (
             <>
               {user.role === "PROVIDER" && (
-                <Link href="/dashboard" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center rounded-lg px-3 py-1.5 hover:bg-black/[0.05]"
+                >
                   Табло
+                  <Badge n={unread?.provider ?? 0} />
                 </Link>
               )}
-              <Link href="/bookings" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
+              <Link
+                href="/bookings"
+                className="inline-flex items-center rounded-lg px-3 py-1.5 hover:bg-black/[0.05]"
+              >
                 Моите заявки
+                <Badge n={unread?.customer ?? 0} />
               </Link>
               <span className="hidden text-black/45 sm:inline">Здравей, {user.name.split(" ")[0]}</span>
               <form action={logoutAction}>

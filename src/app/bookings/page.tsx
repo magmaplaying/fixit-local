@@ -6,6 +6,7 @@ import { setBookingStatus } from "@/app/_actions/bookings";
 import { StatusBadge } from "@/components/booking/status-badge";
 import { ReviewForm } from "@/components/booking/review-form";
 import { formatPrice } from "@/lib/format";
+import { unreadInBooking } from "@/lib/unread";
 
 type SearchParams = Promise<{ requested?: string; reviewed?: string }>;
 
@@ -20,6 +21,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
     include: {
       listing: { include: { category: true, provider: { include: { user: true } } } },
       review: true,
+      messages: { where: { senderId: { not: user.id } }, select: { createdAt: true } },
     },
   });
 
@@ -63,9 +65,14 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
                   </p>
                   <Link
                     href={`/chat/${b.id}`}
-                    className="mt-1 inline-block text-xs font-medium text-cobble-700 hover:underline"
+                    className="mt-1 inline-flex items-center text-xs font-medium text-cobble-700 hover:underline"
                   >
                     💬 Съобщения
+                    {unreadInBooking(b.messages, b.customerReadAt, b.createdAt) > 0 && (
+                      <span className="ml-1.5 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                        {unreadInBooking(b.messages, b.customerReadAt, b.createdAt)}
+                      </span>
+                    )}
                   </Link>
                 </div>
                 {(b.status === "REQUESTED" || b.status === "ACCEPTED") && (

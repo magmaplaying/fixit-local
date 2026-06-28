@@ -81,6 +81,8 @@ model Booking {
   scheduledFor DateTime?
   message      String?
   createdAt    DateTime  @default(now())
+  customerReadAt DateTime?
+  providerReadAt DateTime?
 
   review   Review?
   messages Message[]
