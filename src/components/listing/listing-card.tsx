@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatDistance } from "@/lib/geo";
 
 export type ListingCardData = {
   id: string;
@@ -12,6 +13,7 @@ export type ListingCardData = {
   rating: number | null;
   reviewCount: number;
   imageUrl: string | null;
+  distanceKm?: number | null;
 };
 
 export function ListingCard({ l }: { l: ListingCardData }) {
@@ -21,7 +23,12 @@ export function ListingCard({ l }: { l: ListingCardData }) {
       href={`/listing/${l.id}`}
       className="group flex flex-col overflow-hidden rounded-xl border border-black/10 bg-white transition hover:-translate-y-0.5 hover:border-cobble-500/50 hover:shadow-[0_8px_24px_-14px_rgba(28,26,23,0.35)]"
     >
-      <div className="aspect-[16/10] w-full overflow-hidden bg-cobble-50">
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-cobble-50">
+        {l.distanceKm != null && (
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-espresso/85 px-2.5 py-1 font-mono text-[11px] font-medium text-background backdrop-blur-sm">
+            📍 {formatDistance(l.distanceKm)}
+          </span>
+        )}
         {l.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

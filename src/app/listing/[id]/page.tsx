@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { formatPrice, averageRating, initials, parsePhotos } from "@/lib/format";
+import { LocationMap } from "@/components/map/location-map";
 import { requestBooking } from "@/app/_actions/bookings";
 
 type Params = Promise<{ id: string }>;
@@ -66,6 +67,9 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
 
           <h2 className="mt-8 text-lg font-semibold">За услугата</h2>
           <p className="mt-2 whitespace-pre-line text-black/70 dark:text-white/70">{listing.description}</p>
+
+          <h2 className="mt-8 text-lg font-semibold">Локация</h2>
+          <LocationMap city={listing.city} area={listing.area} className="mt-3" />
 
           {/* Отзиви */}
           <h2 className="mt-8 text-lg font-semibold">

@@ -41,13 +41,15 @@ Demo accounts (password `password123` for all):
 
 - **Auth**: register (as customer or provider), login, logout; protected routes via `src/proxy.ts`.
 - **Discovery**: home page (categories + featured), `/services` browse with category + keyword filters, listing detail pages with images + reviews, and public provider profiles (`/providers/[id]`).
+- **Maps & location search**: listing/provider pages embed an OpenStreetMap of the location, and `/services` supports **„near me“ search** — browser geolocation sorts results by distance (with a radius filter and per-card distance badges). Key-free: coordinates are derived from the city via `src/lib/geo.ts` and the map is an OSM embed (no API key, no extra dependency).
 - **Provider tools**: onboarding, plus full **listing CRUD** — create, edit, and delete your services (with images) from the dashboard.
 - **Booking loop**: a customer can request a booking; the provider accepts / declines / completes it from their dashboard; the customer can cancel, see status in `/bookings`, and leave a ★ review once a booking is completed.
 
 ## Not yet built (next sprints)
 
 - Real image **upload** (listings currently take an image URL) — _later_
-- Payments / commission (Stripe Connect), in-app chat, maps/geo search, notifications — _Phase 2_
+- Payments / commission (Stripe Connect) — _Phase 2_
+- Precise per-listing pins (map-picker / geocoded address) instead of city-level coordinates — _later_
 - Production database (Postgres) + deploy — _Phase 2_
 
 ## Data model

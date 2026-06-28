@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
 import { formatPrice, averageRating, initials, parsePhotos } from "@/lib/format";
+import { LocationMap } from "@/components/map/location-map";
 
 type Params = Promise<{ id: string }>;
 
@@ -67,6 +68,7 @@ export default async function ProviderProfilePage({ params }: { params: Params }
             {overall != null && <> · ★ {overall.toFixed(1)} ({allRatings.length})</>}
           </p>
           {profile.bio && <p className="mt-3 text-black/70 dark:text-white/70">{profile.bio}</p>}
+          <LocationMap city={profile.city} area={profile.area} className="mt-4 max-w-md" />
         </div>
       </div>
 
