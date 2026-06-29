@@ -10,6 +10,36 @@ const STEPS = [
   { title: "Готово", body: "Майсторът идва, свършва работата, а вие оставяте отзив. Просто и спокойно." },
 ];
 
+// Short blurbs shown on the featured category cards (home page only).
+const CATEGORY_BLURBS: Record<string, string> = {
+  cleaning: "Основно и поддържащо почистване на дома и офиса.",
+  tutoring: "Подготовка за изпити и помощ с домашните.",
+  handyman: "Дребни ремонти, монтаж и поправки вкъщи.",
+  moving: "Опаковане и внимателно пренасяне без стрес.",
+  plumbing: "Течове, монтажи, бойлери и аварийни ремонти.",
+  electrical: "Контакти, осветление и електрически табла.",
+  painting: "Латекс, шпакловка и чисто боядисване.",
+  ac: "Монтаж, профилактика и зареждане на климатици.",
+  gardening: "Косене, оформяне и сезонна поддръжка на двора.",
+  childcare: "Грижовни и проверени детегледачи.",
+  beauty: "Прически, грим и разкрасяване у дома.",
+  it: "Компютри, мрежи и настройка на устройства.",
+  auto: "Диагностика, смяна на масло и ремонти.",
+  locksmith: "Отключване и смяна на ключалки и патрони.",
+};
+
+// Background photo per profession (Unsplash, no API key). Categories without an
+// entry fall back to a solid dark card.
+const IMG = "?w=800&q=80&auto=format&fit=crop";
+const CATEGORY_IMAGES: Record<string, string> = {
+  cleaning: `https://images.unsplash.com/photo-1740657254989-42fe9c3b8cce${IMG}`,
+  it: `https://images.unsplash.com/photo-1515378791036-0648a3ef77b2${IMG}`,
+  painting: `https://images.unsplash.com/photo-1554995207-c18c203602cb${IMG}`,
+  plumbing: `https://images.unsplash.com/photo-1749532125405-70950966b0e5${IMG}`,
+  gardening: `https://images.unsplash.com/photo-1585320806297-9794b3e4eeae${IMG}`,
+  electrical: `https://images.unsplash.com/photo-1682345262055-8f95f3c513ea${IMG}`,
+};
+
 export default async function Home() {
   const [categories, listings] = await Promise.all([
     prisma.category.findMany({
@@ -41,6 +71,12 @@ export default async function Home() {
     reviewCount: l.reviews.length,
     imageUrl: parsePhotos(l.photos)[0] ?? null,
   }));
+
+  // Feature a handful of categories on the home page (most providers first);
+  // the full list stays in the search dropdown and on /services.
+  const featuredCategories = [...categories]
+    .sort((a, b) => b._count.listings - a._count.listings)
+    .slice(0, 6);
 
   return (
     <div>
@@ -111,11 +147,11 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categories — a typeset services directory (leader-dot index) */}
+      {/* Categories — featured cards with blurbs (subset; full list on /services) */}
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-600">Указател</p>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-600">Популярни</p>
             <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight">Разгледай по категория</h2>
           </div>
           <Link
@@ -126,40 +162,41 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="mt-8 columns-1 [column-gap:3rem] sm:columns-2">
-          {categories.map((c) => {
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {featuredCategories.map((c) => {
             const n = c._count.listings;
-            const label = n === 0 ? "скоро" : `${n} ${n === 1 ? "майстор" : "майстори"}`;
+            const label = n === 0 ? "Очаквайте скоро" : `${n} ${n === 1 ? "майстор" : "майстори"}`;
+            const blurb = CATEGORY_BLURBS[c.slug];
+            const img = CATEGORY_IMAGES[c.slug];
             return (
               <Link
                 key={c.id}
                 href={`/services?category=${c.slug}`}
-                className="group flex break-inside-avoid items-center gap-3 rounded-lg border-b border-black/10 px-3 py-3.5 outline-none transition-colors hover:bg-cobble-50 focus-visible:bg-cobble-50 focus-visible:ring-1 focus-visible:ring-cobble-500/40"
+                className="group relative isolate flex min-h-[15rem] flex-col justify-end overflow-hidden rounded-2xl bg-espresso text-background outline-none transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-22px_rgba(28,26,23,0.6)] focus-visible:ring-2 focus-visible:ring-cobble-400/70"
               >
-                <span
-                  className="grid size-9 shrink-0 place-items-center rounded-md bg-cobble-100/70 text-lg transition-colors group-hover:bg-cobble-200"
-                  aria-hidden
-                >
-                  {c.icon}
-                </span>
-                <span className="font-display text-lg leading-none text-foreground transition-colors group-hover:text-cobble-900">
-                  {c.name}
-                </span>
-                <span
-                  className="flex-1 border-b border-dotted border-black/25 transition-colors group-hover:border-cobble-500/50"
+                {img && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={img}
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 -z-10 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                )}
+                <div
+                  className="absolute inset-0 -z-10 bg-gradient-to-t from-espresso via-espresso/75 to-espresso/25"
                   aria-hidden
                 />
-                <span
-                  className={`shrink-0 font-mono text-[11px] tracking-wide ${n === 0 ? "italic text-black/30" : "text-black/45"}`}
-                >
-                  {label}
-                </span>
-                <span
-                  className="shrink-0 font-mono text-sm text-black/25 transition-all group-hover:translate-x-0.5 group-hover:text-cobble-700"
-                  aria-hidden
-                >
-                  →
-                </span>
+                <div className="p-5">
+                  <h3 className="text-xl font-semibold tracking-tight">{c.name}</h3>
+                  {blurb && <p className="mt-1.5 text-sm leading-relaxed text-background/80">{blurb}</p>}
+                  <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/15 pt-3">
+                    <span className="text-[13px] font-medium text-background/85">{label}</span>
+                    <span className="font-mono text-xs tracking-wide text-background/70 transition-all group-hover:translate-x-0.5 group-hover:text-cobble-300">
+                      Виж →
+                    </span>
+                  </div>
+                </div>
               </Link>
             );
           })}
