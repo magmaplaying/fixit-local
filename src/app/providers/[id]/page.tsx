@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
@@ -51,15 +50,9 @@ export default async function ProviderProfilePage({ params }: { params: Params }
 
       {/* Header */}
       <div className="mt-4 flex items-start gap-4 rounded-2xl border border-black/5 bg-white p-6 dark:border-white/10 dark:bg-white/5">
-        {profile.avatarUrl ? (
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-cobble-100">
-            <Image src={profile.avatarUrl} alt={profile.user.name} fill sizes="64px" className="object-cover" />
-          </div>
-        ) : (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cobble-100 text-xl font-semibold text-cobble-700 dark:bg-cobble-900/50 dark:text-cobble-300">
-            {initials(profile.user.name)}
-          </div>
-        )}
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cobble-100 text-xl font-semibold text-cobble-700 dark:bg-cobble-900/50 dark:text-cobble-300">
+          {initials(profile.user.name)}
+        </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="font-display text-2xl font-bold tracking-tight">{profile.user.name}</h1>

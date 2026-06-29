@@ -43,7 +43,7 @@ export default async function EditListingPage({ params }: { params: Params }) {
             price: listing.price,
             city: listing.city,
             area: listing.area,
-            photos: parsePhotos(listing.photos),
+            imageUrl: parsePhotos(listing.photos)[0],
             active: listing.active,
           }}
         />

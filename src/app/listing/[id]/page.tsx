@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
@@ -25,7 +24,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
   const user = await getCurrentUser();
   const rating = averageRating(listing.reviews);
   const isOwner = user != null && listing.provider.userId === user.id;
-  const photos = parsePhotos(listing.photos);
+  const photo = parsePhotos(listing.photos)[0];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -46,34 +45,9 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
             {listing.city}
           </p>
 
-          {photos.length > 0 && (
-            <div className="mt-6 space-y-2">
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-cobble-50">
-                <Image
-                  src={photos[0]}
-                  alt={listing.title}
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 700px, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              {photos.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {photos.slice(1).map((p, i) => (
-                    <div key={`${p}-${i}`} className="relative aspect-square overflow-hidden rounded-lg bg-cobble-50">
-                      <Image
-                        src={p}
-                        alt={`${listing.title} — снимка ${i + 2}`}
-                        fill
-                        sizes="180px"
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+          {photo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photo} alt={listing.title} className="mt-6 aspect-[16/9] w-full rounded-xl object-cover" />
           )}
 
           <div className="mt-6 flex items-center gap-3 rounded-xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">

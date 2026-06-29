@@ -3,28 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { requireUser } from "@/lib/auth";
-import { canTransitionBooking } from "@/lib/booking-status";
-import { logger } from "@/lib/log";
+import { getCurrentUser } from "@/lib/auth";
 import { bookingSchema } from "@/lib/validations";
 
 /** Customer requests a booking against a listing. */
 export async function requestBooking(formData: FormData): Promise<void> {
   const listingId = String(formData.get("listingId") ?? "");
-  const user = await requireUser(`/listing/${listingId}`);
-
-  const listing = await prisma.listing.findUnique({
-    where: { id: listingId },
-    include: { provider: true },
-  });
-  if (!listing || !listing.active) {
-    logger.warn("booking.request.unavailable_listing", { userId: user.id, listingId });
-    redirect(`/listing/${listingId}?error=unavailable`);
-  }
-  if (listing.provider.userId === user.id) {
-    logger.warn("booking.request.self_booking", { userId: user.id, listingId });
-    redirect(`/listing/${listingId}?error=self`);
-  }
+  const user = await getCurrentUser();
+  if (!user) redirect(`/login?next=/listing/${listingId}`);
 
   const parsed = bookingSchema.safeParse({
     listingId,
@@ -48,9 +34,12 @@ export async function requestBooking(formData: FormData): Promise<void> {
   redirect("/bookings?requested=1");
 }
 
+const PROVIDER_TRANSITIONS = ["ACCEPTED", "DECLINED", "COMPLETED"];
+
 /** Provider accepts/declines/completes, or customer cancels, a booking. */
 export async function setBookingStatus(formData: FormData): Promise<void> {
-  const user = await requireUser();
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
 
   const bookingId = String(formData.get("bookingId") ?? "");
   const status = String(formData.get("status") ?? "");
@@ -59,29 +48,14 @@ export async function setBookingStatus(formData: FormData): Promise<void> {
     where: { id: bookingId },
     include: { listing: { include: { provider: true } } },
   });
-  if (!booking) {
-    logger.warn("booking.transition.not_found", { userId: user.id, bookingId });
-    return;
-  }
+  if (!booking) return;
 
   const isProvider = booking.listing.provider.userId === user.id;
   const isCustomer = booking.customerId === user.id;
-  if (!isProvider && !isCustomer) {
-    logger.warn("booking.transition.forbidden", { userId: user.id, bookingId });
-    return;
-  }
 
-  const actor = isProvider ? "PROVIDER" : "CUSTOMER";
-  if (!canTransitionBooking(booking.status, status, actor)) {
-    logger.warn("booking.transition.invalid", {
-      userId: user.id,
-      bookingId,
-      from: booking.status,
-      to: status,
-      actor,
-    });
-    return;
-  }
+  const allowed =
+    status === "CANCELLED" ? isCustomer || isProvider : isProvider && PROVIDER_TRANSITIONS.includes(status);
+  if (!allowed) return;
 
   await prisma.booking.update({ where: { id: bookingId }, data: { status } });
   revalidatePath("/dashboard");

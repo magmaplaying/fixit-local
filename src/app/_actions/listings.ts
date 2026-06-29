@@ -5,8 +5,6 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { listingSchema } from "@/lib/validations";
-import { parsePhotos } from "@/lib/format";
-import { deleteImage } from "@/lib/storage";
 
 export type ListingFormState = { error?: string };
 
@@ -27,10 +25,7 @@ function readForm(formData: FormData) {
     price: formData.get("price"),
     city: formData.get("city"),
     area: formData.get("area") || undefined,
-    photos: formData
-      .getAll("photos")
-      .map((v) => String(v).trim())
-      .filter(Boolean),
+    imageUrl: formData.get("imageUrl") || undefined,
   };
 }
 
@@ -53,7 +48,7 @@ export async function createListing(
       price: d.price ?? null,
       city: d.city,
       area: d.area || null,
-      photos: JSON.stringify(d.photos),
+      photos: d.imageUrl ? JSON.stringify([d.imageUrl]) : "[]",
       active: true,
     },
   });
@@ -86,14 +81,10 @@ export async function updateListing(
       price: d.price ?? null,
       city: d.city,
       area: d.area || null,
-      photos: JSON.stringify(d.photos),
+      photos: d.imageUrl ? JSON.stringify([d.imageUrl]) : "[]",
       active: formData.get("active") != null,
     },
   });
-
-  // Best-effort: remove blobs that were dropped from the listing.
-  const removed = parsePhotos(existing.photos).filter((url) => !d.photos.includes(url));
-  await Promise.all(removed.map(deleteImage));
 
   revalidatePath(`/listing/${id}`);
   revalidatePath("/dashboard");
@@ -107,8 +98,6 @@ export async function deleteListing(formData: FormData): Promise<void> {
   const existing = await prisma.listing.findUnique({ where: { id } });
   if (existing && existing.providerId === profile.id) {
     await prisma.listing.delete({ where: { id } });
-    // Best-effort: clean up the listing's uploaded blobs.
-    await Promise.all(parsePhotos(existing.photos).map(deleteImage));
   }
   revalidatePath("/dashboard");
   revalidatePath("/services");
