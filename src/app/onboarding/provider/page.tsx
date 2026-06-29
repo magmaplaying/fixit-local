@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { saveProviderProfile } from "./actions";
+import { PhotoUploader } from "@/components/listing/photo-uploader";
 
 export default async function ProviderOnboardingPage() {
   const user = await getCurrentUser();
@@ -20,6 +21,15 @@ export default async function ProviderOnboardingPage() {
       </p>
 
       <form action={saveProviderProfile} className="mt-8 space-y-4">
+        <div className="block">
+          <span className="mb-1.5 block text-sm font-medium">Снимка на профила</span>
+          <PhotoUploader
+            name="avatarUrl"
+            kind="avatar"
+            max={1}
+            defaultUrls={profile?.avatarUrl ? [profile.avatarUrl] : []}
+          />
+        </div>
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium">Град</span>
           <input name="city" defaultValue={profile?.city ?? "София"} className={inputClass} />

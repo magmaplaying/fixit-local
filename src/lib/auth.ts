@@ -1,13 +1,13 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 
 const COOKIE_NAME = "session";
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
-const secret = new TextEncoder().encode(
-  process.env.AUTH_SECRET ?? "dev-insecure-secret-change-me",
-);
+const secret = new TextEncoder().encode(env.AUTH_SECRET);
 
 export type Role = "CUSTOMER" | "PROVIDER" | "ADMIN";
 export type SessionUser = { id: string; email: string; name: string; role: Role };
@@ -68,4 +68,22 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   const user = await prisma.user.findUnique({ where: { id: session.id } });
   if (!user) return null;
   return { id: user.id, email: user.email, name: user.name, role: user.role as Role };
+}
+
+/** Require an authenticated user or redirect to login (optionally back to `next`). */
+export async function requireUser(next?: string): Promise<SessionUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect(next ? `/login?next=${encodeURIComponent(next)}` : "/login");
+  return user;
+}
+
+/** Require an authenticated user with one of `roles`, else redirect. */
+export async function requireRole(
+  roles: Role | Role[],
+  options?: { next?: string; deniedTo?: string },
+): Promise<SessionUser> {
+  const user = await requireUser(options?.next);
+  const allowed = Array.isArray(roles) ? roles : [roles];
+  if (!allowed.includes(user.role)) redirect(options?.deniedTo ?? "/?denied=1");
+  return user;
 }

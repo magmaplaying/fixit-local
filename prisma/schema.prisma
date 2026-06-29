@@ -18,6 +18,7 @@ model User {
   name         String
   role         String   @default("CUSTOMER") // CUSTOMER | PROVIDER | ADMIN
   createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
   provider ProviderProfile?
   bookings Booking[]        @relation("CustomerBookings")
@@ -33,8 +34,12 @@ model ProviderProfile {
   phone     String?
   city      String
   area      String?
+  avatarUrl String?
   verified  Boolean  @default(false)
+  ratingAvg   Float?
+  ratingCount Int      @default(0)
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   listings Listing[]
 }
@@ -63,6 +68,7 @@ model Listing {
   photos      String          @default("[]") // JSON-encoded array of image URLs
   active      Boolean         @default(true)
   createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now()) @updatedAt
 
   bookings Booking[]
   reviews  Review[]
@@ -80,7 +86,10 @@ model Booking {
   status       String    @default("REQUESTED") // REQUESTED | ACCEPTED | DECLINED | COMPLETED | CANCELLED
   scheduledFor DateTime?
   message      String?
+  amount       Float? // charge amount (set at acceptance; payments groundwork)
+  currency     String    @default("BGN") // BGN today; EUR transition ahead
   createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
   customerReadAt DateTime?
   providerReadAt DateTime?
 

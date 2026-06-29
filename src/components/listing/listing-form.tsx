@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { PRICE_TYPES } from "@/lib/validations";
+import { PhotoUploader } from "@/components/listing/photo-uploader";
 
 type State = { error?: string };
 type Category = { id: string; name: string; icon: string | null };
@@ -16,7 +17,7 @@ export type ListingDefaults = {
   price?: number | null;
   city?: string;
   area?: string | null;
-  imageUrl?: string;
+  photos?: string[];
   active?: boolean;
 };
 
@@ -106,8 +107,8 @@ export function ListingForm({
         </Field>
       </div>
 
-      <Field label="URL на снимка (по избор)">
-        <input name="imageUrl" defaultValue={d.imageUrl ?? ""} placeholder="https://…" className={inputClass} />
+      <Field label="Снимки (по избор)">
+        <PhotoUploader name="photos" kind="listing" max={6} defaultUrls={d.photos ?? []} />
       </Field>
 
       {mode === "edit" && (
