@@ -26,10 +26,10 @@ export const listingSchema = z
     ),
     city: z.string().min(2, "Градът е задължителен"),
     area: z.string().optional(),
-    imageUrl: z.preprocess(
-      (v) => (typeof v === "string" ? v.trim() : v),
-      z.union([z.url("Въведете валиден URL на снимка"), z.literal("")]).optional(),
-    ),
+    photos: z
+      .array(z.url("Невалиден адрес на снимка"))
+      .max(6, "Максимум 6 снимки на обява")
+      .default([]),
   })
   .refine((d) => d.priceType === "QUOTE" || d.price != null, {
     message: "Въведете цена или изберете „По договаряне„",

@@ -1,0 +1,5 @@
+{
+  "smart_parallelism": false,
+  "prefix": "roadmap",
+  "notes": "Created for the 'Под ръка' (FixIt Local) remaining-roadmap breakdown. Conservative dependencies: foundation hardening (00) gates the feature plans; optimisation (05) gates growth (06)."
+}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { formatDistance } from "@/lib/geo";
 
 export type ListingCardData = {
@@ -30,11 +31,12 @@ export function ListingCard({ l }: { l: ListingCardData }) {
           </span>
         )}
         {l.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={l.imageUrl}
             alt={l.title}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-5xl" aria-hidden>
