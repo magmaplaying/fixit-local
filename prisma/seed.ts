@@ -93,6 +93,11 @@ async function main() {
     data: { name: "Демо клиент", email: "customer@demo.bg", passwordHash, role: "CUSTOMER" },
   });
 
+  // Демо администратор за таблото на администрацията (/admin).
+  await prisma.user.create({
+    data: { name: "Админ", email: "admin@demo.bg", passwordHash, role: "ADMIN" },
+  });
+
   // Завършени заявки с отзиви → зарежда рейтинги в целия сайт.
   const reviewed: Array<{ idx: number; rating: number; comment: string }> = [
     { idx: 0, rating: 5, comment: "Безупречно и точно навреме — горещо препоръчвам!" },

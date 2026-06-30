@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { formatPrice, averageRating, initials, parsePhotos } from "@/lib/format";
 import { LocationMap } from "@/components/map/location-map";
 import { requestBooking } from "@/app/_actions/bookings";
+import { createReport } from "@/app/_actions/reports";
 
 type Params = Promise<{ id: string }>;
 
@@ -17,7 +18,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
     include: {
       category: true,
       provider: { include: { user: true } },
-      reviews: { include: { author: true }, orderBy: { createdAt: "desc" } },
+      reviews: { where: { hidden: false }, include: { author: true }, orderBy: { createdAt: "desc" } },
     },
   });
   if (!listing || !listing.active) notFound();
@@ -123,6 +124,28 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                 </li>
               ))}
             </ul>
+          )}
+
+          {user && !isOwner && (
+            <details className="mt-8 text-sm">
+              <summary className="cursor-pointer text-black/40 hover:text-red-600 dark:text-white/40">
+                Докладвай тази обява
+              </summary>
+              <form action={createReport} className="mt-2 flex gap-2">
+                <input type="hidden" name="targetType" value="LISTING" />
+                <input type="hidden" name="targetId" value={listing.id} />
+                <input type="hidden" name="back" value={`/listing/${listing.id}`} />
+                <input
+                  name="reason"
+                  required
+                  placeholder="Причина за сигнала…"
+                  className="flex-1 rounded-lg border border-black/10 bg-white px-3 py-1.5 outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
+                />
+                <button className="rounded-lg border border-black/10 px-3 py-1.5 font-medium text-black/60 transition hover:border-red-300 hover:text-red-600 dark:border-white/15 dark:text-white/60">
+                  Изпрати
+                </button>
+              </form>
+            </details>
           )}
         </div>
 

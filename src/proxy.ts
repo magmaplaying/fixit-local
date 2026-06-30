@@ -19,6 +19,16 @@ export async function proxy(req: NextRequest) {
   if (token) {
     try {
       const { payload } = await jwtVerify(token, secret);
+      // /admin is ADMIN-only.
+      if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+        if (payload.role !== "ADMIN") {
+          const url = req.nextUrl.clone();
+          url.pathname = "/";
+          url.searchParams.set("denied", "admin-only");
+          return NextResponse.redirect(url);
+        }
+        return NextResponse.next();
+      }
       // Role-aware gating: a logged-in CUSTOMER can't reach provider areas.
       if (isProviderOnly(pathname) && payload.role === "CUSTOMER") {
         const url = req.nextUrl.clone();
@@ -38,5 +48,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/bookings/:path*", "/onboarding/:path*", "/chat/:path*"],
+  matcher: ["/admin/:path*", "/dashboard/:path*", "/bookings/:path*", "/onboarding/:path*", "/chat/:path*"],
 };

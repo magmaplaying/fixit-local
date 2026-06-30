@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 /** Send a chat message on a booking. Only the booking's customer or provider may post. */
 export async function sendMessage(formData: FormData): Promise<void> {
@@ -23,6 +24,8 @@ export async function sendMessage(formData: FormData): Promise<void> {
   const isParticipant =
     booking.customerId === user.id || booking.listing.provider.userId === user.id;
   if (!isParticipant) return;
+
+  if (!rateLimit(`msg:${user.id}`, 30, 60_000)) redirect(`/chat/${bookingId}`);
 
   await prisma.message.create({
     data: { bookingId, senderId: user.id, body: body.slice(0, 2000) },

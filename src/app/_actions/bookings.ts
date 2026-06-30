@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { canTransitionBooking } from "@/lib/booking-status";
 import { logger } from "@/lib/log";
+import { rateLimit } from "@/lib/rate-limit";
 import { bookingSchema } from "@/lib/validations";
 import { refundIfPaid } from "@/app/_actions/payments";
 
@@ -26,6 +27,17 @@ export async function requestBooking(formData: FormData): Promise<void> {
     logger.warn("booking.request.self_booking", { userId: user.id, listingId });
     redirect(`/listing/${listingId}?error=self`);
   }
+
+  if (!rateLimit(`book:${user.id}`, 10, 60_000)) {
+    redirect(`/listing/${listingId}?error=rate`);
+  }
+
+  // No duplicate active booking of the same listing by the same customer.
+  const dupe = await prisma.booking.findFirst({
+    where: { listingId, customerId: user.id, status: { in: ["REQUESTED", "ACCEPTED"] } },
+    select: { id: true },
+  });
+  if (dupe) redirect(`/listing/${listingId}?error=duplicate`);
 
   const parsed = bookingSchema.safeParse({
     listingId,

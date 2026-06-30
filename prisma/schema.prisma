@@ -17,6 +17,7 @@ model User {
   passwordHash String
   name         String
   role         String   @default("CUSTOMER") // CUSTOMER | PROVIDER | ADMIN
+  status       String   @default("ACTIVE") // ACTIVE | SUSPENDED
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 
@@ -24,6 +25,7 @@ model User {
   bookings Booking[]        @relation("CustomerBookings")
   reviews  Review[]
   messages Message[]
+  reports  Report[]
 }
 
 model ProviderProfile {
@@ -114,6 +116,7 @@ model Review {
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   rating    Int // 1-5
   comment   String?
+  hidden    Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([listingId])
@@ -129,6 +132,19 @@ model Message {
   createdAt DateTime @default(now())
 
   @@index([bookingId])
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  reporterId String
+  reporter   User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType String // LISTING | REVIEW | USER
+  targetId   String
+  reason     String
+  status     String   @default("OPEN") // OPEN | RESOLVED | DISMISSED
+  createdAt  DateTime @default(now())
+
+  @@index([status])
 }
 
 model Payment {

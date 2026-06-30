@@ -44,6 +44,9 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
     return { error: "Грешен имейл или парола." };
   }
+  if (user.status === "SUSPENDED") {
+    return { error: "Този акаунт е спрян. Свържете се с поддръжката." };
+  }
 
   await createSession({
     id: user.id,

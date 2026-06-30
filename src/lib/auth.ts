@@ -67,6 +67,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   if (!session) return null;
   const user = await prisma.user.findUnique({ where: { id: session.id } });
   if (!user) return null;
+  if (user.status === "SUSPENDED") return null; // suspended → treated as logged out everywhere
   return { id: user.id, email: user.email, name: user.name, role: user.role as Role };
 }
 
