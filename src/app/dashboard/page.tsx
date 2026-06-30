@@ -92,6 +92,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         </p>
       )}
 
+      {sp.stripe === "connected" && (
+        <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+          ✓ Stripe е свързан. Ако още не показва активни плащания, изчакайте няколко секунди и опреснете.
+        </p>
+      )}
+      {(sp.stripe === "error" || sp.stripe === "unconfigured") && (
+        <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+          Свързването със Stripe не бе успешно. Уверете се, че Stripe Connect е активиран за платформата.
+        </p>
+      )}
+
       {/* Stripe payouts + earnings */}
       {showStripe && (
         <div className="mt-6 rounded-2xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-white/5">

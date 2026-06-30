@@ -24,24 +24,31 @@ export async function startStripeOnboarding(): Promise<void> {
   const profile = await prisma.providerProfile.findUnique({ where: { userId: user.id } });
   if (!profile) redirect("/onboarding/provider");
 
-  let accountId = profile.stripeAccountId;
-  if (!accountId) {
-    const account = await stripe.accounts.create({ type: "express", email: user.email });
-    accountId = account.id;
-    await prisma.providerProfile.update({
-      where: { id: profile.id },
-      data: { stripeAccountId: accountId },
+  // redirect() throws NEXT_REDIRECT, so do the Stripe work inside try/catch and
+  // redirect OUTSIDE it (otherwise the redirect would be swallowed by catch).
+  let url: string | null = null;
+  try {
+    let accountId = profile.stripeAccountId;
+    if (!accountId) {
+      const account = await stripe.accounts.create({ type: "express", email: user.email });
+      accountId = account.id;
+      await prisma.providerProfile.update({
+        where: { id: profile.id },
+        data: { stripeAccountId: accountId },
+      });
+    }
+    const base = await getBaseUrl();
+    const link = await stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: `${base}/dashboard?stripe=refresh`,
+      return_url: `${base}/dashboard?stripe=connected`,
+      type: "account_onboarding",
     });
+    url = link.url;
+  } catch (err) {
+    logger.error("stripe.onboarding.failed", { userId: user.id, message: String(err) });
   }
-
-  const base = await getBaseUrl();
-  const link = await stripe.accountLinks.create({
-    account: accountId,
-    refresh_url: `${base}/dashboard?stripe=refresh`,
-    return_url: `${base}/dashboard?stripe=connected`,
-    type: "account_onboarding",
-  });
-  redirect(link.url);
+  redirect(url ?? "/dashboard?stripe=error");
 }
 
 /**
@@ -107,31 +114,36 @@ export async function startBookingCheckout(formData: FormData): Promise<void> {
   const destination = booking.listing.provider.stripeAccountId;
   if (!destination) redirect("/bookings?stripe=provider");
 
-  const base = await getBaseUrl();
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: booking.payment.currency.toLowerCase(),
-          product_data: { name: booking.listing.title },
-          unit_amount: booking.payment.amount,
+  let url: string | null = null;
+  try {
+    const base = await getBaseUrl();
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: booking.payment.currency.toLowerCase(),
+            product_data: { name: booking.listing.title },
+            unit_amount: booking.payment.amount,
+          },
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      payment_intent_data: {
+        application_fee_amount: booking.payment.commissionAmount,
+        transfer_data: { destination },
+        metadata: { bookingId },
       },
-    ],
-    payment_intent_data: {
-      application_fee_amount: booking.payment.commissionAmount,
-      transfer_data: { destination },
-      metadata: { bookingId },
-    },
-    metadata: { kind: "booking", bookingId },
-    success_url: `${base}/bookings?paid=1`,
-    cancel_url: `${base}/bookings?cancelled=1`,
-  });
-
-  await prisma.payment.update({ where: { bookingId }, data: { status: "REQUIRES_ACTION" } });
-  redirect(session.url ?? "/bookings");
+      metadata: { kind: "booking", bookingId },
+      success_url: `${base}/bookings?paid=1`,
+      cancel_url: `${base}/bookings?cancelled=1`,
+    });
+    await prisma.payment.update({ where: { bookingId }, data: { status: "REQUIRES_ACTION" } });
+    url = session.url;
+  } catch (err) {
+    logger.error("stripe.checkout.failed", { userId: user.id, bookingId, message: String(err) });
+  }
+  redirect(url ?? "/bookings?stripe=error");
 }
 
 /** Provider: pay to feature a listing for 7 days (platform keeps 100%). */
@@ -146,24 +158,30 @@ export async function startBoostCheckout(formData: FormData): Promise<void> {
   });
   if (!listing || listing.provider.userId !== user.id) redirect("/dashboard");
 
-  const base = await getBaseUrl();
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: "bgn",
-          product_data: { name: `Издигане на „${listing.title}" (7 дни)` },
-          unit_amount: 1000, // 10.00 BGN
+  let url: string | null = null;
+  try {
+    const base = await getBaseUrl();
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "bgn",
+            product_data: { name: `Издигане на „${listing.title}" (7 дни)` },
+            unit_amount: 1000, // 10.00 BGN
+          },
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    metadata: { kind: "boost", listingId },
-    success_url: `${base}/dashboard?boosted=1`,
-    cancel_url: `${base}/dashboard`,
-  });
-  redirect(session.url ?? "/dashboard");
+      ],
+      metadata: { kind: "boost", listingId },
+      success_url: `${base}/dashboard?boosted=1`,
+      cancel_url: `${base}/dashboard`,
+    });
+    url = session.url;
+  } catch (err) {
+    logger.error("stripe.boost.failed", { userId: user.id, listingId, message: String(err) });
+  }
+  redirect(url ?? "/dashboard?stripe=error");
 }
 
 /** Best-effort refund of a succeeded payment (used when a booking is cancelled). */
