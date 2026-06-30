@@ -25,12 +25,24 @@ const schema = z.object({
   // Optional: enables real image upload via Vercel Blob. Without it the app
   // still runs and providers can paste image URLs instead.
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
+  // Optional: enables Stripe payments. Without these the booking loop works
+  // unpaid (no payout onboarding, no checkout).
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+  // Platform commission in basis points (1500 = 15%).
+  PLATFORM_COMMISSION_BPS: z.coerce.number().int().min(0).max(10000).default(1500),
 });
 
 const parsed = schema.safeParse({
   AUTH_SECRET: process.env.AUTH_SECRET,
   DATABASE_URL: process.env.DATABASE_URL,
   TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
+  BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+  PLATFORM_COMMISSION_BPS: process.env.PLATFORM_COMMISSION_BPS,
 });
 
 if (!parsed.success) {

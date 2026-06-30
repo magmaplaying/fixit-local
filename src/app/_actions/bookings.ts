@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth";
 import { canTransitionBooking } from "@/lib/booking-status";
 import { logger } from "@/lib/log";
 import { bookingSchema } from "@/lib/validations";
+import { refundIfPaid } from "@/app/_actions/payments";
 
 /** Customer requests a booking against a listing. */
 export async function requestBooking(formData: FormData): Promise<void> {
@@ -84,6 +85,10 @@ export async function setBookingStatus(formData: FormData): Promise<void> {
   }
 
   await prisma.booking.update({ where: { id: bookingId }, data: { status } });
+
+  // Refund a paid booking when it's cancelled before completion.
+  if (status === "CANCELLED") await refundIfPaid(bookingId);
+
   revalidatePath("/dashboard");
   revalidatePath("/bookings");
 }

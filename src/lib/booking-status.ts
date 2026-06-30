@@ -22,6 +22,15 @@ export const STATUS_LABELS: Record<string, string> = {
   CANCELLED: "Анулирана",
 };
 
+// Payment status (Stripe) Bulgarian labels.
+export const PAYMENT_LABELS: Record<string, string> = {
+  PENDING: "Очаква плащане",
+  REQUIRES_ACTION: "Очаква плащане",
+  SUCCEEDED: "Платена",
+  REFUNDED: "Възстановена",
+  FAILED: "Неуспешно плащане",
+};
+
 // Allowed transitions: from-status → list of { to, who-may-do-it }.
 // Anything not listed (incl. all transitions out of a terminal status) is denied.
 const TRANSITIONS: Record<BookingStatus, { to: BookingStatus; by: BookingActor[] }[]> = {

@@ -12,7 +12,7 @@ Prefix: `roadmap` · Smart parallelism: **disabled** (conservative deps)
 | ---- | ----- | ---------- | ------ |
 | roadmap-00-foundation-hardening.plan.md | Security/correctness/schema groundwork | — | ✅ COMPLETED |
 | roadmap-01-image-upload.plan.md | Real image upload (Vercel Blob) | 00 | ✅ COMPLETED |
-| roadmap-02-payments-monetisation.plan.md | Stripe Connect, commission, featured listings | 00 | NOT STARTED |
+| roadmap-02-payments-monetisation.plan.md | Stripe Connect, commission, featured listings | 00 | ✅ COMPLETED (needs STRIPE_* keys + Turso migration to go live) |
 | roadmap-03-admin-trust-safety.plan.md | Admin dashboard, verification, moderation | 00 | NOT STARTED |
 | roadmap-04-realtime-notifications.plan.md | Email + push + SSE chat | 00 | NOT STARTED |
 | roadmap-05-performance-seo-a11y.plan.md | Perf, SEO, accessibility | 00 | NOT STARTED |

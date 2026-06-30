@@ -38,6 +38,8 @@ model ProviderProfile {
   verified  Boolean  @default(false)
   ratingAvg   Float?
   ratingCount Int      @default(0)
+  stripeAccountId String?
+  payoutsEnabled  Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
@@ -67,6 +69,7 @@ model Listing {
   area        String?
   photos      String          @default("[]") // JSON-encoded array of image URLs
   active      Boolean         @default(true)
+  featuredUntil DateTime?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @default(now()) @updatedAt
 
@@ -94,6 +97,7 @@ model Booking {
   providerReadAt DateTime?
 
   review   Review?
+  payment  Payment?
   messages Message[]
 
   @@index([listingId])
@@ -125,4 +129,17 @@ model Message {
   createdAt DateTime @default(now())
 
   @@index([bookingId])
+}
+
+model Payment {
+  id                    String   @id @default(cuid())
+  bookingId             String   @unique
+  booking               Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  stripePaymentIntentId String?  @unique
+  amount                Int // minor units (stotinki/cents)
+  currency              String   @default("BGN")
+  commissionAmount      Int      @default(0) // minor units, platform fee
+  status                String   @default("PENDING") // PENDING | REQUIRES_ACTION | SUCCEEDED | REFUNDED | FAILED
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @default(now()) @updatedAt
 }

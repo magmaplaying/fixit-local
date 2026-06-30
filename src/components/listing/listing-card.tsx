@@ -15,6 +15,7 @@ export type ListingCardData = {
   reviewCount: number;
   imageUrl: string | null;
   distanceKm?: number | null;
+  featured?: boolean;
 };
 
 export function ListingCard({ l }: { l: ListingCardData }) {
@@ -28,6 +29,11 @@ export function ListingCard({ l }: { l: ListingCardData }) {
         {l.distanceKm != null && (
           <span className="absolute left-2 top-2 z-10 rounded-full bg-espresso/85 px-2.5 py-1 font-mono text-[11px] font-medium text-background backdrop-blur-sm">
             📍 {formatDistance(l.distanceKm)}
+          </span>
+        )}
+        {l.featured && (
+          <span className="absolute right-2 top-2 z-10 rounded-full bg-cobble-600 px-2.5 py-1 font-mono text-[11px] font-medium text-white">
+            ★ Издигната
           </span>
         )}
         {l.imageUrl ? (

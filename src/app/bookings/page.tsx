@@ -3,12 +3,21 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { setBookingStatus } from "@/app/_actions/bookings";
+import { startBookingCheckout } from "@/app/_actions/payments";
 import { StatusBadge } from "@/components/booking/status-badge";
 import { ReviewForm } from "@/components/booking/review-form";
 import { formatPrice } from "@/lib/format";
+import { formatMoney } from "@/lib/stripe";
+import { PAYMENT_LABELS } from "@/lib/booking-status";
 import { unreadInBooking } from "@/lib/unread";
 
-type SearchParams = Promise<{ requested?: string; reviewed?: string }>;
+type SearchParams = Promise<{
+  requested?: string;
+  reviewed?: string;
+  paid?: string;
+  cancelled?: string;
+  stripe?: string;
+}>;
 
 export default async function BookingsPage({ searchParams }: { searchParams: SearchParams }) {
   const user = await getCurrentUser();
@@ -21,6 +30,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
     include: {
       listing: { include: { category: true, provider: { include: { user: true } } } },
       review: true,
+      payment: true,
       messages: { where: { senderId: { not: user.id } }, select: { createdAt: true } },
     },
   });
@@ -37,6 +47,16 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
       {sp.reviewed && (
         <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
           ✓ Благодарим за отзива!
+        </p>
+      )}
+      {sp.paid && (
+        <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+          ✓ Плащането е успешно. Благодарим!
+        </p>
+      )}
+      {(sp.cancelled || sp.stripe) && (
+        <p className="mt-4 rounded-xl bg-black/[0.04] px-4 py-3 text-sm text-black/60 dark:bg-white/5 dark:text-white/60">
+          Плащането не бе завършено. Можете да опитате отново.
         </p>
       )}
 
@@ -75,15 +95,34 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
                     )}
                   </Link>
                 </div>
-                {(b.status === "REQUESTED" || b.status === "ACCEPTED") && (
-                  <form action={setBookingStatus}>
-                    <input type="hidden" name="bookingId" value={b.id} />
-                    <input type="hidden" name="status" value="CANCELLED" />
-                    <button className="rounded-lg border border-black/10 px-3 py-1.5 text-sm text-black/60 transition hover:border-red-300 hover:text-red-600 dark:border-white/15 dark:text-white/60">
-                      Откажи
-                    </button>
-                  </form>
-                )}
+                <div className="flex flex-col items-stretch gap-2 sm:items-end">
+                  {b.payment && (
+                    <span className="text-xs font-medium text-black/55 dark:text-white/55">
+                      {PAYMENT_LABELS[b.payment.status] ?? b.payment.status} ·{" "}
+                      {formatMoney(b.payment.amount, b.payment.currency)}
+                    </span>
+                  )}
+                  {b.status === "ACCEPTED" &&
+                    b.payment &&
+                    b.payment.status !== "SUCCEEDED" &&
+                    b.payment.status !== "REFUNDED" && (
+                      <form action={startBookingCheckout}>
+                        <input type="hidden" name="bookingId" value={b.id} />
+                        <button className="w-full rounded-lg bg-cobble-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700">
+                          Плати {formatMoney(b.payment.amount, b.payment.currency)}
+                        </button>
+                      </form>
+                    )}
+                  {(b.status === "REQUESTED" || b.status === "ACCEPTED") && (
+                    <form action={setBookingStatus}>
+                      <input type="hidden" name="bookingId" value={b.id} />
+                      <input type="hidden" name="status" value="CANCELLED" />
+                      <button className="rounded-lg border border-black/10 px-3 py-1.5 text-sm text-black/60 transition hover:border-red-300 hover:text-red-600 dark:border-white/15 dark:text-white/60">
+                        Откажи
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
 
               {b.status === "COMPLETED" &&

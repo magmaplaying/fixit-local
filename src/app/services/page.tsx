@@ -54,6 +54,12 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
     items.sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
   }
 
+  // Featured listings (paid boost, not expired) float to the top (stable sort
+  // preserves the createdAt/distance order within each group).
+  const isFeatured = (l: { featuredUntil: Date | null }) =>
+    l.featuredUntil != null && l.featuredUntil > new Date();
+  items.sort((a, b) => Number(isFeatured(b.l)) - Number(isFeatured(a.l)));
+
   const cards: ListingCardData[] = items.map(({ l, distanceKm }) => ({
     id: l.id,
     title: l.title,
@@ -67,6 +73,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
     reviewCount: l.reviews.length,
     imageUrl: parsePhotos(l.photos)[0] ?? null,
     distanceKm,
+    featured: isFeatured(l),
   }));
 
   const activeCategory = sp.category;

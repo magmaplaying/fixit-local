@@ -3,12 +3,21 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { setBookingStatus } from "@/app/_actions/bookings";
+import { startStripeOnboarding, acceptBookingWithPayment, startBoostCheckout } from "@/app/_actions/payments";
 import { deleteListing } from "@/app/_actions/listings";
 import { StatusBadge } from "@/components/booking/status-badge";
+import { PAYMENT_LABELS } from "@/lib/booking-status";
 import { formatPrice } from "@/lib/format";
+import { isStripeConfigured, formatMoney } from "@/lib/stripe";
 import { unreadInBooking } from "@/lib/unread";
 
-type SearchParams = Promise<{ created?: string; updated?: string; deleted?: string }>;
+type SearchParams = Promise<{
+  created?: string;
+  updated?: string;
+  deleted?: string;
+  stripe?: string;
+  boosted?: string;
+}>;
 
 export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
   const user = await getCurrentUser();
@@ -48,10 +57,21 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
     include: {
       listing: true,
       customer: true,
+      payment: true,
       messages: { where: { senderId: { not: user.id } }, select: { createdAt: true } },
     },
   });
   const pending = bookings.filter((b) => b.status === "REQUESTED");
+
+  // Earnings from succeeded payments (gross, commission, net) in minor units.
+  const paid = await prisma.payment.findMany({
+    where: { status: "SUCCEEDED", booking: { listing: { providerId: profile.id } } },
+    select: { amount: true, commissionAmount: true },
+  });
+  const grossMinor = paid.reduce((s, p) => s + p.amount, 0);
+  const commissionMinor = paid.reduce((s, p) => s + p.commissionAmount, 0);
+  const netMinor = grossMinor - commissionMinor;
+  const showStripe = isStripeConfigured();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -60,10 +80,46 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         {profile.listings.length} обяви · {pending.length} чакащи заявки
       </p>
 
-      {(sp.created || sp.updated || sp.deleted) && (
+      {(sp.created || sp.updated || sp.deleted || sp.boosted) && (
         <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
-          {sp.created ? "✓ Обявата е публикувана." : sp.updated ? "✓ Обявата е обновена." : "✓ Обявата е изтрита."}
+          {sp.created
+            ? "✓ Обявата е публикувана."
+            : sp.updated
+              ? "✓ Обявата е обновена."
+              : sp.deleted
+                ? "✓ Обявата е изтрита."
+                : "✓ Обявата е издигната за 7 дни."}
         </p>
+      )}
+
+      {/* Stripe payouts + earnings */}
+      {showStripe && (
+        <div className="mt-6 rounded-2xl border border-black/5 bg-white p-5 dark:border-white/10 dark:bg-white/5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-medium">Получаване на плащания</h2>
+              <p className="mt-0.5 text-sm text-black/55 dark:text-white/55">
+                {profile.payoutsEnabled
+                  ? "✓ Плащанията са активни — можете да приемате платени заявки."
+                  : "Свържете Stripe, за да приемате плащания от клиенти."}
+              </p>
+            </div>
+            {!profile.payoutsEnabled && (
+              <form action={startStripeOnboarding}>
+                <button className="rounded-lg bg-cobble-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cobble-700">
+                  {profile.stripeAccountId ? "Продължи настройката" : "Свържи Stripe"}
+                </button>
+              </form>
+            )}
+          </div>
+          {profile.payoutsEnabled && grossMinor > 0 && (
+            <div className="mt-4 grid grid-cols-3 gap-3 border-t border-black/5 pt-4 dark:border-white/10">
+              <Stat label="Оборот" value={formatMoney(grossMinor)} />
+              <Stat label="Комисиона" value={formatMoney(commissionMinor)} />
+              <Stat label="Нето" value={formatMoney(netMinor)} />
+            </div>
+          )}
+        </div>
       )}
 
       {/* Incoming bookings */}
@@ -78,9 +134,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
               className="flex flex-col gap-3 rounded-xl border border-black/5 bg-white p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10 dark:bg-white/5"
             >
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{b.listing.title}</span>
                   <StatusBadge status={b.status} />
+                  {b.payment && (
+                    <span className="text-xs font-medium text-black/45 dark:text-white/45">
+                      · {PAYMENT_LABELS[b.payment.status] ?? b.payment.status} {formatMoney(b.payment.amount, b.payment.currency)}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-0.5 text-sm text-black/55 dark:text-white/55">
                   {b.customer.name}
@@ -102,7 +163,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 </Link>
                 {b.status === "REQUESTED" && (
                   <>
-                    <StatusButton bookingId={b.id} status="ACCEPTED" label="Приеми" variant="primary" />
+                    <AcceptForm
+                      bookingId={b.id}
+                      canCharge={showStripe && profile.payoutsEnabled}
+                      defaultAmount={b.listing.priceType === "FIXED" ? b.listing.price : null}
+                    />
                     <StatusButton bookingId={b.id} status="DECLINED" label="Откажи" variant="ghost" />
                   </>
                 )}
@@ -160,6 +225,20 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                     Изтрий
                   </button>
                 </form>
+                {showStripe &&
+                  l.active &&
+                  (l.featuredUntil && l.featuredUntil > new Date() ? (
+                    <span className="rounded-lg bg-cobble-100 px-2 py-1 text-xs font-medium text-cobble-800 dark:bg-cobble-900/50 dark:text-cobble-300">
+                      ★ Издигната
+                    </span>
+                  ) : (
+                    <form action={startBoostCheckout}>
+                      <input type="hidden" name="listingId" value={l.id} />
+                      <button className="rounded-lg border border-cobble-500/40 px-3 py-1 text-xs font-medium text-cobble-700 transition hover:bg-cobble-50 dark:text-cobble-300 dark:hover:bg-cobble-950/30">
+                        Издигни
+                      </button>
+                    </form>
+                  ))}
                 {!l.active && (
                   <span className="rounded-lg bg-black/5 px-2 py-1 text-xs text-black/50 dark:bg-white/10 dark:text-white/50">
                     Скрита
@@ -195,5 +274,45 @@ function StatusButton({
       <input type="hidden" name="status" value={status} />
       <button className={cls}>{label}</button>
     </form>
+  );
+}
+
+function AcceptForm({
+  bookingId,
+  canCharge,
+  defaultAmount,
+}: {
+  bookingId: string;
+  canCharge: boolean;
+  defaultAmount?: number | null;
+}) {
+  return (
+    <form action={acceptBookingWithPayment} className="flex items-center gap-1.5">
+      <input type="hidden" name="bookingId" value={bookingId} />
+      {canCharge && (
+        <input
+          name="amount"
+          type="number"
+          min="0"
+          step="0.01"
+          defaultValue={defaultAmount ?? ""}
+          placeholder="лв."
+          title="Сума за плащане"
+          className="w-20 rounded-lg border border-black/10 px-2 py-1.5 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
+        />
+      )}
+      <button className="rounded-lg bg-cobble-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700">
+        Приеми
+      </button>
+    </form>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-xs text-black/45 dark:text-white/45">{label}</div>
+      <div className="mt-0.5 font-semibold">{value}</div>
+    </div>
   );
 }
