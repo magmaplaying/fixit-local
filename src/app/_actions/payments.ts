@@ -2,19 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { canTransitionBooking } from "@/lib/booking-status";
 import { logger } from "@/lib/log";
 import { stripe, commissionFor, toMinor } from "@/lib/stripe";
-
-async function getBaseUrl(): Promise<string> {
-  const h = await headers();
-  const host = h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
-}
+import { getBaseUrl } from "@/lib/url";
+import { notify } from "@/lib/notify";
+import { bookingStatus } from "@/lib/notify-templates";
 
 /** Provider: create/continue a Stripe Connect Express account for payouts. */
 export async function startStripeOnboarding(): Promise<void> {
@@ -94,6 +89,11 @@ export async function acceptBookingWithPayment(formData: FormData): Promise<void
   } else {
     await prisma.booking.update({ where: { id: bookingId }, data: { status: "ACCEPTED" } });
   }
+
+  await notify({
+    userId: booking.customerId,
+    ...bookingStatus("ACCEPTED", { listingTitle: booking.listing.title, recipient: "CUSTOMER", paid: !!charge }),
+  });
 
   revalidatePath("/dashboard");
   revalidatePath("/bookings");

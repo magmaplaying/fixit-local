@@ -18,6 +18,7 @@ model User {
   name         String
   role         String   @default("CUSTOMER") // CUSTOMER | PROVIDER | ADMIN
   status       String   @default("ACTIVE") // ACTIVE | SUSPENDED
+  emailNotifications Boolean @default(true) // opt-out of transactional emails
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 
@@ -26,6 +27,7 @@ model User {
   reviews  Review[]
   messages Message[]
   reports  Report[]
+  notifications Notification[]
 }
 
 model ProviderProfile {
@@ -132,6 +134,20 @@ model Message {
   createdAt DateTime @default(now())
 
   @@index([bookingId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // BOOKING_REQUESTED | BOOKING_ACCEPTED | BOOKING_DECLINED | BOOKING_COMPLETED | BOOKING_CANCELLED | NEW_MESSAGE | PAYMENT_RECEIVED
+  title     String
+  body      String
+  href      String? // app-relative link the notification points at
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
 
 model Report {

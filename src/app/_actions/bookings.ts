@@ -9,6 +9,8 @@ import { logger } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
 import { bookingSchema } from "@/lib/validations";
 import { refundIfPaid } from "@/app/_actions/payments";
+import { notify } from "@/lib/notify";
+import { bookingRequested, bookingStatus, type StatusEvent } from "@/lib/notify-templates";
 
 /** Customer requests a booking against a listing. */
 export async function requestBooking(formData: FormData): Promise<void> {
@@ -57,6 +59,11 @@ export async function requestBooking(formData: FormData): Promise<void> {
     },
   });
 
+  await notify({
+    userId: listing.provider.userId,
+    ...bookingRequested({ listingTitle: listing.title, customerName: user.name }),
+  });
+
   revalidatePath("/bookings");
   redirect("/bookings?requested=1");
 }
@@ -100,6 +107,15 @@ export async function setBookingStatus(formData: FormData): Promise<void> {
 
   // Refund a paid booking when it's cancelled before completion.
   if (status === "CANCELLED") await refundIfPaid(bookingId);
+
+  // Notify the counterparty of the transition (opposite side of the actor).
+  await notify({
+    userId: isProvider ? booking.customerId : booking.listing.provider.userId,
+    ...bookingStatus(status as StatusEvent, {
+      listingTitle: booking.listing.title,
+      recipient: isProvider ? "CUSTOMER" : "PROVIDER",
+    }),
+  });
 
   revalidatePath("/dashboard");
   revalidatePath("/bookings");

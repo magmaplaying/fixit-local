@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { sendMessage } from "@/app/_actions/messages";
-import { ChatPoller } from "@/components/chat/chat-poller";
+import { ChatThread } from "@/components/chat/chat-stream";
 import { initials } from "@/lib/format";
 
 type Params = Promise<{ bookingId: string }>;
@@ -19,7 +19,10 @@ export default async function ChatPage({ params }: { params: Params }) {
     include: {
       listing: { include: { provider: { include: { user: true } } } },
       customer: true,
-      messages: { include: { sender: true }, orderBy: { createdAt: "asc" } },
+      messages: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, body: true, senderId: true, createdAt: true },
+      },
     },
   });
   if (!booking) notFound();
@@ -36,11 +39,15 @@ export default async function ChatPage({ params }: { params: Params }) {
 
   const other = isCustomer ? booking.listing.provider.user : booking.customer;
   const backHref = isProvider ? "/dashboard" : "/bookings";
+  const initialMessages = booking.messages.map((m) => ({
+    id: m.id,
+    body: m.body,
+    senderId: m.senderId,
+    createdAt: m.createdAt.getTime(),
+  }));
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-2xl flex-col px-4 py-8">
-      <ChatPoller />
-
       <Link href={backHref} className="text-sm text-black/50 hover:text-cobble-600">
         ← Назад
       </Link>
@@ -58,32 +65,8 @@ export default async function ChatPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      {/* Thread */}
-      <div className="flex flex-1 flex-col gap-3 py-6">
-        {booking.messages.length === 0 ? (
-          <p className="my-auto text-center text-sm text-black/45">Още няма съобщения. Напишете първото.</p>
-        ) : (
-          booking.messages.map((m) => {
-            const mine = m.senderId === user.id;
-            return (
-              <div key={m.id} className={mine ? "flex justify-end" : "flex justify-start"}>
-                <div
-                  className={
-                    mine
-                      ? "max-w-[80%] rounded-2xl rounded-br-sm bg-cobble-600 px-4 py-2 text-sm text-white"
-                      : "max-w-[80%] rounded-2xl rounded-bl-sm border border-black/5 bg-white px-4 py-2 text-sm"
-                  }
-                >
-                  <p className="whitespace-pre-wrap break-words">{m.body}</p>
-                  <p className={mine ? "mt-1 text-[11px] text-white/60" : "mt-1 text-[11px] text-black/35"}>
-                    {m.createdAt.toLocaleTimeString("bg-BG", { hour: "2-digit", minute: "2-digit" })}
-                  </p>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
+      {/* Thread (client component: live via SSE, polling fallback) */}
+      <ChatThread bookingId={booking.id} currentUserId={user.id} initial={initialMessages} />
 
       {/* Composer */}
       <form action={sendMessage} className="sticky bottom-4 flex gap-2 border-t border-black/5 bg-background pt-4">

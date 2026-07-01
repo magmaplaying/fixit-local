@@ -32,6 +32,12 @@ const schema = z.object({
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
   // Platform commission in basis points (1500 = 15%).
   PLATFORM_COMMISSION_BPS: z.coerce.number().int().min(0).max(10000).default(1500),
+  // Optional: enables transactional email via Resend. Without it, emails are
+  // logged to the server instead of sent (the app works fully either way).
+  RESEND_API_KEY: z.string().optional(),
+  // Sender identity for outgoing email. Resend's onboarding@resend.dev works for
+  // testing; swap for a verified domain (no-reply@podruka.bg) in production.
+  EMAIL_FROM: z.string().min(1).default("Podruka <onboarding@resend.dev>"),
 });
 
 const parsed = schema.safeParse({
@@ -43,6 +49,8 @@ const parsed = schema.safeParse({
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   PLATFORM_COMMISSION_BPS: process.env.PLATFORM_COMMISSION_BPS,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  EMAIL_FROM: process.env.EMAIL_FROM,
 });
 
 if (!parsed.success) {

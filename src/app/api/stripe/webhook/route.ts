@@ -4,6 +4,8 @@ import { stripe } from "@/lib/stripe";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/log";
+import { notify } from "@/lib/notify";
+import { paymentReceived } from "@/lib/notify-templates";
 
 const FEATURE_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -37,6 +39,18 @@ export async function POST(req: Request): Promise<Response> {
               stripePaymentIntentId: typeof s.payment_intent === "string" ? s.payment_intent : undefined,
             },
           });
+          // Tell the provider the money has arrived.
+          const booking = await prisma.booking.findUnique({
+            where: { id: s.metadata.bookingId },
+            include: { listing: { include: { provider: true } }, payment: true },
+          });
+          if (booking?.payment) {
+            const amountLabel = `${(booking.payment.amount / 100).toFixed(2)} лв.`;
+            await notify({
+              userId: booking.listing.provider.userId,
+              ...paymentReceived({ listingTitle: booking.listing.title, amountLabel }),
+            });
+          }
         } else if (s.metadata?.kind === "boost" && s.metadata.listingId) {
           await prisma.listing.update({
             where: { id: s.metadata.listingId },

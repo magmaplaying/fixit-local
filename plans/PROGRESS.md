@@ -10,11 +10,11 @@ Prefix: `roadmap` · Smart parallelism: **disabled** (conservative deps)
 
 | Plan | Theme | Depends on | Status |
 | ---- | ----- | ---------- | ------ |
-| roadmap-00-foundation-hardening.plan.md | Security/correctness/schema groundwork | — | ✅ COMPLETED |
-| roadmap-01-image-upload.plan.md | Real image upload (Vercel Blob) | 00 | ✅ COMPLETED |
-| roadmap-02-payments-monetisation.plan.md | Stripe Connect, commission, featured listings | 00 | ✅ COMPLETED (needs STRIPE_* keys + Turso migration to go live) |
-| roadmap-03-admin-trust-safety.plan.md | Admin dashboard, verification, moderation | 00 | ✅ COMPLETED (local; needs Turso migration to deploy) |
-| roadmap-04-realtime-notifications.plan.md | Email + push + SSE chat | 00 | NOT STARTED |
+| roadmap-00-foundation-hardening.plan.md | Security/correctness/schema groundwork | — | ✅ DEPLOYED |
+| roadmap-01-image-upload.plan.md | Real image upload (Vercel Blob) | 00 | ✅ DEPLOYED (needs BLOB_READ_WRITE_TOKEN to store uploads; URL fallback works) |
+| roadmap-02-payments-monetisation.plan.md | Stripe Connect, commission, featured listings | 00 | ✅ DEPLOYED (Stripe test keys live; Connect enabled) |
+| roadmap-03-admin-trust-safety.plan.md | Admin dashboard, verification, moderation | 00 | ✅ DEPLOYED (admin@demo.bg / password123 → /admin) |
+| roadmap-04-realtime-notifications.plan.md | Email + push + SSE chat | 00 | ✅ DONE (local) — email (Resend, fetch-based) + in-app notification center + SSE chat. Web push (Step 6) deferred. Needs `RESEND_API_KEY` + Turso migration to deploy |
 | roadmap-05-performance-seo-a11y.plan.md | Perf, SEO, accessibility | 00 | NOT STARTED |
 | roadmap-06-growth-marketing.plan.md | Analytics, referrals, lifecycle, content | 05 | NOT STARTED |
 
@@ -45,3 +45,8 @@ or run individually in dependency order.
   Next.js — read `node_modules/next/dist/docs/` before using framework APIs.
 - UI is **Bulgarian (Cyrillic)**; cobblestone (`cobble-*`) design tokens.
 - Deployed on Vercel (auto-deploy on push to `main`); Turso prod DB.
+- **roadmap-04 deploy:** the migration rebuilds the `User` table (fails via the
+  Turso console). Before pushing, apply the additive change idempotently:
+  `node scripts/apply-notifications-turso.mjs` with `DATABASE_URL`/`TURSO_AUTH_TOKEN`
+  set. Set `RESEND_API_KEY` (+ optional `EMAIL_FROM`) in Vercel to send real
+  email; without it, emails are logged and everything else works.
