@@ -89,8 +89,9 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="font-display text-2xl font-bold tracking-tight">Разгледай услуги</h1>
-      <p className="mt-1 text-black/55 dark:text-white/55">
-        {cards.length} {cards.length === 1 ? "резултат" : "резултата"}
+      <p className="mt-1 text-sm text-black/55 dark:text-white/55">
+        <span className="font-semibold text-foreground">{cards.length}</span>{" "}
+        {cards.length === 1 ? "резултат" : "резултата"}
         {sp.q ? ` за „${sp.q}“` : ""}
         {near ? " · подредени по близост до вас" : ` в ${sp.city || "България"}`}
       </p>
@@ -215,8 +216,8 @@ function FilterChip({
       href={href}
       className={
         active
-          ? "rounded-full bg-cobble-600 px-3.5 py-1.5 text-sm font-medium text-white"
-          : "rounded-full border border-black/10 px-3.5 py-1.5 text-sm transition hover:border-cobble-500/40 dark:border-white/15"
+          ? "rounded-full bg-cobble-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm"
+          : "rounded-full border border-black/10 bg-white px-3.5 py-1.5 text-sm text-black/70 transition hover:border-cobble-500/50 hover:text-cobble-800 dark:border-white/15 dark:bg-white/5"
       }
     >
       {children}
