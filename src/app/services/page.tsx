@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
@@ -13,6 +14,18 @@ type SearchParams = Promise<{
   near?: string;
   radius?: string;
 }>;
+
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const sp = await searchParams;
+  const title = sp.q ? `Търсене: ${sp.q}` : sp.city ? `Услуги в ${sp.city}` : "Всички услуги";
+  return {
+    title,
+    description:
+      "Разгледайте и заявете проверени майстори в цяла България — филтрирайте по категория, град и близост до вас.",
+    // Query-param variants all canonicalise to the clean browse page.
+    alternates: { canonical: "/services" },
+  };
+}
 
 const RADII = [5, 10, 25, 50] as const;
 

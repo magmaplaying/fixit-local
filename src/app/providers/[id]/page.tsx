@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -5,13 +7,14 @@ import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
 import { formatPrice, averageRating, initials, parsePhotos } from "@/lib/format";
 import { LocationMap } from "@/components/map/location-map";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
 
 type Params = Promise<{ id: string }>;
 
-export default async function ProviderProfilePage({ params }: { params: Params }) {
-  const { id } = await params;
-
-  const profile = await prisma.providerProfile.findUnique({
+// Cached so generateMetadata and the page share a single query per request.
+const getProvider = cache((id: string) =>
+  prisma.providerProfile.findUnique({
     where: { id },
     include: {
       user: true,
@@ -21,7 +24,33 @@ export default async function ProviderProfilePage({ params }: { params: Params }
         include: { category: true, reviews: { select: { rating: true } } },
       },
     },
-  });
+  }),
+);
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { id } = await params;
+  const profile = await getProvider(id);
+  if (!profile) return {};
+  const title = `${profile.user.name} — ${profile.city}`;
+  const description =
+    profile.bio ?? `Услуги от ${profile.user.name} в ${profile.city}. Вижте оферти, оценки и отзиви.`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/providers/${id}` },
+    openGraph: {
+      title: `${title} | ${SITE_NAME}`,
+      description,
+      url: `${SITE_URL}/providers/${id}`,
+      images: profile.avatarUrl ? [profile.avatarUrl] : undefined,
+    },
+  };
+}
+
+export default async function ProviderProfilePage({ params }: { params: Params }) {
+  const { id } = await params;
+
+  const profile = await getProvider(id);
   if (!profile) notFound();
 
   const allRatings = profile.listings.flatMap((l) => l.reviews.map((r) => r.rating));
@@ -43,8 +72,27 @@ export default async function ProviderProfilePage({ params }: { params: Params }
     imageUrl: parsePhotos(l.photos)[0] ?? null,
   }));
 
+  const providerLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: profile.user.name,
+    url: `${SITE_URL}/providers/${profile.id}`,
+    areaServed: profile.city,
+    ...(profile.avatarUrl ? { image: profile.avatarUrl } : {}),
+    ...(overall != null
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: overall.toFixed(1),
+            reviewCount: allRatings.length,
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
+      <JsonLd data={providerLd} />
       <Link href="/services" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
         ← Обратно към услугите
       </Link>

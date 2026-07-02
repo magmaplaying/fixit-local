@@ -82,6 +82,7 @@ model Listing {
 
   @@index([categoryId])
   @@index([city])
+  @@index([city, categoryId])
 }
 
 model Booking {

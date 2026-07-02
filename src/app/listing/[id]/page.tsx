@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -7,20 +9,47 @@ import { formatPrice, averageRating, initials, parsePhotos } from "@/lib/format"
 import { LocationMap } from "@/components/map/location-map";
 import { requestBooking } from "@/app/_actions/bookings";
 import { createReport } from "@/app/_actions/reports";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
 
 type Params = Promise<{ id: string }>;
 
-export default async function ListingDetailPage({ params }: { params: Params }) {
-  const { id } = await params;
-
-  const listing = await prisma.listing.findUnique({
+// Cached so generateMetadata and the page share a single query per request.
+const getListing = cache((id: string) =>
+  prisma.listing.findUnique({
     where: { id },
     include: {
       category: true,
       provider: { include: { user: true } },
       reviews: { where: { hidden: false }, include: { author: true }, orderBy: { createdAt: "desc" } },
     },
-  });
+  }),
+);
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { id } = await params;
+  const listing = await getListing(id);
+  if (!listing || !listing.active) return {};
+  const photos = parsePhotos(listing.photos);
+  const title = `${listing.title} — ${listing.city}`;
+  const description = listing.description.slice(0, 155).trim();
+  return {
+    title,
+    description,
+    alternates: { canonical: `/listing/${id}` },
+    openGraph: {
+      title: `${title} | ${SITE_NAME}`,
+      description,
+      url: `${SITE_URL}/listing/${id}`,
+      images: photos[0] ? [photos[0]] : undefined,
+    },
+  };
+}
+
+export default async function ListingDetailPage({ params }: { params: Params }) {
+  const { id } = await params;
+
+  const listing = await getListing(id);
   if (!listing || !listing.active) notFound();
 
   const user = await getCurrentUser();
@@ -28,8 +57,43 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
   const isOwner = user != null && listing.provider.userId === user.id;
   const photos = parsePhotos(listing.photos);
 
+  const serviceLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: listing.title,
+    description: listing.description,
+    serviceType: listing.category.name,
+    areaServed: listing.city,
+    url: `${SITE_URL}/listing/${listing.id}`,
+    provider: { "@type": "LocalBusiness", name: listing.provider.user.name },
+    ...(listing.price != null && listing.priceType !== "QUOTE"
+      ? { offers: { "@type": "Offer", price: listing.price, priceCurrency: "EUR" } }
+      : {}),
+    ...(rating != null
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: rating.toFixed(1),
+            reviewCount: listing.reviews.length,
+          },
+        }
+      : {}),
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Услуги", item: `${SITE_URL}/services` },
+      { "@type": "ListItem", position: 3, name: listing.category.name, item: `${SITE_URL}/services/${listing.category.slug}` },
+      { "@type": "ListItem", position: 4, name: listing.title, item: `${SITE_URL}/listing/${listing.id}` },
+    ],
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
+      <JsonLd data={serviceLd} />
+      <JsonLd data={breadcrumbLd} />
       <Link href="/services" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
         ← Обратно към услугите
       </Link>

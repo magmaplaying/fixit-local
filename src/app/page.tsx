@@ -1,8 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
 import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
 import { CITIES } from "@/lib/cities";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
+const ORGANIZATION_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+};
+
+const WEBSITE_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: SITE_URL,
+  inLanguage: "bg",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/services?q={search_term_string}` },
+    "query-input": "required name=search_term_string",
+  },
+};
 
 const STEPS = [
   { title: "Намерете майстор", body: "Разгледайте проверени специалисти по категория и град — с реални оценки и отзиви." },
@@ -80,6 +106,8 @@ export default async function Home() {
 
   return (
     <div>
+      <JsonLd data={ORGANIZATION_LD} />
+      <JsonLd data={WEBSITE_LD} />
       {/* Hero */}
       <section className="relative isolate overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -171,7 +199,7 @@ export default async function Home() {
             return (
               <Link
                 key={c.id}
-                href={`/services?category=${c.slug}`}
+                href={`/services/${c.slug}`}
                 className="group relative isolate flex min-h-[15rem] flex-col justify-end overflow-hidden rounded-2xl bg-espresso text-background outline-none transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-22px_rgba(28,26,23,0.6)] focus-visible:ring-2 focus-visible:ring-cobble-400/70"
               >
                 {img && (
