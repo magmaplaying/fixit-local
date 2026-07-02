@@ -49,3 +49,101 @@ body {
   outline-offset: 2px;
   border-radius: 2px;
 }
+
+/* ————————————————————————————————————————————————————————————————
+   Pavé motion system. The brand metaphor is Sofia's yellow paving
+   stones, so motion = "laying pavement": content settles into place,
+   stones lay themselves in, progress paves as you read. Everything
+   here is gated behind prefers-reduced-motion; without it the site
+   is fully static and fully visible.
+   ———————————————————————————————————————————————————————————————— */
+
+::selection {
+  background: var(--color-cobble-200);
+  color: var(--color-espresso);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Scroll-triggered reveals (class added by <Reveal/>). */
+  .rv {
+    opacity: 0;
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .rv-up {
+    transform: translateY(18px);
+  }
+  .rv-scale {
+    transform: scale(0.96);
+  }
+  .rv.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero entrance sequence (pure CSS, runs on load). */
+  @keyframes fade-rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .hero-i1 { animation: fade-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .hero-i2 { animation: fade-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both; }
+  .hero-i3 { animation: fade-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both; }
+  .hero-i4 { animation: fade-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.36s both; }
+
+  /* Scroll cue at the hero's foot. */
+  @keyframes cue-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.65;
+    }
+    50% {
+      transform: translateY(7px);
+      opacity: 1;
+    }
+  }
+  .scroll-cue {
+    animation: cue-bob 1.9s ease-in-out infinite;
+  }
+
+  /* Pavé stones "lay" into place when their divider scrolls into view.
+     Rotation comes from the rotate utility (separate `rotate` property),
+     so transform only carries the scale. */
+  .pave-stone {
+    opacity: 0;
+    transform: scale(0.2);
+    transition:
+      opacity 0.45s ease,
+      transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .rv.is-visible .pave-stone {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+}
+
+/* Navbar solidifies once the page scrolls (class toggled by <NavScrollFx/>).
+   Kept outside the reduced-motion gate: it's a state change, not decoration.
+   (A CSS scroll-timeline version gets stripped by the Lightning CSS build.) */
+.site-nav {
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.site-nav.nav-scrolled {
+  background: rgba(250, 245, 234, 0.97);
+  box-shadow: 0 12px 32px -20px rgba(33, 26, 19, 0.45);
+}

@@ -6,6 +6,10 @@ import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
 import { CITIES } from "@/lib/cities";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
+import { Reveal } from "@/components/motion/reveal";
+import { Counter } from "@/components/motion/counter";
+import { HeroParallax } from "@/components/motion/hero-parallax";
+import { PaveDivider } from "@/components/site/pave-divider";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
@@ -67,7 +71,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 export default async function Home() {
-  const [categories, listings] = await Promise.all([
+  const [categories, listings, providerCount, reviewCount, cityRows] = await Promise.all([
     prisma.category.findMany({
       orderBy: { name: "asc" },
       include: { _count: { select: { listings: true } } },
@@ -82,7 +86,17 @@ export default async function Home() {
         reviews: { select: { rating: true } },
       },
     }),
+    prisma.providerProfile.count(),
+    prisma.review.count({ where: { hidden: false } }),
+    prisma.listing.findMany({ where: { active: true }, distinct: ["city"], select: { city: true } }),
   ]);
+
+  const stats = [
+    { value: providerCount, label: "майстори" },
+    { value: categories.length, label: "категории услуги" },
+    { value: cityRows.length, label: "града" },
+    { value: reviewCount, label: "отзива от клиенти" },
+  ];
 
   const cards: ListingCardData[] = listings.map((l) => ({
     id: l.id,
@@ -110,30 +124,33 @@ export default async function Home() {
       <JsonLd data={WEBSITE_LD} />
       {/* Hero */}
       <section className="relative isolate overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80&auto=format&fit=crop"
-          alt=""
-          aria-hidden
-          className="absolute inset-0 -z-10 h-full w-full object-cover [filter:sepia(0.5)_saturate(1.3)_brightness(0.66)]"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-espresso via-espresso/75 to-espresso/45" />
+        {/* Backdrop drifts slower than the page — depth without a library. */}
+        <HeroParallax className="absolute inset-0 -z-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80&auto=format&fit=crop"
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full scale-110 object-cover [filter:sepia(0.5)_saturate(1.3)_brightness(0.66)]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-espresso via-espresso/75 to-espresso/45" />
+        </HeroParallax>
         <div className="mx-auto max-w-6xl px-4 py-28 sm:py-40">
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-300">
+          <p className="hero-i1 font-mono text-xs uppercase tracking-[0.22em] text-cobble-300">
             Майстори · Услуги · Цяла България
           </p>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl leading-[1.04] font-semibold text-background sm:text-7xl">
+          <h1 className="hero-i2 mt-5 max-w-3xl font-display text-5xl leading-[1.04] font-semibold text-background sm:text-7xl">
             Доверена помощ,
             <br />
             <span className="text-cobble-400">където и да сте.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-background/75">
+          <p className="hero-i3 mt-6 max-w-xl text-lg text-background/75">
             Проверени майстори за почистване, ремонти, уроци, преместване и още — във вашия град, в цяла България.
           </p>
 
           <form
             action="/services"
-            className="mt-9 flex max-w-2xl flex-col gap-2 rounded-2xl bg-background p-2 shadow-2xl sm:flex-row"
+            className="hero-i4 mt-9 flex max-w-2xl flex-col gap-2 rounded-2xl bg-background p-2 shadow-2xl sm:flex-row"
           >
             <input
               name="q"
@@ -173,11 +190,21 @@ export default async function Home() {
             </button>
           </form>
         </div>
+
+        {/* Scroll cue */}
+        <div aria-hidden className="pointer-events-none absolute bottom-5 left-1/2 hidden -translate-x-1/2 sm:block">
+          <span className="scroll-cue inline-block text-background/70">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </span>
+        </div>
       </section>
 
       {/* Categories — featured cards with blurbs (subset; full list on /services) */}
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="flex items-end justify-between gap-4">
+        <PaveDivider className="mb-12" />
+        <Reveal className="flex items-end justify-between gap-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-600">Популярни</p>
             <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight">Разгледай по категория</h2>
@@ -188,19 +215,19 @@ export default async function Home() {
           >
             Всички услуги →
           </Link>
-        </div>
+        </Reveal>
 
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredCategories.map((c) => {
+          {featuredCategories.map((c, i) => {
             const n = c._count.listings;
             const label = n === 0 ? "Очаквайте скоро" : `${n} ${n === 1 ? "майстор" : "майстори"}`;
             const blurb = CATEGORY_BLURBS[c.slug];
             const img = CATEGORY_IMAGES[c.slug];
             return (
+              <Reveal key={c.id} delay={i * 70} className="h-full">
               <Link
-                key={c.id}
                 href={`/services/${c.slug}`}
-                className="group relative isolate flex min-h-[15rem] flex-col justify-end overflow-hidden rounded-2xl bg-espresso text-background outline-none transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-22px_rgba(28,26,23,0.6)] focus-visible:ring-2 focus-visible:ring-cobble-400/70"
+                className="group relative isolate flex h-full min-h-[15rem] flex-col justify-end overflow-hidden rounded-2xl bg-espresso text-background outline-none transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-22px_rgba(28,26,23,0.6)] focus-visible:ring-2 focus-visible:ring-cobble-400/70"
               >
                 {img && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -226,6 +253,7 @@ export default async function Home() {
                   </div>
                 </div>
               </Link>
+              </Reveal>
             );
           })}
         </div>
@@ -234,36 +262,54 @@ export default async function Home() {
       {/* How it works (dark editorial) */}
       <section className="bg-espresso text-background">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:py-24">
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-400">Как работи</p>
-          <h2 className="mt-4 max-w-2xl font-display text-4xl leading-tight font-semibold sm:text-5xl">
-            Намерете. Заявете. Готово.
-          </h2>
+          <Reveal>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-400">Как работи</p>
+            <h2 className="mt-4 max-w-2xl font-display text-4xl leading-tight font-semibold sm:text-5xl">
+              Намерете. Заявете. Готово.
+            </h2>
+          </Reveal>
           <div className="mt-14 grid gap-12 sm:grid-cols-3">
             {STEPS.map((s, i) => (
-              <div key={s.title}>
+              <Reveal key={s.title} delay={i * 130}>
                 <div className="font-display text-5xl text-cobble-400/50">0{i + 1}</div>
                 <h3 className="mt-4 font-display text-xl">{s.title}</h3>
                 <p className="mt-2 leading-relaxed text-background/65">{s.body}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Community in numbers — live counts, counted up on scroll */}
+      <section aria-label="Платформата в числа" className="border-b border-black/5 bg-white/50">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-10 px-4 py-14 sm:grid-cols-4">
+          {stats.map((s, i) => (
+            <Reveal key={s.label} delay={i * 90} className="text-center">
+              <p className="font-display text-4xl font-bold text-cobble-700 sm:text-5xl">
+                <Counter value={s.value} />
+              </p>
+              <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-black/45">{s.label}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* Featured */}
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mb-8 flex items-end justify-between">
+        <Reveal className="mb-8 flex items-end justify-between">
           <h2 className="font-display text-3xl font-semibold tracking-tight">Препоръчани услуги</h2>
           <Link href="/services" className="text-sm font-medium text-cobble-700 hover:underline">
             Виж всички →
           </Link>
-        </div>
+        </Reveal>
         {cards.length === 0 ? (
           <p className="text-black/50">Все още няма обяви. Очаквайте скоро.</p>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {cards.map((l) => (
-              <ListingCard key={l.id} l={l} />
+            {cards.map((l, i) => (
+              <Reveal key={l.id} delay={(i % 3) * 80} className="h-full">
+                <ListingCard l={l} />
+              </Reveal>
             ))}
           </div>
         )}

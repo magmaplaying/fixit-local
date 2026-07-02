@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getArticle } from "@/content/articles";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ReadingProgress } from "@/components/motion/reading-progress";
 
 type Params = Promise<{ slug: string }>;
 
@@ -49,6 +50,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
   return (
     <article className="mx-auto max-w-2xl px-4 py-12">
+      {/* The article "paves itself" along the top edge as you read. */}
+      <ReadingProgress />
       <JsonLd data={articleLd} />
 
       <nav aria-label="Навигация" className="text-sm text-black/45">

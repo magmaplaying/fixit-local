@@ -23,7 +23,7 @@ export function ListingCard({ l }: { l: ListingCardData }) {
   return (
     <Link
       href={`/listing/${l.id}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_1px_3px_rgba(33,26,19,0.06),0_10px_24px_-18px_rgba(33,26,19,0.22)] transition hover:-translate-y-0.5 hover:border-cobble-500/60 hover:shadow-[0_12px_28px_-14px_rgba(28,26,23,0.4)]"
+      className="group flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_1px_3px_rgba(33,26,19,0.06),0_10px_24px_-18px_rgba(33,26,19,0.22)] transition hover:-translate-y-0.5 hover:border-cobble-500/60 hover:shadow-[0_12px_28px_-14px_rgba(28,26,23,0.4)]"
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-cobble-50">
         {l.distanceKm != null && (
