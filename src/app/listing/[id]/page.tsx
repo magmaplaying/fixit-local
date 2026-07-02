@@ -11,6 +11,7 @@ import { requestBooking } from "@/app/_actions/bookings";
 import { createReport } from "@/app/_actions/reports";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ShareButtons } from "@/components/share/share-buttons";
 
 type Params = Promise<{ id: string }>;
 
@@ -266,6 +267,13 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                 Влез, за да заявиш
               </Link>
             )}
+          </div>
+
+          <div className="mt-3 rounded-2xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">
+            <p className="text-sm font-medium">Сподели услугата</p>
+            <div className="mt-2">
+              <ShareButtons url={`${SITE_URL}/listing/${listing.id}`} title={listing.title} />
+            </div>
           </div>
         </aside>
       </div>

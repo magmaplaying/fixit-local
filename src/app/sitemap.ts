@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
 import { SITE_URL } from "@/lib/site";
 import { CITIES, citySlug } from "@/lib/cities";
+import { ARTICLES } from "@/content/articles";
 
 // Regenerated hourly (crawlers don't need per-request freshness).
 export const revalidate = 3600;
@@ -16,9 +17,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/services`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/become-provider`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/blog`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${SITE_URL}/terms`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${SITE_URL}/privacy`, changeFrequency: "yearly", priority: 0.2 },
   ];
+
+  const articlePages: MetadataRoute.Sitemap = ARTICLES.map((a) => ({
+    url: `${SITE_URL}/blog/${a.slug}`,
+    lastModified: new Date(a.date),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
 
   // Category and city landing pages — the organic-traffic workhorses.
   const categoryPages: MetadataRoute.Sitemap = categories.map((c) => ({
@@ -45,5 +55,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...staticPages, ...categoryPages, ...cityPages, ...listingPages, ...providerPages];
+  return [
+    ...staticPages,
+    ...articlePages,
+    ...categoryPages,
+    ...cityPages,
+    ...listingPages,
+    ...providerPages,
+  ];
 }

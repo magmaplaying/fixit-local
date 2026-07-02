@@ -1,9 +1,11 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { hashPassword, verifyPassword, createSession, destroySession } from "@/lib/auth";
 import { registerSchema, loginSchema } from "@/lib/validations";
+import { ensureReferralCode, attributeReferral } from "@/lib/referrals";
 
 export type AuthState = { error?: string };
 
@@ -25,6 +27,17 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   const user = await prisma.user.create({
     data: { name, email, passwordHash: await hashPassword(password), role },
   });
+
+  // Give the new user their own invite code, and attribute the inviter (if a
+  // ?ref cookie was captured on an earlier page visit).
+  await ensureReferralCode(user.id);
+  const cookieStore = await cookies();
+  const ref = cookieStore.get("podruka_ref")?.value;
+  if (ref) {
+    await attributeReferral(user.id, ref);
+    cookieStore.delete("podruka_ref");
+  }
+
   await createSession({ id: user.id, email: user.email, name: user.name, role });
 
   redirect(role === "PROVIDER" ? "/onboarding/provider" : "/");

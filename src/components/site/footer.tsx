@@ -56,8 +56,18 @@ export function Footer() {
           <p className="font-mono text-xs uppercase tracking-wider text-black/40">Информация</p>
           <ul className="mt-3 space-y-2 text-sm text-black/60">
             <li>
-              <Link href="/services" className="hover:text-cobble-700">
-                Всички услуги
+              <Link href="/blog" className="hover:text-cobble-700">
+                Полезно
+              </Link>
+            </li>
+            <li>
+              <Link href="/become-provider" className="hover:text-cobble-700">
+                Станете изпълнител
+              </Link>
+            </li>
+            <li>
+              <Link href="/invite" className="hover:text-cobble-700">
+                Поканете приятел
               </Link>
             </li>
             <li>

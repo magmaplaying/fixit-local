@@ -6,9 +6,10 @@ type AuthState = { error?: string };
 type Props = {
   mode: "login" | "register";
   action: (prev: AuthState, formData: FormData) => Promise<AuthState>;
+  defaultRole?: "CUSTOMER" | "PROVIDER";
 };
 
-export function AuthForm({ mode, action }: Props) {
+export function AuthForm({ mode, action, defaultRole = "CUSTOMER" }: Props) {
   const [state, formAction, pending] = useActionState<AuthState, FormData>(action, {});
   const isRegister = mode === "register";
 
@@ -20,8 +21,18 @@ export function AuthForm({ mode, action }: Props) {
             <input name="name" type="text" required autoComplete="name" className={inputClass} placeholder="Иван Петров" />
           </Field>
           <fieldset className="grid grid-cols-2 gap-3">
-            <RoleOption value="CUSTOMER" defaultChecked label="Търся услуги" hint="Намери и заяви майстори" />
-            <RoleOption value="PROVIDER" label="Предлагам услуги" hint="Публикувай услугите си" />
+            <RoleOption
+              value="CUSTOMER"
+              defaultChecked={defaultRole === "CUSTOMER"}
+              label="Търся услуги"
+              hint="Намери и заяви майстори"
+            />
+            <RoleOption
+              value="PROVIDER"
+              defaultChecked={defaultRole === "PROVIDER"}
+              label="Предлагам услуги"
+              hint="Публикувай услугите си"
+            />
           </fieldset>
         </>
       )}

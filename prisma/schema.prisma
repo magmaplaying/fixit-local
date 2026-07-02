@@ -19,6 +19,8 @@ model User {
   role         String   @default("CUSTOMER") // CUSTOMER | PROVIDER | ADMIN
   status       String   @default("ACTIVE") // ACTIVE | SUSPENDED
   emailNotifications Boolean @default(true) // opt-out of transactional emails
+  referralCode String?  @unique // this user's own shareable invite code
+  referredById String? // the user who invited them (attribution)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 
@@ -28,6 +30,8 @@ model User {
   messages Message[]
   reports  Report[]
   notifications Notification[]
+  referredBy   User?  @relation("Referrals", fields: [referredById], references: [id])
+  referrals    User[] @relation("Referrals")
 }
 
 model ProviderProfile {

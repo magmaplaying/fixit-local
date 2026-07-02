@@ -3,6 +3,7 @@ import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
+import { RefCapture } from "@/components/growth/ref-capture";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 
 const DEFAULT_TITLE = "Под ръка — доверена местна помощ в България";
@@ -59,6 +60,7 @@ export default function RootLayout({
         >
           Към съдържанието
         </a>
+        <RefCapture />
         <Navbar />
         <main id="main" className="flex-1">
           {children}
