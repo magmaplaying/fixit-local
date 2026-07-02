@@ -147,3 +147,14 @@ body {
   background: rgba(250, 245, 234, 0.97);
   box-shadow: 0 12px 32px -20px rgba(33, 26, 19, 0.45);
 }
+
+/* Horizontal filter rail: one scrollable row, hidden scrollbar, faded edges
+   hinting that it scrolls. */
+.chip-rail {
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
+}
+.chip-rail::-webkit-scrollbar {
+  display: none;
+}

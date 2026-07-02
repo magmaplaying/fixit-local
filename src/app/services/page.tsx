@@ -6,6 +6,9 @@ import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
 import { CITIES } from "@/lib/cities";
 import { cityCoords, haversineKm, nearestCity, parseLatLng } from "@/lib/geo";
 import { NearMeButton } from "@/components/search/near-me-button";
+import { Reveal } from "@/components/motion/reveal";
+import { Counter } from "@/components/motion/counter";
+import { PaveDivider } from "@/components/site/pave-divider";
 
 type SearchParams = Promise<{
   q?: string;
@@ -101,16 +104,24 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="font-display text-2xl font-bold tracking-tight">Разгледай услуги</h1>
-      <p className="mt-1 text-sm text-black/55 dark:text-white/55">
-        <span className="font-semibold text-foreground">{cards.length}</span>{" "}
+      <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-600">
+        Каталог · {sp.city || "Цяла България"}
+      </p>
+      <h1 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">Разгледай услуги</h1>
+      <p className="mt-2 text-sm text-black/55 dark:text-white/55">
+        <span className="font-semibold text-foreground">
+          <Counter value={cards.length} duration={600} />
+        </span>{" "}
         {cards.length === 1 ? "резултат" : "резултата"}
         {sp.q ? ` за „${sp.q}“` : ""}
-        {near ? " · подредени по близост до вас" : ` в ${sp.city || "България"}`}
+        {near ? " · подредени по близост до вас" : ""}
       </p>
 
-      {/* Search */}
-      <form action="/services" className="mt-6 flex max-w-3xl flex-col gap-3 sm:flex-row">
+      {/* Search — one white bar, same language as the home hero */}
+      <form
+        action="/services"
+        className="mt-6 flex max-w-3xl flex-col gap-2 rounded-2xl border border-black/5 bg-white p-2 shadow-[0_10px_30px_-18px_rgba(33,26,19,0.25)] sm:flex-row"
+      >
         {activeCategory && <input type="hidden" name="category" value={activeCategory} />}
         {sp.near && <input type="hidden" name="near" value={sp.near} />}
         {sp.radius && <input type="hidden" name="radius" value={sp.radius} />}
@@ -119,12 +130,14 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           type="text"
           defaultValue={sp.q ?? ""}
           placeholder="Какво трябва да се свърши?"
-          className="flex-1 rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm outline-none focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20 dark:border-white/15 dark:bg-white/5"
+          aria-label="Търсене на услуга"
+          className="flex-1 rounded-xl bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-black/40 focus:bg-black/[0.03]"
         />
         <select
           name="city"
           defaultValue={sp.city ?? ""}
-          className="rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
+          aria-label="Град"
+          className="rounded-xl bg-black/[0.04] px-3 py-2.5 text-sm outline-none transition hover:bg-black/[0.07]"
         >
           <option value="">Цяла България</option>
           {CITIES.map((c) => (
@@ -163,37 +176,52 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
         </div>
       )}
 
-      {/* Category filter chips */}
-      <div className="mt-5 flex flex-wrap gap-2">
-        <FilterChip href={buildUrl(sp, { category: undefined })} active={!activeCategory}>
-          Всички
-        </FilterChip>
-        {categories.map((c) => (
-          <FilterChip key={c.id} href={buildUrl(sp, { category: c.slug })} active={activeCategory === c.slug}>
-            <span aria-hidden>{c.icon}</span> {c.name}
+      {/* Category rail — sticks under the navbar so you can re-filter from
+          anywhere in the list; scrolls horizontally with faded edges. */}
+      <nav
+        aria-label="Категории"
+        className="sticky top-[4.5rem] z-30 mt-6 rounded-2xl border border-black/5 bg-background/90 p-2 backdrop-blur"
+      >
+        <div className="chip-rail flex gap-2 overflow-x-auto p-1">
+          <FilterChip href={buildUrl(sp, { category: undefined })} active={!activeCategory}>
+            Всички
           </FilterChip>
-        ))}
-      </div>
+          {categories.map((c) => (
+            <FilterChip key={c.id} href={buildUrl(sp, { category: c.slug })} active={activeCategory === c.slug}>
+              <span aria-hidden>{c.icon}</span> {c.name}
+            </FilterChip>
+          ))}
+        </div>
+      </nav>
 
       {/* Results */}
       <div className="mt-8">
         {cards.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-black/10 p-12 text-center text-black/50 dark:border-white/15 dark:text-white/50">
-            <p className="text-lg font-medium">No services match your search.</p>
+            <PaveDivider className="mb-6" />
+            <p className="text-lg font-medium text-foreground">Няма услуги по тези критерии.</p>
             <p className="mt-1 text-sm">
               {near && radius
                 ? "Опитайте по-голям радиус или изчистете филтрите."
                 : "Опитайте друга категория или изчистете филтрите."}
             </p>
             <Link href="/services" className="mt-4 inline-block text-sm font-medium text-cobble-600 hover:underline">
-              Clear filters
+              Изчисти филтрите →
             </Link>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {cards.map((l) => (
-              <ListingCard key={l.id} l={l} />
-            ))}
+            {cards.map((l, i) =>
+              // First rows render instantly so re-filtering feels snappy;
+              // deeper rows settle in on scroll like the rest of the site.
+              i < 6 ? (
+                <ListingCard key={l.id} l={l} />
+              ) : (
+                <Reveal key={l.id} className="h-full">
+                  <ListingCard l={l} />
+                </Reveal>
+              ),
+            )}
           </div>
         )}
       </div>
@@ -229,8 +257,8 @@ function FilterChip({
       href={href}
       className={
         active
-          ? "rounded-full bg-cobble-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm"
-          : "rounded-full border border-black/10 bg-white px-3.5 py-1.5 text-sm text-black/70 transition hover:border-cobble-500/50 hover:text-cobble-800 dark:border-white/15 dark:bg-white/5"
+          ? "shrink-0 whitespace-nowrap rounded-full bg-cobble-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm"
+          : "shrink-0 whitespace-nowrap rounded-full border border-black/10 bg-white px-3.5 py-1.5 text-sm text-black/70 transition hover:border-cobble-500/50 hover:text-cobble-800 dark:border-white/15 dark:bg-white/5"
       }
     >
       {children}

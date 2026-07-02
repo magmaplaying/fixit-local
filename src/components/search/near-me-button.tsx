@@ -37,7 +37,7 @@ export function NearMeButton({ params }: { params: Record<string, string> }) {
       onClick={locate}
       disabled={status === "locating"}
       title="Подреди услугите по близост до вас"
-      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-medium transition hover:border-cobble-500/40 disabled:opacity-60 dark:border-white/15 dark:bg-white/5"
+      className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-black/[0.04] px-4 py-2.5 text-sm font-medium transition hover:bg-black/[0.08] disabled:opacity-60 dark:bg-white/5"
     >
       <span aria-hidden>📍</span>
       {status === "locating"
