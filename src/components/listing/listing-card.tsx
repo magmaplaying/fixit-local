@@ -18,7 +18,7 @@ export type ListingCardData = {
   featured?: boolean;
 };
 
-export function ListingCard({ l }: { l: ListingCardData }) {
+export function ListingCard({ l, eager = false }: { l: ListingCardData; eager?: boolean }) {
   const meta = `${l.categoryName} · ${l.area ?? l.city}`.toUpperCase();
   return (
     <Link
@@ -41,6 +41,7 @@ export function ListingCard({ l }: { l: ListingCardData }) {
             src={l.imageUrl}
             alt={l.title}
             fill
+            priority={eager}
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition duration-300 group-hover:scale-105"
           />

@@ -6,6 +6,7 @@ import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
 import { CITIES } from "@/lib/cities";
 import { cityCoords, haversineKm, nearestCity, parseLatLng } from "@/lib/geo";
 import { NearMeButton } from "@/components/search/near-me-button";
+import { CardScroller } from "@/components/listing/card-scroller";
 import { Reveal } from "@/components/motion/reveal";
 import { Counter } from "@/components/motion/counter";
 import { PaveDivider } from "@/components/site/pave-divider";
@@ -37,7 +38,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
   const near = parseLatLng(sp.near);
   const radius = sp.radius && near ? Number(sp.radius) : null;
 
-  const [categories, listings] = await Promise.all([
+  const [categories, listings, topPool] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: "asc" } }),
     prisma.listing.findMany({
       where: {
@@ -48,6 +49,18 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           ? { OR: [{ title: { contains: sp.q } }, { description: { contains: sp.q } }] }
           : {}),
       },
+      orderBy: { createdAt: "desc" },
+      include: {
+        category: true,
+        provider: { include: { user: true } },
+        reviews: { select: { rating: true } },
+      },
+    }),
+    // Pool for the "Препоръчани майстори" scroller — cross-catalog (ignores the
+    // active filters), so it doubles as a recovery path on thin/empty results.
+    prisma.listing.findMany({
+      where: { active: true },
+      take: 24,
       orderBy: { createdAt: "desc" },
       include: {
         category: true,
@@ -92,6 +105,26 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
     featured: isFeatured(l),
   }));
 
+  // Scroller content: top-rated first (by rating, then review count), newest
+  // profiles as fill — capped at 8 slides.
+  const topCards: ListingCardData[] = topPool
+    .map((l) => ({ l, rating: averageRating(l.reviews) }))
+    .sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || b.l.reviews.length - a.l.reviews.length)
+    .slice(0, 8)
+    .map(({ l, rating }) => ({
+      id: l.id,
+      title: l.title,
+      city: l.city,
+      area: l.area,
+      priceLabel: formatPrice(l.priceType, l.price),
+      categoryName: l.category.name,
+      categoryIcon: l.category.icon,
+      providerName: l.provider.user.name,
+      rating,
+      reviewCount: l.reviews.length,
+      imageUrl: parsePhotos(l.photos)[0] ?? null,
+    }));
+
   const activeCategory = sp.category;
   const nearestName = near ? nearestCity(near) : null;
 
@@ -101,6 +134,31 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
   if (sp.category) carryParams.category = sp.category;
   if (sp.city) carryParams.city = sp.city;
   if (sp.radius) carryParams.radius = sp.radius;
+
+  // Swipeable dark strip sandwiched between the result rows.
+  const scroller = topCards.length >= 4 && (
+    <Reveal className="mt-10">
+      <section className="overflow-hidden rounded-3xl bg-espresso p-6 text-background sm:p-8">
+        <CardScroller
+          label="Препоръчани майстори"
+          header={
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-cobble-300">
+                Препоръчани майстори
+              </p>
+              <h2 className="mt-2 font-display text-2xl font-semibold">Топ оценени и нови профили</h2>
+            </div>
+          }
+        >
+          {topCards.map((l) => (
+            <div key={l.id} className="w-[16.5rem] shrink-0 snap-start">
+              <ListingCard l={l} />
+            </div>
+          ))}
+        </CardScroller>
+      </section>
+    </Reveal>
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -194,35 +252,48 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
         </div>
       </nav>
 
-      {/* Results */}
+      {/* Results — the scroller strip sits between the first rows and the rest */}
       <div className="mt-8">
         {cards.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-black/10 p-12 text-center text-black/50 dark:border-white/15 dark:text-white/50">
-            <PaveDivider className="mb-6" />
-            <p className="text-lg font-medium text-foreground">Няма услуги по тези критерии.</p>
-            <p className="mt-1 text-sm">
-              {near && radius
-                ? "Опитайте по-голям радиус или изчистете филтрите."
-                : "Опитайте друга категория или изчистете филтрите."}
-            </p>
-            <Link href="/services" className="mt-4 inline-block text-sm font-medium text-cobble-600 hover:underline">
-              Изчисти филтрите →
-            </Link>
-          </div>
+          <>
+            <div className="rounded-2xl border border-dashed border-black/10 p-12 text-center text-black/50 dark:border-white/15 dark:text-white/50">
+              <PaveDivider className="mb-6" />
+              <p className="text-lg font-medium text-foreground">Няма услуги по тези критерии.</p>
+              <p className="mt-1 text-sm">
+                {near && radius
+                  ? "Опитайте по-голям радиус или изчистете филтрите."
+                  : "Опитайте друга категория или изчистете филтрите."}
+              </p>
+              <Link href="/services" className="mt-4 inline-block text-sm font-medium text-cobble-600 hover:underline">
+                Изчисти филтрите →
+              </Link>
+            </div>
+            {/* Recovery path: nothing matched, but these might. */}
+            {scroller}
+          </>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {cards.map((l, i) =>
-              // First rows render instantly so re-filtering feels snappy;
-              // deeper rows settle in on scroll like the rest of the site.
-              i < 6 ? (
-                <ListingCard key={l.id} l={l} />
-              ) : (
-                <Reveal key={l.id} className="h-full">
-                  <ListingCard l={l} />
-                </Reveal>
-              ),
+          <>
+            {/* First rows render instantly so re-filtering feels snappy;
+                the first row's images load eagerly (they're the page's LCP). */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {cards.slice(0, 6).map((l, i) => (
+                <ListingCard key={l.id} l={l} eager={i < 3} />
+              ))}
+            </div>
+
+            {scroller}
+
+            {/* Deeper rows settle in on scroll like the rest of the site. */}
+            {cards.length > 6 && (
+              <div className={`${scroller ? "mt-10" : "mt-4"} grid gap-4 sm:grid-cols-2 lg:grid-cols-3`}>
+                {cards.slice(6).map((l) => (
+                  <Reveal key={l.id} className="h-full">
+                    <ListingCard l={l} />
+                  </Reveal>
+                ))}
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
