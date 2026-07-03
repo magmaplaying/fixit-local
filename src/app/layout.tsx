@@ -51,6 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="bg"
+      data-scroll-behavior="smooth"
       className={`${playfair.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">

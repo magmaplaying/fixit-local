@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { usePager } from "@/components/motion/use-pager";
 
 /**
  * Horizontal card scroller: scroll-snap rail with edge fades, swipe on touch,
@@ -17,36 +17,7 @@ export function CardScroller({
   header?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const railRef = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState({ start: true, end: false });
-
-  const update = useCallback(() => {
-    const el = railRef.current;
-    if (!el) return;
-    setPos({
-      start: el.scrollLeft <= 4,
-      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4,
-    });
-  }, []);
-
-  useEffect(() => {
-    update();
-    const el = railRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      el.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [update]);
-
-  const page = (dir: 1 | -1) => {
-    const el = railRef.current;
-    if (!el) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollBy({ left: dir * el.clientWidth * 0.9, behavior: reduce ? "auto" : "smooth" });
-  };
+  const { railRef, pos, page } = usePager();
 
   const arrowClass =
     "flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-background transition hover:bg-white/10 disabled:pointer-events-none disabled:opacity-30";
@@ -54,7 +25,9 @@ export function CardScroller({
   return (
     <div>
       <div className="flex items-end justify-between gap-4">
-        {header}
+        {/* Static wrapper: a bare `{header}` array-sibling of the arrows div
+            trips React 19's key validation during hydration. */}
+        <div className="min-w-0">{header}</div>
         <div className="hidden shrink-0 gap-2 sm:flex">
           <button type="button" onClick={() => page(-1)} disabled={pos.start} aria-label="Предишни" className={arrowClass}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

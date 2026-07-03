@@ -6,6 +6,7 @@ import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
 import { CITIES } from "@/lib/cities";
 import { cityCoords, haversineKm, nearestCity, parseLatLng } from "@/lib/geo";
 import { NearMeButton } from "@/components/search/near-me-button";
+import { ChipRail } from "@/components/search/chip-rail";
 import { CardScroller } from "@/components/listing/card-scroller";
 import { Reveal } from "@/components/motion/reveal";
 import { Counter } from "@/components/motion/counter";
@@ -222,7 +223,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
               {r} км
             </FilterChip>
           ))}
-          <FilterChip href={buildUrl(sp, { radius: undefined })} active={!radius}>
+          <FilterChip key="any-radius" href={buildUrl(sp, { radius: undefined })} active={!radius}>
             Навсякъде
           </FilterChip>
           <Link
@@ -240,8 +241,10 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
         aria-label="Категории"
         className="sticky top-[4.5rem] z-30 mt-6 rounded-2xl border border-black/5 bg-background/90 p-2 backdrop-blur"
       >
-        <div className="chip-rail flex gap-2 overflow-x-auto p-1">
-          <FilterChip href={buildUrl(sp, { category: undefined })} active={!activeCategory}>
+        <ChipRail>
+          {/* keyed: a lone static sibling next to the mapped array trips React's
+              key validation during SSR otherwise */}
+          <FilterChip key="all" href={buildUrl(sp, { category: undefined })} active={!activeCategory}>
             Всички
           </FilterChip>
           {categories.map((c) => (
@@ -249,7 +252,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
               <span aria-hidden>{c.icon}</span> {c.name}
             </FilterChip>
           ))}
-        </div>
+        </ChipRail>
       </nav>
 
       {/* Results — the scroller strip sits between the first rows and the rest */}
