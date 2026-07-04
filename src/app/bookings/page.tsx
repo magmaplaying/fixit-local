@@ -128,7 +128,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
               {b.status === "COMPLETED" &&
                 (b.review ? (
                   <p className="mt-3 border-t border-black/5 pt-3 text-sm dark:border-white/10">
-                    <span className="text-amber-500" aria-hidden>
+                    <span className="text-cobble-500" aria-hidden>
                       {"★".repeat(b.review.rating)}
                       <span className="text-black/15 dark:text-white/15">{"★".repeat(5 - b.review.rating)}</span>
                     </span>{" "}

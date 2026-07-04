@@ -19,7 +19,7 @@ export default async function AdminReviews() {
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="min-w-0">
-              <span className="text-amber-500" aria-hidden>
+              <span className="text-cobble-500" aria-hidden>
                 {"★".repeat(r.rating)}
                 <span className="text-black/15 dark:text-white/15">{"★".repeat(5 - r.rating)}</span>
               </span>{" "}

@@ -102,19 +102,31 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
       <div className="mt-4 grid gap-8 lg:grid-cols-[1fr_22rem]">
         {/* Main */}
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-cobble-50 px-2.5 py-1 text-xs font-medium text-cobble-700 dark:bg-cobble-950/40 dark:text-cobble-300">
-            <span aria-hidden>{listing.category.icon}</span>
-            {listing.category.name}
-          </span>
-          <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">{listing.title}</h1>
-          <p className="mt-2 text-black/55 dark:text-white/55">
-            {listing.area ? `${listing.area}, ` : ""}
-            {listing.city}
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-cobble-700">
+            {listing.category.name} · {listing.city}
           </p>
+          <h1 className="mt-2 font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+            {listing.title}
+          </h1>
+          <div className="mt-3 flex flex-wrap items-center gap-2.5 text-sm text-black/55 dark:text-white/55">
+            <span>
+              {listing.area ? `${listing.area}, ` : ""}
+              {listing.city}
+            </span>
+            {rating != null && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-cobble-50 px-1.5 py-0.5">
+                <span className="text-cobble-500" aria-hidden>
+                  ★
+                </span>
+                <span className="font-mono text-xs font-bold text-espresso">{rating.toFixed(1)}</span>
+                <span className="font-mono text-[11px] text-black/40">({listing.reviews.length})</span>
+              </span>
+            )}
+          </div>
 
           {photos.length > 0 && (
             <div className="mt-6 space-y-2">
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-cobble-50">
+              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-cobble-50 ring-1 ring-black/5">
                 <Image
                   src={photos[0]}
                   alt={listing.title}
@@ -157,35 +169,33 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
             </div>
           </div>
 
-          <h2 className="mt-8 text-lg font-semibold">За услугата</h2>
-          <p className="mt-2 whitespace-pre-line text-black/70 dark:text-white/70">{listing.description}</p>
+          <h2 className="mt-10 font-display text-xl font-semibold">За услугата</h2>
+          <p className="mt-2 whitespace-pre-line leading-relaxed text-black/70 dark:text-white/70">{listing.description}</p>
 
-          <h2 className="mt-8 text-lg font-semibold">Локация</h2>
+          <h2 className="mt-10 font-display text-xl font-semibold">Локация</h2>
           <LocationMap city={listing.city} area={listing.area} className="mt-3" />
 
           {/* Отзиви */}
-          <h2 className="mt-8 text-lg font-semibold">
-            Отзиви{" "}
-            {rating != null && (
-              <span className="ml-1 text-sm font-normal text-black/50 dark:text-white/50">
-                ★ {rating.toFixed(1)} · {listing.reviews.length}
-              </span>
-            )}
-          </h2>
+          <h2 className="mt-10 font-display text-xl font-semibold">Отзиви</h2>
           {listing.reviews.length === 0 ? (
             <p className="mt-2 text-black/50 dark:text-white/50">Все още няма отзиви — бъдете първият след вашата заявка.</p>
           ) : (
             <ul className="mt-3 space-y-4">
               {listing.reviews.map((r) => (
-                <li key={r.id} className="rounded-xl border border-black/5 p-4 dark:border-white/10">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{r.author.name}</span>
-                    <span className="text-amber-500" aria-hidden>
+                <li key={r.id} className="rounded-xl border border-black/5 bg-white p-4 dark:border-white/10">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cobble-100 text-xs font-semibold text-cobble-700">
+                        {initials(r.author.name)}
+                      </span>
+                      <span className="truncate font-medium">{r.author.name}</span>
+                    </span>
+                    <span className="shrink-0 text-cobble-500" aria-hidden>
                       {"★".repeat(r.rating)}
                       <span className="text-black/15 dark:text-white/15">{"★".repeat(5 - r.rating)}</span>
                     </span>
                   </div>
-                  {r.comment && <p className="mt-1.5 text-sm text-black/70 dark:text-white/70">{r.comment}</p>}
+                  {r.comment && <p className="mt-2 text-sm leading-relaxed text-black/70 dark:text-white/70">{r.comment}</p>}
                 </li>
               ))}
             </ul>
@@ -214,15 +224,27 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
           )}
         </div>
 
-        {/* Booking sidebar */}
+        {/* Booking sidebar — a service ticket: price above the perforation,
+            the request below it, ticket number at the foot. */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-            <p className="text-2xl font-bold text-cobble-700 dark:text-cobble-400">
-              {formatPrice(listing.priceType, listing.price)}
-            </p>
+          <div className="relative rounded-2xl border border-black/10 bg-white shadow-[0_1px_3px_rgba(33,26,19,0.06),0_16px_32px_-24px_rgba(33,26,19,0.35)] dark:border-white/10 dark:bg-white/5">
+            <div className="px-5 pb-4 pt-5">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-black/40">Цена</p>
+              <p className="mt-1 font-mono text-3xl font-bold tracking-tight text-espresso dark:text-cobble-400">
+                {formatPrice(listing.priceType, listing.price)}
+              </p>
+            </div>
 
+            {/* Perforation with punched side notches */}
+            <div className="relative" aria-hidden>
+              <div className="border-t border-dashed border-black/15" />
+              <span className="absolute -left-2.5 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border border-black/10 bg-background" />
+              <span className="absolute -right-2.5 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border border-black/10 bg-background" />
+            </div>
+
+            <div className="px-5 pb-5 pt-4">
             {isOwner ? (
-              <p className="mt-4 rounded-lg bg-black/[0.03] px-3 py-2 text-sm text-black/60 dark:bg-white/5 dark:text-white/60">
+              <p className="rounded-lg bg-black/[0.03] px-3 py-2 text-sm text-black/60 dark:bg-white/5 dark:text-white/60">
                 Това е вашата обява. Управлявайте заявките от вашето{" "}
                 <Link href="/dashboard" className="font-medium text-cobble-600 hover:underline">
                   табло
@@ -230,7 +252,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                 .
               </p>
             ) : user ? (
-              <form action={requestBooking} className="mt-4 space-y-3">
+              <form action={requestBooking} className="space-y-3">
                 <input type="hidden" name="listingId" value={listing.id} />
                 <label className="block">
                   <span className="mb-1 block text-sm font-medium">Кога ви трябва?</span>
@@ -262,11 +284,18 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
             ) : (
               <Link
                 href={`/login?next=/listing/${listing.id}`}
-                className="mt-4 block rounded-lg bg-cobble-600 px-4 py-2.5 text-center font-medium text-white transition hover:bg-cobble-700"
+                className="block rounded-lg bg-cobble-600 px-4 py-2.5 text-center font-medium text-white transition hover:bg-cobble-700"
               >
                 Влез, за да заявиш
               </Link>
             )}
+
+            {/* Ticket foot */}
+            <div className="mt-5 flex items-center justify-between border-t border-dashed border-black/10 pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-black/35">
+              <span>№ {listing.id.slice(-6).toUpperCase()}</span>
+              <span>Под ръка</span>
+            </div>
+            </div>
           </div>
 
           <div className="mt-3 rounded-2xl border border-black/5 bg-white p-4 dark:border-white/10 dark:bg-white/5">

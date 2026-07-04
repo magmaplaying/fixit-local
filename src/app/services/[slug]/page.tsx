@@ -5,9 +5,13 @@ import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
 import { formatPrice, averageRating, parsePhotos } from "@/lib/format";
-import { cityFromSlug } from "@/lib/cities";
+import { cityFromSlug, citySlug, inCity } from "@/lib/cities";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
+import { PaveDivider } from "@/components/site/pave-divider";
+
+// The cities cross-linked from every landing page (they match the footer's).
+const MAIN_CITIES = ["София", "Пловдив", "Варна", "Бургас", "Русе"];
 
 type Params = Promise<{ slug: string }>;
 
@@ -36,9 +40,9 @@ async function resolve(slug: string): Promise<Resolved | null> {
   if (city) {
     return {
       kind: "city",
-      heading: `Услуги в ${city}`,
-      intro: `Намерете доверени майстори в ${city} — почистване, ремонти, уроци, преместване и още. Реални оценки и отзиви, заявка с няколко клика.`,
-      metaTitle: `Услуги в ${city}`,
+      heading: `Услуги ${inCity(city)}`,
+      intro: `Намерете доверени майстори ${inCity(city)} — почистване, ремонти, уроци, преместване и още. Реални оценки и отзиви, заявка с няколко клика.`,
+      metaTitle: `Услуги ${inCity(city)}`,
       where: { active: true, city },
     };
   }
@@ -62,11 +66,27 @@ export default async function ServicesLandingPage({ params }: { params: Params }
   const r = await resolve(slug);
   if (!r) notFound();
 
-  const listings = await prisma.listing.findMany({
-    where: r.where,
-    orderBy: { createdAt: "desc" },
-    include: { category: true, provider: { include: { user: true } }, reviews: { select: { rating: true } } },
-  });
+  const [listings, allCategories] = await Promise.all([
+    prisma.listing.findMany({
+      where: r.where,
+      orderBy: { createdAt: "desc" },
+      include: { category: true, provider: { include: { user: true } }, reviews: { select: { rating: true } } },
+    }),
+    prisma.category.findMany({ orderBy: { name: "asc" }, select: { name: true, slug: true } }),
+  ]);
+
+  // Cross-links: categories ↔ cities. Doubles as SEO internal linking between
+  // the landing pages.
+  const related: { label: string; href: string }[] =
+    r.kind === "category"
+      ? [
+          ...MAIN_CITIES.map((c) => ({ label: `Услуги ${inCity(c)}`, href: `/services/${citySlug(c)}` })),
+          ...allCategories.filter((c) => c.slug !== slug).slice(0, 6).map((c) => ({ label: c.name, href: `/services/${c.slug}` })),
+        ]
+      : [
+          ...allCategories.slice(0, 8).map((c) => ({ label: c.name, href: `/services/${c.slug}` })),
+          ...MAIN_CITIES.filter((c) => citySlug(c) !== slug).map((c) => ({ label: `Услуги ${inCity(c)}`, href: `/services/${citySlug(c)}` })),
+        ];
 
   const cards: ListingCardData[] = listings.map((l) => ({
     id: l.id,
@@ -96,17 +116,18 @@ export default async function ServicesLandingPage({ params }: { params: Params }
     <div className="mx-auto max-w-6xl px-4 py-10">
       <JsonLd data={breadcrumb} />
 
-      <nav aria-label="Навигация" className="text-sm text-black/45">
-        <Link href="/services" className="hover:text-cobble-700">
-          Услуги
+      <nav aria-label="Навигация" className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-black/40">
+        <Link href="/services" className="text-cobble-700 hover:text-cobble-800">
+          Каталог
         </Link>{" "}
-        / <span className="text-black/70">{r.heading}</span>
+        <span aria-hidden>·</span> <span>{r.kind === "category" ? "Категория" : "Град"}</span>
       </nav>
 
-      <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">{r.heading}</h1>
+      <h1 className="mt-3 font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{r.heading}</h1>
       <p className="mt-2 max-w-2xl text-black/60">{r.intro}</p>
-      <p className="mt-1 text-sm text-black/45">
-        {cards.length} {cards.length === 1 ? "оферта" : "оферти"}
+      <p className="mt-2 text-sm text-black/55">
+        <span className="font-semibold text-foreground">{cards.length}</span>{" "}
+        {cards.length === 1 ? "оферта" : "оферти"}
       </p>
 
       {cards.length === 0 ? (
@@ -118,11 +139,28 @@ export default async function ServicesLandingPage({ params }: { params: Params }
         </div>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {cards.map((l) => (
-            <ListingCard key={l.id} l={l} />
+          {cards.map((l, i) => (
+            <ListingCard key={l.id} l={l} eager={i < 3} />
           ))}
         </div>
       )}
+
+      {/* Cross-links between the landing pages */}
+      <PaveDivider className="mt-16" />
+      <section className="mt-10">
+        <h2 className="font-display text-xl font-semibold">Разгледайте също</h2>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {related.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="rounded-full border border-black/10 bg-white px-3.5 py-1.5 text-sm text-black/70 transition hover:border-cobble-500/50 hover:text-cobble-800"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

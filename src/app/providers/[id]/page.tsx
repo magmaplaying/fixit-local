@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
 import { formatPrice, averageRating, initials, parsePhotos } from "@/lib/format";
 import { LocationMap } from "@/components/map/location-map";
+import { inCity } from "@/lib/cities";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
 
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!profile) return {};
   const title = `${profile.user.name} — ${profile.city}`;
   const description =
-    profile.bio ?? `Услуги от ${profile.user.name} в ${profile.city}. Вижте оферти, оценки и отзиви.`;
+    profile.bio ?? `Услуги от ${profile.user.name} ${inCity(profile.city)}. Вижте оферти, оценки и отзиви.`;
   return {
     title,
     description,

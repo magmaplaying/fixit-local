@@ -55,6 +55,11 @@ export function citySlug(city: string): string {
     .join("");
 }
 
+/** The Bulgarian preposition "in" for a city: "във" before в/ф, else "в". */
+export function inCity(city: string): string {
+  return /^[вфВФ]/.test(city) ? `във ${city}` : `в ${city}`;
+}
+
 const CITY_BY_SLUG: Record<string, string> = Object.fromEntries(CITIES.map((c) => [citySlug(c), c]));
 
 /** Resolve a city slug back to its Cyrillic name, or null if unknown. */
