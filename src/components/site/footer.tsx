@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { citySlug } from "@/lib/cities";
+import { Logo } from "@/components/site/logo";
 
 // Curated internal links to the category/city landing pages — helps crawlers
 // discover them and spreads link equity. Slugs are stable seed data, so they're
@@ -20,8 +21,8 @@ export function Footer() {
     <footer className="mt-auto border-t border-black/5 bg-white/40">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-lg">
-            Под <span className="text-cobble-600">ръка</span>
+          <p className="group">
+            <Logo markClassName="h-5 w-5" textClassName="text-lg" />
           </p>
           <p className="mt-2 max-w-xs text-sm text-black/55">Доверена местна помощ в цяла България.</p>
         </div>

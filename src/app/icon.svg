@@ -1,0 +1,8 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Под ръка — pavé mark: three seated stones, one being laid. -->
+  <rect width="32" height="32" rx="7" fill="#faf5ea"/>
+  <rect x="3.9" y="11.8" width="9.4" height="9.4" rx="0.8" transform="rotate(45 8.6 16.5)" fill="#a37010"/>
+  <rect x="11.3" y="19.2" width="9.4" height="9.4" rx="0.8" transform="rotate(45 16 23.9)" fill="#e0a019"/>
+  <rect x="18.7" y="11.8" width="9.4" height="9.4" rx="0.8" transform="rotate(45 23.4 16.5)" fill="#e8bc5c"/>
+  <rect x="13.1" y="2.2" width="9.4" height="9.4" rx="0.8" transform="rotate(58 17.8 6.9)" fill="#e4ab35"/>
+</svg>

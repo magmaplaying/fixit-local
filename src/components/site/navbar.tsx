@@ -4,6 +4,7 @@ import { logoutAction } from "@/app/(auth)/actions";
 import { getUnreadCounts } from "@/lib/unread";
 import { getUnreadNotificationCount } from "@/lib/notify";
 import { NavScrollFx } from "@/components/motion/nav-scroll-fx";
+import { Logo } from "@/components/site/logo";
 
 function Badge({ n }: { n: number }) {
   if (n <= 0) return null;
@@ -24,8 +25,8 @@ export async function Navbar() {
     <header className="site-nav sticky top-0 z-40 border-b border-black/10 bg-background/85 backdrop-blur">
       <NavScrollFx />
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="font-display text-xl font-semibold tracking-tight">
-          Под <span className="text-cobble-600">ръка</span>
+        <Link href="/" className="group" aria-label="Под ръка — начало">
+          <Logo />
         </Link>
 
         <div className="flex items-center gap-1 text-sm sm:gap-3">

@@ -133,6 +133,22 @@ body {
     transform: scale(1);
   }
 
+  /* Logo: the loose stone seats itself when the lockup is hovered. */
+  .logo-stone {
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+/* The lifted-and-tilted stone is the mark's resting state (a state, not
+   decoration — kept outside the motion gate); hover/focus seats it. */
+.logo-stone {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: translate(2.3px, -2.6px) rotate(14deg);
+}
+.group:hover .logo-stone,
+.group:focus-visible .logo-stone {
+  transform: none;
 }
 
 /* Navbar solidifies once the page scrolls (class toggled by <NavScrollFx/>).
