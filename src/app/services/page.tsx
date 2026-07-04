@@ -176,22 +176,28 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
         {near ? " · подредени по близост до вас" : ""}
       </p>
 
-      {/* Search — one white bar, same language as the home hero */}
+      {/* Search — one white bar, same language as the home hero. The lead
+          field is a dropdown of every service type; picking one applies on
+          Търси (the chip rail below stays in sync). */}
       <form
         action="/services"
         className="mt-6 flex max-w-3xl flex-col gap-2 rounded-2xl border border-black/5 bg-white p-2 shadow-[0_10px_30px_-18px_rgba(33,26,19,0.25)] sm:flex-row"
       >
-        {activeCategory && <input type="hidden" name="category" value={activeCategory} />}
         {sp.near && <input type="hidden" name="near" value={sp.near} />}
         {sp.radius && <input type="hidden" name="radius" value={sp.radius} />}
-        <input
-          name="q"
-          type="text"
-          defaultValue={sp.q ?? ""}
-          placeholder="Какво трябва да се свърши?"
-          aria-label="Търсене на услуга"
-          className="flex-1 rounded-xl bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-black/40 focus:bg-black/[0.03]"
-        />
+        <select
+          name="category"
+          defaultValue={activeCategory ?? ""}
+          aria-label="Каква услуга ви трябва?"
+          className="flex-1 cursor-pointer rounded-xl bg-transparent px-3 py-2.5 text-sm outline-none transition hover:bg-black/[0.03]"
+        >
+          <option value="">Какво трябва да се свърши?</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.slug}>
+              {c.icon} {c.name}
+            </option>
+          ))}
+        </select>
         <select
           name="city"
           defaultValue={sp.city ?? ""}
