@@ -26,18 +26,19 @@ const CATEGORIES = [
   { name: "Ключар", slug: "locksmith", icon: "🔑" },
 ];
 
+// photo: тематичен кадър от public/seed/ (локален, без външни CDN зависимости).
 const PROVIDERS = [
-  { name: "Мария Иванова", email: "maria@demo.bg", cat: "cleaning", title: "Професионално почистване на дома", price: 25, priceType: "HOURLY", city: "София", area: "Лозенец", bio: "10 години блестящи домове.", desc: "Основно и поддържащо почистване, нанасяне и изнасяне. Еко препарати при заявка." },
-  { name: "Георги Петров", email: "georgi@demo.bg", cat: "handyman", title: "Майстор за дребни ремонти", price: 30, priceType: "HOURLY", city: "Пловдив", area: "Кючук Париж", bio: "Вашият майстор за всичко.", desc: "Сглобяване на мебели, окачване на телевизори, пробиване и дребни ремонти вкъщи. Свободен в рамките на седмицата." },
-  { name: "Иван Димитров", email: "ivan@demo.bg", cat: "plumbing", title: "Лицензиран водопроводчик — бърза реакция", price: 40, priceType: "HOURLY", city: "Варна", area: "Гръцка махала", bio: "Лицензиран водопроводчик с 15 г. опит.", desc: "Течове, монтажи, бойлери и аварии. Бърза реакция в целия град." },
-  { name: "Елена Колева", email: "elena@demo.bg", cat: "tutoring", title: "Учител по математика и физика", price: 20, priceType: "HOURLY", city: "София", area: "Студентски град", bio: "Магистър по физика, търпелив учител.", desc: "Математика и физика за ученици и студенти. Подготовка за изпити и ясни обяснения. Възможни и онлайн уроци." },
-  { name: "Димитър Стоянов", email: "dimitar@demo.bg", cat: "moving", title: "Преместване — двама с бус", price: 120, priceType: "FIXED", city: "Бургас", area: "Център", bio: "Местим ви без стрес.", desc: "Преместване на апартаменти и офиси. Опаковъчни материали и внимателно пренасяне." },
-  { name: "Светлин Маринов", email: "svetlin@demo.bg", cat: "electrical", title: "Сертифициран електротехник", price: 35, priceType: "HOURLY", city: "Русе", area: "Център", bio: "Сертифициран електротехник.", desc: "Окабеляване, контакти, осветление и табла. Проверки на безопасността за стари апартаменти." },
-  { name: "Петя Христова", email: "petya@demo.bg", cat: "cleaning", title: "Почистване на офиси и след партита", price: 28, priceType: "HOURLY", city: "Пловдив", area: "Център", bio: "Надеждна и старателна.", desc: "Договори за почистване на офиси и еднократно основно почистване. Гъвкави вечерни и съботно-неделни часове." },
-  { name: "Николай Колев", email: "nikolay@demo.bg", cat: "painting", title: "Бояджийски услуги — апартаменти и офиси", price: 18, priceType: "HOURLY", city: "Пловдив", area: "Тракия", bio: "Чисто и бързо боядисване.", desc: "Латекс, гипсокартон, шпакловка и декоративни мазилки. Без прах и безпорядък." },
-  { name: "Стефан Ангелов", email: "stefan@demo.bg", cat: "ac", title: "Монтаж и профилактика на климатици", price: 50, priceType: "FIXED", city: "София", area: "Младост", bio: "Оторизиран техник.", desc: "Доставка, монтаж, зареждане и профилактика на климатици. Гаранция на труда." },
-  { name: "Виктория Тодорова", email: "viktoria@demo.bg", cat: "gardening", title: "Поддръжка на градини и дворове", price: 22, priceType: "HOURLY", city: "Варна", area: "Виница", bio: "Зелено и подредено.", desc: "Косене, оформяне на жив плет, засаждане и сезонна поддръжка на дворове." },
-  { name: "Мартин Иванов", email: "martin@demo.bg", cat: "it", title: "Компютърна помощ и настройки", price: 25, priceType: "HOURLY", city: "София", area: "Лозенец", bio: "IT помощ за дома и офиса.", desc: "Почистване от вируси, преинсталация, мрежи и Wi-Fi, настройка на устройства. Възможно и онлайн." },
+  { name: "Мария Иванова", email: "maria@demo.bg", cat: "cleaning", title: "Професионално почистване на дома", price: 25, priceType: "HOURLY", city: "София", area: "Лозенец", bio: "10 години блестящи домове.", desc: "Основно и поддържащо почистване, нанасяне и изнасяне. Еко препарати при заявка.", photo: "cleaning-home.jpg" },
+  { name: "Георги Петров", email: "georgi@demo.bg", cat: "handyman", title: "Майстор за дребни ремонти", price: 30, priceType: "HOURLY", city: "Пловдив", area: "Кючук Париж", bio: "Вашият майстор за всичко.", desc: "Сглобяване на мебели, окачване на телевизори, пробиване и дребни ремонти вкъщи. Свободен в рамките на седмицата.", photo: "handyman.jpg" },
+  { name: "Иван Димитров", email: "ivan@demo.bg", cat: "plumbing", title: "Лицензиран водопроводчик — бърза реакция", price: 40, priceType: "HOURLY", city: "Варна", area: "Гръцка махала", bio: "Лицензиран водопроводчик с 15 г. опит.", desc: "Течове, монтажи, бойлери и аварии. Бърза реакция в целия град.", photo: "plumbing.jpg" },
+  { name: "Елена Колева", email: "elena@demo.bg", cat: "tutoring", title: "Учител по математика и физика", price: 20, priceType: "HOURLY", city: "София", area: "Студентски град", bio: "Магистър по физика, търпелив учител.", desc: "Математика и физика за ученици и студенти. Подготовка за изпити и ясни обяснения. Възможни и онлайн уроци.", photo: "tutoring.jpg" },
+  { name: "Димитър Стоянов", email: "dimitar@demo.bg", cat: "moving", title: "Преместване — двама с бус", price: 120, priceType: "FIXED", city: "Бургас", area: "Център", bio: "Местим ви без стрес.", desc: "Преместване на апартаменти и офиси. Опаковъчни материали и внимателно пренасяне.", photo: "moving.jpg" },
+  { name: "Светлин Маринов", email: "svetlin@demo.bg", cat: "electrical", title: "Сертифициран електротехник", price: 35, priceType: "HOURLY", city: "Русе", area: "Център", bio: "Сертифициран електротехник.", desc: "Окабеляване, контакти, осветление и табла. Проверки на безопасността за стари апартаменти.", photo: "electrical.jpg" },
+  { name: "Петя Христова", email: "petya@demo.bg", cat: "cleaning", title: "Почистване на офиси и след партита", price: 28, priceType: "HOURLY", city: "Пловдив", area: "Център", bio: "Надеждна и старателна.", desc: "Договори за почистване на офиси и еднократно основно почистване. Гъвкави вечерни и съботно-неделни часове.", photo: "cleaning-office.jpg" },
+  { name: "Николай Колев", email: "nikolay@demo.bg", cat: "painting", title: "Бояджийски услуги — апартаменти и офиси", price: 18, priceType: "HOURLY", city: "Пловдив", area: "Тракия", bio: "Чисто и бързо боядисване.", desc: "Латекс, гипсокартон, шпакловка и декоративни мазилки. Без прах и безпорядък.", photo: "painting.jpg" },
+  { name: "Стефан Ангелов", email: "stefan@demo.bg", cat: "ac", title: "Монтаж и профилактика на климатици", price: 50, priceType: "FIXED", city: "София", area: "Младост", bio: "Оторизиран техник.", desc: "Доставка, монтаж, зареждане и профилактика на климатици. Гаранция на труда.", photo: "ac.jpg" },
+  { name: "Виктория Тодорова", email: "viktoria@demo.bg", cat: "gardening", title: "Поддръжка на градини и дворове", price: 22, priceType: "HOURLY", city: "Варна", area: "Виница", bio: "Зелено и подредено.", desc: "Косене, оформяне на жив плет, засаждане и сезонна поддръжка на дворове.", photo: "gardening.jpg" },
+  { name: "Мартин Иванов", email: "martin@demo.bg", cat: "it", title: "Компютърна помощ и настройки", price: 25, priceType: "HOURLY", city: "София", area: "Лозенец", bio: "IT помощ за дома и офиса.", desc: "Почистване от вируси, преинсталация, мрежи и Wi-Fi, настройка на устройства. Възможно и онлайн.", photo: "it.jpg" },
 ];
 
 async function main() {
@@ -81,7 +82,7 @@ async function main() {
         price: p.price,
         city: p.city,
         area: p.area,
-        photos: JSON.stringify([`https://picsum.photos/seed/podruka-${p.email.split("@")[0]}/800/600`]),
+        photos: JSON.stringify([`/seed/${p.photo}`]),
         active: true,
       },
     });
