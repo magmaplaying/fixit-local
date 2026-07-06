@@ -16,7 +16,7 @@ Prefix: `roadmap` · Smart parallelism: **disabled** (conservative deps)
 | roadmap-03-admin-trust-safety.plan.md | Admin dashboard, verification, moderation | 00 | ✅ DEPLOYED (admin@demo.bg / password123 → /admin) |
 | roadmap-04-realtime-notifications.plan.md | Email + push + SSE chat | 00 | ✅ DONE (local) — email (Resend, fetch-based) + in-app notification center + SSE chat. Web push (Step 6) deferred. Needs `RESEND_API_KEY` + Turso migration to deploy |
 | roadmap-05-performance-seo-a11y.plan.md | Perf, SEO, accessibility | 00 | ✅ CORE DONE (local) — metadata/OG + Twitter, JSON-LD (Organization/WebSite, Service+AggregateRating, LocalBusiness, Breadcrumb), sitemap.ts + robots.ts, indexable `/services/[slug]` category+city landing pages, footer internal links, a11y (skip link, focus ring, landmarks), `Listing(city,categoryId)` index. Deferred: dynamic OG images, static/ISR (navbar reads cookies → pages dynamic), deeper a11y audit. Set `NEXT_PUBLIC_SITE_URL` + apply index migration to deploy |
-| roadmap-06-growth-marketing.plan.md | Analytics, referrals, lifecycle, content | 05 | ✅ CORE DONE (local) — referral loop (codes + attribution + /invite + share), content blog (/blog + Article JSON-LD + RSS + sitemap), share buttons (WhatsApp/Viber/FB + UTM), /become-provider supply landing (provider-role preselect). Deferred: analytics (needs a tool + consent), lifecycle-email cron, A/B + CRO polish. Needs referral Turso migration to deploy |
+| roadmap-06-growth-marketing.plan.md | Analytics, referrals, lifecycle, content | 05 | ✅ CORE DONE (local) — referral loop (codes + attribution + /invite + share), content blog (/blog + Article JSON-LD + RSS + sitemap), share buttons (WhatsApp/Viber/FB + UTM), /become-provider supply landing (provider-role preselect). Analytics done 2026-07-05: Vercel Analytics (cookieless, no consent needed) + server events sign_up/booking_requested/review_submitted + GSC hook via `GOOGLE_SITE_VERIFICATION` (see docs/seo-measurement.md; enable Analytics in the Vercel dashboard). Deferred: lifecycle-email cron, A/B + CRO polish. Needs referral Turso migration to deploy |
 
 ## Execution order (rounds)
 
@@ -60,3 +60,13 @@ or run individually in dependency order.
   via the Turso console). Before pushing, run `node scripts/apply-referrals-turso.mjs`
   with the Turso env vars set — it adds `referralCode`/`referredById` + the unique
   index additively. New code reads those columns, so apply it **before** the deploy.
+- **2026-07-06 legal (ЗЗП 14-day withdrawal + EU ODR link):** booking requests now
+  require an explicit checkbox consenting to start before the withdrawal window
+  and record `Booking.withdrawalConsentAt` (plain additive column, no rebuild —
+  safe via the Turso console or `node scripts/apply-withdrawal-consent-turso.mjs`).
+  New code writes that column on every booking request, so apply it **before**
+  the deploy. Terms/Privacy also got an ODR link and Vercel Analytics disclosure;
+  no deploy step needed for those. **Still open:** Terms/Privacy still have a
+  bracketed `[юридическо лице / ЕИК]` placeholder — register the actual legal
+  entity and swap it in before real public launch (see `OPERATOR` const in both
+  files), and have a lawyer review both documents.

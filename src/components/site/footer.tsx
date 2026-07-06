@@ -86,9 +86,17 @@ export function Footer() {
       </div>
 
       <div className="border-t border-black/5">
-        <p className="mx-auto max-w-6xl px-4 py-5 font-mono text-xs text-black/45">
-          © {new Date().getFullYear()} Под ръка
-        </p>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-5 font-mono text-xs text-black/45">
+          <p>© {new Date().getFullYear()} Под ръка</p>
+          <a
+            href="https://ec.europa.eu/consumers/odr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-cobble-700"
+          >
+            Онлайн решаване на спорове (ОРС)
+          </a>
+        </div>
       </div>
     </footer>
   );

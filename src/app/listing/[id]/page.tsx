@@ -271,6 +271,23 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                     className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
                   />
                 </label>
+                <label className="flex items-start gap-2 text-xs text-black/55 dark:text-white/55">
+                  <input
+                    type="checkbox"
+                    name="withdrawalConsent"
+                    value="true"
+                    required
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-cobble-600"
+                  />
+                  <span>
+                    Искам изпълнението да започне преди изтичането на 14-дневния срок за отказ и
+                    разбирам, че губя правото на отказ след пълното изпълнение на услугата (
+                    <Link href="/terms#withdrawal" className="underline hover:text-cobble-700">
+                      Условия, т. 6
+                    </Link>
+                    ).
+                  </span>
+                </label>
                 <button
                   type="submit"
                   className="w-full rounded-lg bg-cobble-600 px-4 py-2.5 font-medium text-white transition hover:bg-cobble-700"

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { reviewSchema } from "@/lib/validations";
+import { track } from "@/lib/track";
 
 /** Recompute a provider's denormalized rating from their non-hidden reviews. */
 export async function recomputeProviderRating(providerId: string): Promise<void> {
@@ -60,6 +61,7 @@ export async function submitReview(formData: FormData): Promise<void> {
     },
   });
   await recomputeProviderRating(booking.listing.providerId);
+  await track("review_submitted", { rating });
 
   revalidatePath(`/listing/${booking.listingId}`);
   revalidatePath("/bookings");

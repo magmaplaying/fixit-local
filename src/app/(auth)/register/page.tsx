@@ -17,6 +17,17 @@ export default async function RegisterPage({
       <h1 className="mb-1 text-xl font-semibold">Създайте акаунт</h1>
       <p className="mb-6 text-sm text-black/60 dark:text-white/60">Присъединете се към „Под ръка“, за да заявите доверена помощ или да предлагате услуги.</p>
       <AuthForm mode="register" action={registerAction} defaultRole={defaultRole} />
+      <p className="mt-4 text-center text-xs text-black/45 dark:text-white/45">
+        Създавайки акаунт, приемате{" "}
+        <Link href="/terms" className="font-medium text-cobble-600 hover:underline">
+          Условията за ползване
+        </Link>{" "}
+        и{" "}
+        <Link href="/privacy" className="font-medium text-cobble-600 hover:underline">
+          Политиката за поверителност
+        </Link>
+        .
+      </p>
       <p className="mt-4 text-center text-sm text-black/60 dark:text-white/60">
         Вече имате акаунт?{" "}
         <Link href="/login" className="font-medium text-cobble-600 hover:underline">

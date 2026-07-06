@@ -40,6 +40,12 @@ export const bookingSchema = z.object({
   listingId: z.string().min(1),
   message: z.string().max(500).optional(),
   scheduledFor: z.string().optional(),
+  // ЗЗП чл. 57, т. 13 / Directive 2011/83 Art. 16(a): the customer must
+  // expressly request the service start before the 14-day withdrawal window
+  // and acknowledge losing that right once it's fully performed.
+  withdrawalConsent: z
+    .string()
+    .refine((v) => v === "true", { message: "Потвърдете съгласието за започване на услугата." }),
 });
 
 export const reviewSchema = z.object({

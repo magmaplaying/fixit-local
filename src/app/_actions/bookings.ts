@@ -11,6 +11,7 @@ import { bookingSchema } from "@/lib/validations";
 import { refundIfPaid } from "@/app/_actions/payments";
 import { notify } from "@/lib/notify";
 import { bookingRequested, bookingStatus, type StatusEvent } from "@/lib/notify-templates";
+import { track } from "@/lib/track";
 
 /** Customer requests a booking against a listing. */
 export async function requestBooking(formData: FormData): Promise<void> {
@@ -45,6 +46,7 @@ export async function requestBooking(formData: FormData): Promise<void> {
     listingId,
     message: formData.get("message") || undefined,
     scheduledFor: formData.get("scheduledFor") || undefined,
+    withdrawalConsent: formData.get("withdrawalConsent") || undefined,
   });
   if (!parsed.success) redirect(`/listing/${listingId}?error=1`);
 
@@ -56,6 +58,7 @@ export async function requestBooking(formData: FormData): Promise<void> {
       message: message || null,
       scheduledFor: scheduledFor ? new Date(scheduledFor) : null,
       status: "REQUESTED",
+      withdrawalConsentAt: new Date(),
     },
   });
 
@@ -63,6 +66,7 @@ export async function requestBooking(formData: FormData): Promise<void> {
     userId: listing.provider.userId,
     ...bookingRequested({ listingTitle: listing.title, customerName: user.name }),
   });
+  await track("booking_requested", { city: listing.city });
 
   revalidatePath("/bookings");
   redirect("/bookings?requested=1");

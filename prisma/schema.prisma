@@ -100,6 +100,7 @@ model Booking {
   message      String?
   amount       Float? // charge amount (set at acceptance; payments groundwork)
   currency     String    @default("BGN") // BGN today; EUR transition ahead
+  withdrawalConsentAt DateTime? // customer's explicit consent (ЗЗП чл. 57, т. 13 / Directive 2011/83 Art. 16(a)) to start before the 14-day withdrawal window and waive it on completion
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   customerReadAt DateTime?
