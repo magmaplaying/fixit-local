@@ -139,7 +139,7 @@ export default async function Home() {
           <p className="hero-i1 font-mono text-xs uppercase tracking-[0.22em] text-cobble-300">
             Майстори · Услуги · Цяла България
           </p>
-          <h1 className="hero-i2 mt-5 max-w-3xl font-display text-5xl leading-[1.04] font-semibold text-background sm:text-7xl">
+          <h1 className="hero-i2 mt-5 max-w-3xl font-display text-5xl leading-[1.04] font-bold text-background [text-shadow:0_4px_24px_rgba(0,0,0,0.45)] sm:text-7xl">
             Доверена помощ,
             <br />
             <span className="text-cobble-400">където и да сте.</span>
@@ -150,7 +150,7 @@ export default async function Home() {
 
           <form
             action="/services"
-            className="hero-i4 mt-9 flex max-w-2xl flex-col gap-2 rounded-2xl bg-background p-2 shadow-2xl sm:flex-row"
+            className="hero-i4 mt-9 flex max-w-2xl flex-col gap-2 rounded-2xl bg-background p-2 shadow-2xl transition-shadow focus-within:ring-2 focus-within:ring-cobble-400/60 sm:flex-row"
           >
             <input
               name="q"
@@ -184,7 +184,7 @@ export default async function Home() {
             </select>
             <button
               type="submit"
-              className="rounded-xl bg-cobble-600 px-6 py-3 font-medium text-white transition hover:bg-cobble-700"
+              className="btn-press rounded-xl bg-cobble-600 px-6 py-3 font-medium text-white transition hover:bg-cobble-700"
             >
               Търси
             </button>

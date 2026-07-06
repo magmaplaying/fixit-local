@@ -137,6 +137,14 @@ body {
   .logo-stone {
     transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+
+  /* Primary buttons press down like a stone tapped into place. */
+  .btn-press {
+    transition: transform 0.15s ease;
+  }
+  .btn-press:active {
+    transform: scale(0.97);
+  }
 }
 
 /* The lifted-and-tilted stone is the mark's resting state (a state, not

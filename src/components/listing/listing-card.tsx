@@ -64,8 +64,11 @@ export function ListingCard({ l, eager = false }: { l: ListingCardData; eager?: 
 
         <div className="mt-4 flex items-center justify-between border-t border-dashed border-black/15 pt-3">
           <span className="font-mono text-base font-medium text-espresso">{l.priceLabel}</span>
-          <span className="font-mono text-xs font-medium tracking-wide text-cobble-700 transition group-hover:text-cobble-800">
-            ВИЖ →
+          <span className="inline-flex items-center gap-1 font-mono text-xs font-medium tracking-wide text-cobble-700 transition group-hover:text-cobble-800">
+            ВИЖ
+            <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-1">
+              →
+            </span>
           </span>
         </div>
       </div>

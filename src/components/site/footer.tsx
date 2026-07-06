@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { citySlug } from "@/lib/cities";
 import { Logo } from "@/components/site/logo";
+import { PaveDivider } from "@/components/site/pave-divider";
 
 // Curated internal links to the category/city landing pages — helps crawlers
 // discover them and spreads link equity. Slugs are stable seed data, so they're
@@ -84,6 +85,9 @@ export function Footer() {
           </ul>
         </nav>
       </div>
+
+      {/* The brand's pavement, laid one last time at the foot of every page. */}
+      <PaveDivider className="pb-6" />
 
       <div className="border-t border-black/5">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-5 font-mono text-xs text-black/45">

@@ -12,6 +12,9 @@ import { createReport } from "@/app/_actions/reports";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ShareButtons } from "@/components/share/share-buttons";
+import { StickyRequestBar } from "@/components/listing/sticky-request-bar";
+import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
+import { Reveal } from "@/components/motion/reveal";
 
 type Params = Promise<{ id: string }>;
 
@@ -58,6 +61,35 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
   const isOwner = user != null && listing.provider.userId === user.id;
   const photos = parsePhotos(listing.photos);
 
+  // Recovery path: 3 more listings from the category, same-city first — so a
+  // near-miss listing is a fork in the road, not a dead end.
+  const relatedPool = await prisma.listing.findMany({
+    where: { active: true, id: { not: listing.id }, categoryId: listing.categoryId },
+    take: 8,
+    orderBy: { createdAt: "desc" },
+    include: {
+      category: true,
+      provider: { include: { user: true } },
+      reviews: { select: { rating: true } },
+    },
+  });
+  const related: ListingCardData[] = relatedPool
+    .sort((a, b) => Number(b.city === listing.city) - Number(a.city === listing.city))
+    .slice(0, 3)
+    .map((l) => ({
+      id: l.id,
+      title: l.title,
+      city: l.city,
+      area: l.area,
+      priceLabel: formatPrice(l.priceType, l.price),
+      categoryName: l.category.name,
+      categoryIcon: l.category.icon,
+      providerName: l.provider.user.name,
+      rating: averageRating(l.reviews),
+      reviewCount: l.reviews.length,
+      imageUrl: parsePhotos(l.photos)[0] ?? null,
+    }));
+
   const serviceLd = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -95,17 +127,29 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
     <div className="mx-auto max-w-5xl px-4 py-10">
       <JsonLd data={serviceLd} />
       <JsonLd data={breadcrumbLd} />
-      <Link href="/services" className="text-sm text-black/50 hover:text-cobble-600 dark:text-white/50">
-        ← Обратно към услугите
-      </Link>
+      {/* Visible breadcrumb — mirrors the JSON-LD one; keeps the user oriented
+          and one tap from the category they came for. */}
+      <nav
+        aria-label="Навигационна пътека"
+        className="flex min-w-0 items-center gap-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-black/45"
+      >
+        <Link href="/services" className="shrink-0 transition hover:text-cobble-700">
+          Услуги
+        </Link>
+        <span aria-hidden className="text-black/25">›</span>
+        <Link href={`/services/${listing.category.slug}`} className="shrink-0 transition hover:text-cobble-700">
+          {listing.category.name}
+        </Link>
+        <span aria-hidden className="text-black/25">›</span>
+        <span aria-current="page" className="truncate text-cobble-700">
+          {listing.title}
+        </span>
+      </nav>
 
       <div className="mt-4 grid gap-8 lg:grid-cols-[1fr_22rem]">
         {/* Main */}
         <div>
-          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-cobble-700">
-            {listing.category.name} · {listing.city}
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+          <h1 className="font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
             {listing.title}
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-2.5 text-sm text-black/55 dark:text-white/55">
@@ -226,7 +270,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
 
         {/* Booking sidebar — a service ticket: price above the perforation,
             the request below it, ticket number at the foot. */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        <aside id="booking" className="scroll-mt-24 lg:sticky lg:top-24 lg:self-start">
           <div className="relative rounded-2xl border border-black/10 bg-white shadow-[0_1px_3px_rgba(33,26,19,0.06),0_16px_32px_-24px_rgba(33,26,19,0.35)] dark:border-white/10 dark:bg-white/5">
             <div className="px-5 pb-4 pt-5">
               <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-black/40">Цена</p>
@@ -290,7 +334,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                 </label>
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-cobble-600 px-4 py-2.5 font-medium text-white transition hover:bg-cobble-700"
+                  className="btn-press w-full rounded-lg bg-cobble-600 px-4 py-2.5 font-medium text-white transition hover:bg-cobble-700"
                 >
                   Заяви услуга
                 </button>
@@ -323,6 +367,39 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
           </div>
         </aside>
       </div>
+
+      {/* Recovery path — never a dead end: more of the same category, same city first. */}
+      {related.length > 0 && (
+        <Reveal className="mt-14">
+          <section aria-label="Подобни услуги" className="border-t border-dashed border-black/10 pt-8">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-xl font-semibold">
+                Още „{listing.category.name}“ {related.some((r) => r.city === listing.city) ? `в ${listing.city}` : "наблизо"}
+              </h2>
+              <Link
+                href={`/services/${listing.category.slug}`}
+                className="shrink-0 text-sm font-medium text-cobble-700 transition hover:text-cobble-800 hover:underline"
+              >
+                Виж всички →
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((l) => (
+                <ListingCard key={l.id} l={l} />
+              ))}
+            </div>
+          </section>
+        </Reveal>
+      )}
+
+      {/* Mobile: the ticket lives below the fold — keep the CTA a thumb away. */}
+      {!isOwner && (
+        <StickyRequestBar
+          priceLabel={formatPrice(listing.priceType, listing.price)}
+          ctaHref={user ? "#booking" : `/login?next=/listing/${listing.id}`}
+          ctaLabel={user ? "Заяви услуга" : "Влез, за да заявиш"}
+        />
+      )}
     </div>
   );
 }

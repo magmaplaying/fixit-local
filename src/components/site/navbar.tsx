@@ -5,6 +5,7 @@ import { getUnreadCounts } from "@/lib/unread";
 import { getUnreadNotificationCount } from "@/lib/notify";
 import { NavScrollFx } from "@/components/motion/nav-scroll-fx";
 import { Logo } from "@/components/site/logo";
+import { NavLink } from "@/components/site/nav-link";
 
 function Badge({ n }: { n: number }) {
   if (n <= 0) return null;
@@ -30,28 +31,20 @@ export async function Navbar() {
         </Link>
 
         <div className="flex items-center gap-1 text-sm sm:gap-3">
-          <Link href="/services" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
-            Услуги
-          </Link>
+          <NavLink href="/services">Услуги</NavLink>
 
           {user ? (
             <>
               {user.role === "PROVIDER" && (
-                <Link
-                  href="/dashboard"
-                  className="inline-flex items-center rounded-lg px-3 py-1.5 hover:bg-black/[0.05]"
-                >
+                <NavLink href="/dashboard" className="inline-flex items-center">
                   Табло
                   <Badge n={unread?.provider ?? 0} />
-                </Link>
+                </NavLink>
               )}
-              <Link
-                href="/bookings"
-                className="inline-flex items-center rounded-lg px-3 py-1.5 hover:bg-black/[0.05]"
-              >
+              <NavLink href="/bookings" className="inline-flex items-center">
                 Моите заявки
                 <Badge n={unread?.customer ?? 0} />
-              </Link>
+              </NavLink>
               <Link
                 href="/notifications"
                 aria-label="Известия"
@@ -84,12 +77,10 @@ export async function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login" className="rounded-lg px-3 py-1.5 hover:bg-black/[0.05]">
-                Вход
-              </Link>
+              <NavLink href="/login">Вход</NavLink>
               <Link
                 href="/register"
-                className="rounded-lg bg-cobble-600 px-3.5 py-1.5 font-medium text-white transition hover:bg-cobble-700"
+                className="btn-press rounded-lg bg-cobble-600 px-3.5 py-1.5 font-medium text-white transition hover:bg-cobble-700"
               >
                 Регистрация
               </Link>

@@ -34,6 +34,10 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 
 const RADII = [5, 10, 25, 50] as const;
 
+// NB: no loading.tsx here — in this Next fork a Suspense loading boundary
+// requires `unstable_instant` + `nextConfig.cacheComponents`, and without them
+// the streamed page never replaces the skeleton. Revisit with cacheComponents.
+
 export default async function ServicesPage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
   const near = parseLatLng(sp.near);
@@ -181,7 +185,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           Търси (the chip rail below stays in sync). */}
       <form
         action="/services"
-        className="mt-6 flex max-w-3xl flex-col gap-2 rounded-2xl border border-black/5 bg-white p-2 shadow-[0_10px_30px_-18px_rgba(33,26,19,0.25)] sm:flex-row"
+        className="mt-6 flex max-w-3xl flex-col gap-2 rounded-2xl border border-black/5 bg-white p-2 shadow-[0_10px_30px_-18px_rgba(33,26,19,0.25)] transition-shadow focus-within:ring-2 focus-within:ring-cobble-400/50 sm:flex-row"
       >
         {sp.near && <input type="hidden" name="near" value={sp.near} />}
         {sp.radius && <input type="hidden" name="radius" value={sp.radius} />}
@@ -212,7 +216,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           ))}
         </select>
         <NearMeButton params={carryParams} />
-        <button type="submit" className="rounded-xl bg-cobble-600 px-6 py-2.5 font-medium text-white transition hover:bg-cobble-700">
+        <button type="submit" className="btn-press rounded-xl bg-cobble-600 px-6 py-2.5 font-medium text-white transition hover:bg-cobble-700">
           Търси
         </button>
       </form>
