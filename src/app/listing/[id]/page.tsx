@@ -345,7 +345,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
             ) : (
               <Link
                 href={`/login?next=/listing/${listing.id}`}
-                className="block rounded-lg bg-cobble-600 px-4 py-2.5 text-center font-medium text-white transition hover:bg-cobble-700"
+                className="btn-press block rounded-lg bg-cobble-600 px-4 py-2.5 text-center font-medium text-white transition hover:bg-cobble-700"
               >
                 Влез, за да заявиш
               </Link>

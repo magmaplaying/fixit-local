@@ -43,7 +43,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         </p>
         <Link
           href="/onboarding/provider"
-          className="mt-6 inline-block rounded-lg bg-cobble-600 px-5 py-2.5 font-medium text-white transition hover:bg-cobble-700"
+          className="btn-press mt-6 inline-block rounded-lg bg-cobble-600 px-5 py-2.5 font-medium text-white transition hover:bg-cobble-700"
         >
           Създай профил
         </Link>

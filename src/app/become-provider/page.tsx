@@ -51,7 +51,7 @@ export default function BecomeProviderPage() {
           <div className="hero-i4">
             <Link
               href="/register?role=provider"
-              className="mt-8 inline-block rounded-xl bg-cobble-600 px-7 py-3 font-medium text-white transition hover:bg-cobble-700"
+              className="btn-press mt-8 inline-block rounded-xl bg-cobble-600 px-7 py-3 font-medium text-white transition hover:bg-cobble-700"
             >
               Станете изпълнител
             </Link>
@@ -91,7 +91,7 @@ export default function BecomeProviderPage() {
         <div className="mt-12">
           <Link
             href="/register?role=provider"
-            className="inline-block rounded-xl bg-cobble-600 px-7 py-3 font-medium text-white transition hover:bg-cobble-700"
+            className="btn-press inline-block rounded-xl bg-cobble-600 px-7 py-3 font-medium text-white transition hover:bg-cobble-700"
           >
             Създайте безплатен профил
           </Link>

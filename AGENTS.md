@@ -9,5 +9,8 @@ and never swaps it in; fixing that requires `export const unstable_instant`,
 which in turn requires `nextConfig.cacheComponents` — an app-wide caching-model
 change this project hasn't adopted. Skeleton/instant loading states are blocked
 on that migration. After removing a bad segment-config export, restart the dev
-server — Turbopack keeps serving the stale compile error.
+server — Turbopack keeps serving the stale compile error. The persistent cache
+has a second trap: edits made **while the dev server is down** can keep being
+served stale even after a restart — make any content edit to the file while
+the server is running (or delete `.next`) to force a recompile.
 <!-- END:nextjs-agent-rules -->
