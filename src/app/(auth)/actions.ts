@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { hashPassword, verifyPassword, createSession, destroySession } from "@/lib/auth";
 import { registerSchema, loginSchema } from "@/lib/validations";
 import { ensureReferralCode, attributeReferral } from "@/lib/referrals";
+import { track } from "@/lib/track";
 
 export type AuthState = { error?: string };
 
@@ -39,6 +40,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   }
 
   await createSession({ id: user.id, email: user.email, name: user.name, role });
+  await track("sign_up", { role, referred: Boolean(ref) });
 
   redirect(role === "PROVIDER" ? "/onboarding/provider" : "/");
 }

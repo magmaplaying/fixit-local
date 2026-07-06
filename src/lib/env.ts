@@ -32,6 +32,9 @@ const schema = z.object({
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
   // Platform commission in basis points (1500 = 15%).
   PLATFORM_COMMISSION_BPS: z.coerce.number().int().min(0).max(10000).default(1500),
+  // Optional: Google Search Console ownership token (Settings → HTML tag).
+  // Rendered as a <meta name="google-site-verification"> when set.
+  GOOGLE_SITE_VERIFICATION: z.string().optional(),
   // Optional: enables transactional email via Resend. Without it, emails are
   // logged to the server instead of sent (the app works fully either way).
   RESEND_API_KEY: z.string().optional(),
@@ -49,6 +52,7 @@ const parsed = schema.safeParse({
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   PLATFORM_COMMISSION_BPS: process.env.PLATFORM_COMMISSION_BPS,
+  GOOGLE_SITE_VERIFICATION: process.env.GOOGLE_SITE_VERIFICATION,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   EMAIL_FROM: process.env.EMAIL_FROM,
 });
