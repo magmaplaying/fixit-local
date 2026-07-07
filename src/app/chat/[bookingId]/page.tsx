@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { sendMessage } from "@/app/_actions/messages";
 import { ChatThread } from "@/components/chat/chat-stream";
 import { initials } from "@/lib/format";
+import { shouldMaskContacts } from "@/lib/contact-guard";
 
 type Params = Promise<{ bookingId: string }>;
 
@@ -19,6 +20,7 @@ export default async function ChatPage({ params }: { params: Params }) {
     include: {
       listing: { include: { provider: { include: { user: true } } } },
       customer: true,
+      payment: true,
       messages: {
         orderBy: { createdAt: "asc" },
         select: { id: true, body: true, senderId: true, createdAt: true },
@@ -67,6 +69,18 @@ export default async function ChatPage({ params }: { params: Params }) {
 
       {/* Thread (client component: live via SSE, polling fallback) */}
       <ChatThread bookingId={booking.id} currentUserId={user.id} initial={initialMessages} />
+
+      {/* Anti-bypass notice: explains why contacts are hidden pre-payment. */}
+      {shouldMaskContacts(booking) ? (
+        <p className="mt-3 rounded-lg bg-cobble-50/70 px-3 py-2 text-xs leading-snug text-cobble-800 dark:bg-cobble-950/30 dark:text-cobble-300">
+          🔒 Телефони и имейли се скриват до плащането през сайта — така и двете страни са
+          защитени. Уговорките и плащанията извън сайта не се покриват от защитата ни.
+        </p>
+      ) : (
+        <p className="mt-3 text-center text-[11px] text-black/35 dark:text-white/35">
+          Дръжте плащанията в сайта — само те са защитени с възстановяване.
+        </p>
+      )}
 
       {/* Composer */}
       <form action={sendMessage} className="sticky bottom-4 flex gap-2 border-t border-black/5 bg-background pt-4">

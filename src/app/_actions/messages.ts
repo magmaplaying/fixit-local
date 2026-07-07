@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { notify, hasUnreadNotification } from "@/lib/notify";
 import { newMessage } from "@/lib/notify-templates";
+import { maskContacts, shouldMaskContacts } from "@/lib/contact-guard";
 
 /** Send a chat message on a booking. Only the booking's customer or provider may post. */
 export async function sendMessage(formData: FormData): Promise<void> {
@@ -19,7 +20,7 @@ export async function sendMessage(formData: FormData): Promise<void> {
 
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    include: { listing: { include: { provider: true } } },
+    include: { listing: { include: { provider: true } }, payment: true },
   });
   if (!booking) return;
 
@@ -29,15 +30,20 @@ export async function sendMessage(formData: FormData): Promise<void> {
 
   if (!rateLimit(`msg:${user.id}`, 30, 60_000)) redirect(`/chat/${bookingId}`);
 
+  // Off-platform-deal guard: phones/emails stay masked until the booking is
+  // paid (or accepted with no online payment in play). Masked at write time so
+  // history, notifications and the SSE stream all carry the safe version.
+  const stored = shouldMaskContacts(booking) ? maskContacts(body).text : body;
+
   await prisma.message.create({
-    data: { bookingId, senderId: user.id, body: body.slice(0, 2000) },
+    data: { bookingId, senderId: user.id, body: stored.slice(0, 2000) },
   });
 
   // Notify the other participant. Collapse repeats into one feed row, and only
   // email if they don't already have an unread message notice for this chat.
   const recipientId =
     booking.customerId === user.id ? booking.listing.provider.userId : booking.customerId;
-  const content = newMessage({ senderName: user.name, body, bookingId });
+  const content = newMessage({ senderName: user.name, body: stored, bookingId });
   const alreadyPinged = await hasUnreadNotification(recipientId, "NEW_MESSAGE", content.href!);
   await notify({ userId: recipientId, ...content, collapse: true, emailable: !alreadyPinged });
 

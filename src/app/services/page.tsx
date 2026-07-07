@@ -108,6 +108,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
     imageUrl: parsePhotos(l.photos)[0] ?? null,
     distanceKm,
     featured: isFeatured(l),
+    onlinePayments: l.provider.payoutsEnabled,
   }));
 
   // Scroller content: top-rated first (by rating, then review count), newest
@@ -128,6 +129,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
       rating,
       reviewCount: l.reviews.length,
       imageUrl: parsePhotos(l.photos)[0] ?? null,
+      onlinePayments: l.provider.payoutsEnabled,
     }));
 
   const activeCategory = sp.category;

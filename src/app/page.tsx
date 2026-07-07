@@ -110,6 +110,7 @@ export default async function Home() {
     rating: averageRating(l.reviews),
     reviewCount: l.reviews.length,
     imageUrl: parsePhotos(l.photos)[0] ?? null,
+    onlinePayments: l.provider.payoutsEnabled,
   }));
 
   // Feature a handful of categories on the home page (most providers first);

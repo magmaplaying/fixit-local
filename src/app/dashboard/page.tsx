@@ -17,6 +17,7 @@ type SearchParams = Promise<{
   deleted?: string;
   stripe?: string;
   boosted?: string;
+  complete?: string;
 }>;
 
 export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
@@ -102,6 +103,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           Свързването със Stripe не бе успешно. Уверете се, че Stripe Connect е активиран за платформата.
         </p>
       )}
+      {sp.complete === "unpaid" && (
+        <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+          Заявката се завършва след плащането от клиента през сайта. Напомнете му от чата, ако е
+          нужно — той вижда бутон „Плати" в своите заявки.
+        </p>
+      )}
 
       {/* Stripe payouts + earnings */}
       {showStripe && (
@@ -111,8 +118,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
               <h2 className="font-medium">Получаване на плащания</h2>
               <p className="mt-0.5 text-sm text-black/55 dark:text-white/55">
                 {profile.payoutsEnabled
-                  ? "✓ Плащанията са активни — можете да приемате платени заявки."
-                  : "Свържете Stripe, за да приемате плащания от клиенти."}
+                  ? "✓ Плащанията са активни — обявите ви носят баджа „💳 Онлайн плащане“."
+                  : "Свържете Stripe: обявите ви получават бадж „💳 Онлайн плащане“, а клиентите избират по-често изпълнители със защитено плащане."}
               </p>
             </div>
             {!profile.payoutsEnabled && (
@@ -182,9 +189,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                     <StatusButton bookingId={b.id} status="DECLINED" label="Откажи" variant="ghost" />
                   </>
                 )}
-                {b.status === "ACCEPTED" && (
-                  <StatusButton bookingId={b.id} status="COMPLETED" label="Завърши" variant="primary" />
-                )}
+                {b.status === "ACCEPTED" &&
+                  (b.payment && b.payment.status !== "SUCCEEDED" ? (
+                    <span
+                      title="Клиентът първо плаща през сайта, после заявката може да се завърши."
+                      className="inline-flex items-center rounded-lg border border-dashed border-black/15 px-3 py-1.5 text-sm text-black/45 dark:border-white/20 dark:text-white/45"
+                    >
+                      ⏳ Изчаква плащане
+                    </span>
+                  ) : (
+                    <StatusButton bookingId={b.id} status="COMPLETED" label="Завърши" variant="primary" />
+                  ))}
               </div>
             </li>
           ))}

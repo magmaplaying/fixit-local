@@ -106,12 +106,18 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
                     b.payment &&
                     b.payment.status !== "SUCCEEDED" &&
                     b.payment.status !== "REFUNDED" && (
-                      <form action={startBookingCheckout}>
-                        <input type="hidden" name="bookingId" value={b.id} />
-                        <button className="w-full rounded-lg bg-cobble-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700">
-                          Плати {formatMoney(b.payment.amount, b.payment.currency)}
-                        </button>
-                      </form>
+                      <div className="sm:text-right">
+                        <form action={startBookingCheckout}>
+                          <input type="hidden" name="bookingId" value={b.id} />
+                          <button className="w-full rounded-lg bg-cobble-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700">
+                            Плати {formatMoney(b.payment.amount, b.payment.currency)}
+                          </button>
+                        </form>
+                        <p className="mt-1.5 max-w-[15rem] text-[11px] leading-snug text-black/45 dark:text-white/45">
+                          🛡 Защитено плащане: пълно възстановяване при отмяна и отзив „Платено през
+                          сайта“. Плащанията на ръка не са защитени.
+                        </p>
+                      </div>
                     )}
                   {(b.status === "REQUESTED" || b.status === "ACCEPTED") && (
                     <form action={setBookingStatus}>

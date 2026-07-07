@@ -16,6 +16,8 @@ export type ListingCardData = {
   imageUrl: string | null;
   distanceKm?: number | null;
   featured?: boolean;
+  /** Provider has Stripe payouts enabled → protected online payment. */
+  onlinePayments?: boolean;
 };
 
 export function ListingCard({ l, eager = false }: { l: ListingCardData; eager?: boolean }) {
@@ -53,7 +55,19 @@ export function ListingCard({ l, eager = false }: { l: ListingCardData; eager?: 
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <div className="font-mono text-[11px] font-medium tracking-[0.1em] text-cobble-700">{meta}</div>
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 truncate font-mono text-[11px] font-medium tracking-[0.1em] text-cobble-700">
+            {meta}
+          </div>
+          {l.onlinePayments && (
+            <span
+              title="Изпълнителят приема защитено онлайн плащане през сайта"
+              className="shrink-0 rounded-md bg-emerald-50 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+            >
+              💳 Онлайн плащане
+            </span>
+          )}
+        </div>
         <h3 className="mt-1.5 font-display text-lg font-bold leading-snug text-espresso transition group-hover:text-cobble-800">
           {l.title}
         </h3>

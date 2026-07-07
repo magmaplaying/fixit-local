@@ -11,6 +11,7 @@ import { bookingSchema } from "@/lib/validations";
 import { refundIfPaid } from "@/app/_actions/payments";
 import { notify } from "@/lib/notify";
 import { bookingRequested, bookingStatus, type StatusEvent } from "@/lib/notify-templates";
+import { maskContacts } from "@/lib/contact-guard";
 import { track } from "@/lib/track";
 
 /** Customer requests a booking against a listing. */
@@ -51,11 +52,13 @@ export async function requestBooking(formData: FormData): Promise<void> {
   if (!parsed.success) redirect(`/listing/${listingId}?error=1`);
 
   const { message, scheduledFor } = parsed.data;
+  // The request note predates any payment — same contact masking as the chat.
+  const note = message ? maskContacts(message).text : null;
   await prisma.booking.create({
     data: {
       listingId,
       customerId: user.id,
-      message: message || null,
+      message: note,
       scheduledFor: scheduledFor ? new Date(scheduledFor) : null,
       status: "REQUESTED",
       withdrawalConsentAt: new Date(),
@@ -81,7 +84,7 @@ export async function setBookingStatus(formData: FormData): Promise<void> {
 
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    include: { listing: { include: { provider: true } } },
+    include: { listing: { include: { provider: true } }, payment: true },
   });
   if (!booking) {
     logger.warn("booking.transition.not_found", { userId: user.id, bookingId });
@@ -105,6 +108,17 @@ export async function setBookingStatus(formData: FormData): Promise<void> {
       actor,
     });
     return;
+  }
+
+  // A booking with an online payment in play can only be completed once the
+  // customer has paid through the site — the job can't be closed "на ръка".
+  if (
+    status === "COMPLETED" &&
+    booking.payment &&
+    booking.payment.status !== "SUCCEEDED"
+  ) {
+    logger.warn("booking.complete.unpaid", { userId: user.id, bookingId });
+    redirect("/dashboard?complete=unpaid");
   }
 
   await prisma.booking.update({ where: { id: bookingId }, data: { status } });

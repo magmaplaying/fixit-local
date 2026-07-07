@@ -25,7 +25,11 @@ const getListing = cache((id: string) =>
     include: {
       category: true,
       provider: { include: { user: true } },
-      reviews: { where: { hidden: false }, include: { author: true }, orderBy: { createdAt: "desc" } },
+      reviews: {
+        where: { hidden: false },
+        include: { author: true, booking: { select: { payment: { select: { status: true } } } } },
+        orderBy: { createdAt: "desc" },
+      },
     },
   }),
 );
@@ -88,6 +92,7 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
       rating: averageRating(l.reviews),
       reviewCount: l.reviews.length,
       imageUrl: parsePhotos(l.photos)[0] ?? null,
+      onlinePayments: l.provider.payoutsEnabled,
     }));
 
   const serviceLd = {
@@ -233,6 +238,14 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                         {initials(r.author.name)}
                       </span>
                       <span className="truncate font-medium">{r.author.name}</span>
+                      {r.booking.payment?.status === "SUCCEEDED" && (
+                        <span
+                          title="Отзив от заявка, платена през сайта"
+                          className="shrink-0 rounded-md bg-emerald-50 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                        >
+                          ✓ Платено през сайта
+                        </span>
+                      )}
                     </span>
                     <span className="shrink-0 text-cobble-500" aria-hidden>
                       {"★".repeat(r.rating)}
@@ -341,6 +354,13 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
                 <p className="text-center text-xs text-black/45 dark:text-white/45">
                   Без плащане сега — специалистът първо потвърждава.
                 </p>
+                {listing.provider.payoutsEnabled && (
+                  <ul className="space-y-1 rounded-lg bg-emerald-50/60 px-3 py-2.5 text-[11px] leading-snug text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
+                    <li>💳 Защитено онлайн плащане през сайта</li>
+                    <li>↩️ Пълно възстановяване при отмяна</li>
+                    <li>⭐ Отзивът ви носи знак „Платено през сайта“</li>
+                  </ul>
+                )}
               </form>
             ) : (
               <Link

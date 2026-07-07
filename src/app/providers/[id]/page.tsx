@@ -71,6 +71,7 @@ export default async function ProviderProfilePage({ params }: { params: Params }
     rating: averageRating(l.reviews),
     reviewCount: l.reviews.length,
     imageUrl: parsePhotos(l.photos)[0] ?? null,
+    onlinePayments: profile.payoutsEnabled,
   }));
 
   const providerLd = {
