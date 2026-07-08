@@ -146,19 +146,24 @@ export async function startBookingCheckout(formData: FormData): Promise<void> {
   redirect(url ?? "/bookings?stripe=error");
 }
 
-/** Provider: pay to feature a listing for 7 days (platform keeps 100%). */
-export async function startBoostCheckout(formData: FormData): Promise<void> {
-  const user = await requireUser("/dashboard");
-  if (!stripe) redirect("/dashboard?stripe=unconfigured");
+export type CheckoutResult = { url?: string; error?: string };
 
-  const listingId = String(formData.get("listingId") ?? "");
+/**
+ * Provider: pay to feature a listing for 7 days (platform keeps 100%). Returns
+ * the Stripe Checkout URL for the client to navigate to — redirecting to an
+ * external URL from inside a server action isn't reliable in this Next fork
+ * (the client stays put), so the caller does `window.location.href = url`.
+ */
+export async function startBoostCheckout(listingId: string): Promise<CheckoutResult> {
+  const user = await requireUser("/dashboard");
+  if (!stripe) return { error: "Плащанията не са настроени." };
+
   const listing = await prisma.listing.findUnique({
     where: { id: listingId },
     include: { provider: true },
   });
-  if (!listing || listing.provider.userId !== user.id) redirect("/dashboard");
+  if (!listing || listing.provider.userId !== user.id) return { error: "Обявата не е намерена." };
 
-  let url: string | null = null;
   try {
     const base = await getBaseUrl();
     const session = await stripe.checkout.sessions.create({
@@ -174,14 +179,48 @@ export async function startBoostCheckout(formData: FormData): Promise<void> {
         },
       ],
       metadata: { kind: "boost", listingId },
-      success_url: `${base}/dashboard?boosted=1`,
+      success_url: `${base}/dashboard?boost_session={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/dashboard`,
     });
-    url = session.url;
+    if (!session.url) return { error: "Stripe не върна адрес за плащане." };
+    return { url: session.url };
   } catch (err) {
     logger.error("stripe.boost.failed", { userId: user.id, listingId, message: String(err) });
+    return { error: "Възникна грешка. Опитайте отново." };
   }
-  redirect(url ?? "/dashboard?stripe=error");
+}
+
+const FEATURE_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * Confirm a boost from the Checkout success redirect and apply it — the
+ * reliable path that doesn't depend on the Stripe webhook being registered.
+ * Verifies the session is paid, is a boost, and belongs to the caller; then
+ * sets featuredUntil. Idempotent with the webhook (both just set the date).
+ */
+export async function confirmBoostSession(sessionId: string): Promise<boolean> {
+  if (!stripe || !sessionId.startsWith("cs_")) return false;
+  const user = await requireUser("/dashboard");
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.payment_status !== "paid" || session.metadata?.kind !== "boost") return false;
+    const listingId = session.metadata.listingId;
+    if (!listingId) return false;
+    const listing = await prisma.listing.findUnique({
+      where: { id: listingId },
+      include: { provider: true },
+    });
+    if (!listing || listing.provider.userId !== user.id) return false;
+
+    const until = new Date(Date.now() + FEATURE_MS);
+    if (!listing.featuredUntil || listing.featuredUntil < until) {
+      await prisma.listing.update({ where: { id: listingId }, data: { featuredUntil: until } });
+    }
+    return true;
+  } catch (err) {
+    logger.error("stripe.boost.confirm_failed", { userId: user.id, sessionId, message: String(err) });
+    return false;
+  }
 }
 
 /** Best-effort refund of a succeeded payment (used when a booking is cancelled). */

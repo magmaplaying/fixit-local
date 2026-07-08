@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { setBookingStatus } from "@/app/_actions/bookings";
-import { startStripeOnboarding, acceptBookingWithPayment, startBoostCheckout } from "@/app/_actions/payments";
+import { startStripeOnboarding, acceptBookingWithPayment, confirmBoostSession } from "@/app/_actions/payments";
+import { BoostButton } from "@/components/listing/boost-button";
 import { deleteListing } from "@/app/_actions/listings";
 import { StatusBadge } from "@/components/booking/status-badge";
 import { PAYMENT_LABELS } from "@/lib/booking-status";
@@ -16,7 +17,7 @@ type SearchParams = Promise<{
   updated?: string;
   deleted?: string;
   stripe?: string;
-  boosted?: string;
+  boost_session?: string;
   complete?: string;
 }>;
 
@@ -24,6 +25,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/dashboard");
   const sp = await searchParams;
+
+  // Returning from a boost Checkout: apply it now (webhook-independent).
+  const boostConfirmed = sp.boost_session ? await confirmBoostSession(sp.boost_session) : false;
 
   const profile = await prisma.providerProfile.findUnique({
     where: { userId: user.id },
@@ -81,7 +85,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         {profile.listings.length} обяви · {pending.length} чакащи заявки
       </p>
 
-      {(sp.created || sp.updated || sp.deleted || sp.boosted) && (
+      {(sp.created || sp.updated || sp.deleted || boostConfirmed) && (
         <p className="mt-4 rounded-xl bg-cobble-50 px-4 py-3 text-sm text-cobble-800 dark:bg-cobble-950/40 dark:text-cobble-200">
           {sp.created
             ? "✓ Обявата е публикувана."
@@ -258,12 +262,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                       ★ Издигната
                     </span>
                   ) : (
-                    <form action={startBoostCheckout}>
-                      <input type="hidden" name="listingId" value={l.id} />
-                      <button className="rounded-lg border border-cobble-500/40 px-3 py-1 text-xs font-medium text-cobble-700 transition hover:bg-cobble-50 dark:text-cobble-300 dark:hover:bg-cobble-950/30">
-                        Издигни
-                      </button>
-                    </form>
+                    <BoostButton listingId={l.id} />
                   ))}
                 {!l.active && (
                   <span className="rounded-lg bg-black/5 px-2 py-1 text-xs text-black/50 dark:bg-white/10 dark:text-white/50">
