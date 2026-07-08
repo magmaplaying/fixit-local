@@ -2,6 +2,9 @@
 
 import sharp from "sharp";
 import { randomUUID } from "node:crypto";
+import { writeFile, unlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { getCurrentUser } from "@/lib/auth";
 import { logger } from "@/lib/log";
 import {
@@ -42,16 +45,17 @@ export async function uploadImage(formData: FormData): Promise<UploadResult> {
   const kind = String(formData.get("kind") ?? "listing");
   const prefix = KIND_PREFIX[kind] ?? KIND_PREFIX.listing;
 
+  // On Vercel's serverless runtime, file.arrayBuffer() is backed by a
+  // SharedArrayBuffer, which sharp's native layer rejects ("SharedArrayBuffer
+  // is not allowed") — and copying into another Buffer doesn't shake it loose.
+  // So we stage the bytes as a temp file and let sharp read from the path
+  // (libvips file loader, no ArrayBuffer input at all). /tmp is writable on
+  // Vercel. (Locally arrayBuffer() is plain, so this only ever broke in prod.)
+  const tmpPath = join(tmpdir(), `podruka_upload_${randomUUID()}`);
   try {
-    // On Vercel's serverless runtime, file.arrayBuffer() can be backed by a
-    // SharedArrayBuffer, which sharp rejects ("SharedArrayBuffer is not
-    // allowed"). Copy the bytes into a fresh, non-shared Buffer first. (Locally
-    // arrayBuffer() is a plain ArrayBuffer, so this bug only shows in prod.)
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const input = Buffer.alloc(bytes.byteLength);
-    input.set(bytes);
+    await writeFile(tmpPath, new Uint8Array(await file.arrayBuffer()));
     // rotate() applies EXIF orientation; sharp drops metadata by default → EXIF stripped.
-    const processed = await sharp(input)
+    const processed = await sharp(tmpPath)
       .rotate()
       .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
       .webp({ quality: 82 })
@@ -63,5 +67,7 @@ export async function uploadImage(formData: FormData): Promise<UploadResult> {
   } catch (err) {
     logger.error("upload.failed", { userId: user.id, kind, message: String(err) });
     return { error: "Качването не бе успешно. Опитайте отново." };
+  } finally {
+    await unlink(tmpPath).catch(() => {});
   }
 }
