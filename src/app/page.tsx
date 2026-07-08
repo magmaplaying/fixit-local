@@ -140,7 +140,7 @@ export default async function Home() {
           <p className="hero-i1 font-mono text-xs uppercase tracking-[0.22em] text-cobble-300">
             Майстори · Услуги · Цяла България
           </p>
-          <h1 className="hero-i2 mt-5 max-w-3xl font-display text-5xl leading-[1.04] font-bold text-background [text-shadow:0_4px_24px_rgba(0,0,0,0.45)] sm:text-7xl">
+          <h1 className="hero-i2 mt-5 max-w-3xl font-display text-4xl leading-[1.08] font-bold text-background [text-shadow:0_4px_24px_rgba(0,0,0,0.45)] sm:text-7xl sm:leading-[1.04]">
             Доверена помощ,
             <br />
             <span className="text-cobble-400">където и да сте.</span>
