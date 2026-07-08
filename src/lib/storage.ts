@@ -12,9 +12,21 @@ export function isAllowedImageType(type: string): boolean {
   return (ALLOWED_IMAGE_TYPES as readonly string[]).includes(type);
 }
 
-/** True only when a Blob store is configured (lets the UI/action degrade gracefully). */
+/** True when a Blob store is reachable via either auth mode (static RW token,
+ *  or a connected store's BLOB_STORE_ID + auto VERCEL_OIDC_TOKEN). Lets the
+ *  UI/action degrade gracefully when neither is present. */
 export function isStorageConfigured(): boolean {
-  return Boolean(env.BLOB_READ_WRITE_TOKEN);
+  return Boolean(env.BLOB_READ_WRITE_TOKEN || env.BLOB_STORE_ID);
+}
+
+/** Auth options for @vercel/blob calls. When a static token is set we pass it;
+ *  otherwise we pass storeId and the SDK picks up VERCEL_OIDC_TOKEN from the
+ *  environment (the mode a Vercel-connected store uses — token is ignored then). */
+function blobAuth() {
+  return {
+    ...(env.BLOB_READ_WRITE_TOKEN ? { token: env.BLOB_READ_WRITE_TOKEN } : {}),
+    ...(env.BLOB_STORE_ID ? { storeId: env.BLOB_STORE_ID } : {}),
+  };
 }
 
 /** Hostname suffix of Vercel Blob public URLs — used to scope cleanup. */
@@ -24,19 +36,19 @@ export async function putImage(key: string, data: Buffer, contentType: string): 
   const blob = await put(key, data, {
     access: "public",
     contentType,
-    token: env.BLOB_READ_WRITE_TOKEN,
     addRandomSuffix: false,
+    ...blobAuth(),
   });
   return blob.url;
 }
 
 /** Best-effort delete; only touches blobs we host, never crashes the caller. */
 export async function deleteImage(url: string): Promise<void> {
-  if (!env.BLOB_READ_WRITE_TOKEN) return;
+  if (!isStorageConfigured()) return;
   try {
     const host = new URL(url).hostname;
     if (!host.endsWith(BLOB_HOST_SUFFIX)) return;
-    await del(url, { token: env.BLOB_READ_WRITE_TOKEN });
+    await del(url, blobAuth());
   } catch {
     // ignore — orphaned blob is harmless
   }

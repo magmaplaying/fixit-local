@@ -22,9 +22,13 @@ const schema = z.object({
   TURSO_AUTH_TOKEN: usesTurso
     ? z.string().min(1, "TURSO_AUTH_TOKEN is required for a hosted Turso (libsql://) database")
     : z.string().optional(),
-  // Optional: enables real image upload via Vercel Blob. Without it the app
-  // still runs and providers can paste image URLs instead.
+  // Enables real image upload via Vercel Blob. Two auth modes are supported
+  // (see src/lib/storage.ts): a static BLOB_READ_WRITE_TOKEN, or — the mode a
+  // connected Blob store uses on Vercel — BLOB_STORE_ID together with the
+  // auto-provisioned VERCEL_OIDC_TOKEN. Either one turns uploads on; without
+  // both, the app still runs and providers can paste image URLs instead.
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
+  BLOB_STORE_ID: z.string().optional(),
   // Optional: enables Stripe payments. Without these the booking loop works
   // unpaid (no payout onboarding, no checkout).
   STRIPE_SECRET_KEY: z.string().optional(),
@@ -48,6 +52,7 @@ const parsed = schema.safeParse({
   DATABASE_URL: process.env.DATABASE_URL,
   TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
   BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+  BLOB_STORE_ID: process.env.BLOB_STORE_ID,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
