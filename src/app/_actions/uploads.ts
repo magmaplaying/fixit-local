@@ -43,7 +43,13 @@ export async function uploadImage(formData: FormData): Promise<UploadResult> {
   const prefix = KIND_PREFIX[kind] ?? KIND_PREFIX.listing;
 
   try {
-    const input = Buffer.from(await file.arrayBuffer());
+    // On Vercel's serverless runtime, file.arrayBuffer() can be backed by a
+    // SharedArrayBuffer, which sharp rejects ("SharedArrayBuffer is not
+    // allowed"). Copy the bytes into a fresh, non-shared Buffer first. (Locally
+    // arrayBuffer() is a plain ArrayBuffer, so this bug only shows in prod.)
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const input = Buffer.alloc(bytes.byteLength);
+    input.set(bytes);
     // rotate() applies EXIF orientation; sharp drops metadata by default → EXIF stripped.
     const processed = await sharp(input)
       .rotate()
