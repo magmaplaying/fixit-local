@@ -33,13 +33,24 @@ function blobAuth() {
 export const BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
 
 export async function putImage(key: string, data: Buffer, contentType: string): Promise<string> {
-  const blob = await put(key, data, {
+  const blob = await put(key, toPlainBuffer(data), {
     access: "public",
     contentType,
     addRandomSuffix: false,
     ...blobAuth(),
   });
   return blob.url;
+}
+
+/** Re-home bytes into a Buffer backed by a plain (non-shared) ArrayBuffer.
+ *  On Vercel's runtime the buffers we hand to @vercel/blob can be backed by a
+ *  SharedArrayBuffer, which undici (its fetch/Blob layer) rejects outright
+ *  ("SharedArrayBuffer is not allowed"). `new ArrayBuffer` is never shared, so
+ *  copying through it guarantees an acceptable buffer. */
+function toPlainBuffer(data: Buffer): Buffer {
+  const ab = new ArrayBuffer(data.byteLength);
+  new Uint8Array(ab).set(data);
+  return Buffer.from(ab);
 }
 
 /** Best-effort delete; only touches blobs we host, never crashes the caller. */
