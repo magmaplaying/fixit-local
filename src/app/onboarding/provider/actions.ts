@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentUser, createSession } from "@/lib/auth";
 import { deleteImage } from "@/lib/storage";
+import { geocodeArea } from "@/lib/geocode";
 
 export async function saveProviderProfile(formData: FormData): Promise<void> {
   const user = await getCurrentUser();
@@ -17,10 +18,18 @@ export async function saveProviderProfile(formData: FormData): Promise<void> {
 
   const existing = await prisma.providerProfile.findUnique({ where: { userId: user.id } });
 
+  // Re-geocode only when the location changed (or is new) — avoids needless
+  // Nominatim calls on unrelated edits. null coords → city-center fallback.
+  const locationChanged = !existing || existing.city !== city || existing.area !== area;
+  const coords = locationChanged ? await geocodeArea(area, city) : null;
+  const coordFields = locationChanged
+    ? { latitude: coords?.lat ?? null, longitude: coords?.lng ?? null }
+    : {};
+
   await prisma.providerProfile.upsert({
     where: { userId: user.id },
-    update: { city, area, bio, phone, avatarUrl },
-    create: { userId: user.id, city, area, bio, phone, avatarUrl },
+    update: { city, area, bio, phone, avatarUrl, ...coordFields },
+    create: { userId: user.id, city, area, bio, phone, avatarUrl, ...coordFields },
   });
 
   // Best-effort: drop the old avatar blob if it was replaced/removed.

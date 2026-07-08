@@ -222,7 +222,13 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
           <p className="mt-2 whitespace-pre-line leading-relaxed text-black/70 dark:text-white/70">{listing.description}</p>
 
           <h2 className="mt-10 font-display text-xl font-semibold">Локация</h2>
-          <LocationMap city={listing.city} area={listing.area} className="mt-3" />
+          <LocationMap
+            city={listing.city}
+            area={listing.area}
+            lat={listing.latitude}
+            lng={listing.longitude}
+            className="mt-3"
+          />
 
           {/* Отзиви */}
           <h2 className="mt-10 font-display text-xl font-semibold">Отзиви</h2>

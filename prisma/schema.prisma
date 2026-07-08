@@ -42,6 +42,8 @@ model ProviderProfile {
   phone     String?
   city      String
   area      String?
+  latitude  Float? // geocoded from area+city at save time (Nominatim); null → city-center fallback
+  longitude Float?
   avatarUrl String?
   verified  Boolean  @default(false)
   ratingAvg   Float?
@@ -75,6 +77,8 @@ model Listing {
   price       Float?
   city        String
   area        String?
+  latitude    Float? // geocoded from area+city at save time (Nominatim); null → city-center fallback
+  longitude   Float?
   photos      String          @default("[]") // JSON-encoded array of image URLs
   active      Boolean         @default(true)
   featuredUntil DateTime?

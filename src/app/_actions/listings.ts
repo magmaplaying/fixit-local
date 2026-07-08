@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { listingSchema } from "@/lib/validations";
 import { parsePhotos } from "@/lib/format";
 import { deleteImage } from "@/lib/storage";
+import { geocodeArea } from "@/lib/geocode";
 
 export type ListingFormState = { error?: string };
 
@@ -43,6 +44,7 @@ export async function createListing(
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Невалидни данни" };
 
   const d = parsed.data;
+  const coords = await geocodeArea(d.area, d.city);
   await prisma.listing.create({
     data: {
       providerId: profile.id,
@@ -53,6 +55,8 @@ export async function createListing(
       price: d.price ?? null,
       city: d.city,
       area: d.area || null,
+      latitude: coords?.lat ?? null,
+      longitude: coords?.lng ?? null,
       photos: JSON.stringify(d.photos),
       active: true,
     },
@@ -76,6 +80,14 @@ export async function updateListing(
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Невалидни данни" };
 
   const d = parsed.data;
+  // Re-geocode only when the location actually changed.
+  const locationChanged = existing.city !== d.city || (existing.area ?? null) !== (d.area || null);
+  const coordFields = locationChanged
+    ? await geocodeArea(d.area, d.city).then((c) => ({
+        latitude: c?.lat ?? null,
+        longitude: c?.lng ?? null,
+      }))
+    : {};
   await prisma.listing.update({
     where: { id },
     data: {
@@ -86,6 +98,7 @@ export async function updateListing(
       price: d.price ?? null,
       city: d.city,
       area: d.area || null,
+      ...coordFields,
       photos: JSON.stringify(d.photos),
       active: formData.get("active") != null,
     },

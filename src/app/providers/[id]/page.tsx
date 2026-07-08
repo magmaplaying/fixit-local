@@ -125,7 +125,13 @@ export default async function ProviderProfilePage({ params }: { params: Params }
             {overall != null && <> · ★ {overall.toFixed(1)} ({allRatings.length})</>}
           </p>
           {profile.bio && <p className="mt-3 text-black/70 dark:text-white/70">{profile.bio}</p>}
-          <LocationMap city={profile.city} area={profile.area} className="mt-4 max-w-md" />
+          <LocationMap
+            city={profile.city}
+            area={profile.area}
+            lat={profile.latitude}
+            lng={profile.longitude}
+            className="mt-4 max-w-md"
+          />
         </div>
       </div>
 
