@@ -157,12 +157,12 @@ export default async function Home() {
               name="q"
               type="text"
               placeholder="Какво трябва да се свърши?"
-              className="flex-1 rounded-xl bg-transparent px-4 py-3 text-sm outline-none placeholder:text-black/40"
+              className="w-full min-w-0 flex-1 rounded-xl bg-transparent px-4 py-3 text-sm outline-none placeholder:text-black/40"
             />
             <select
               name="category"
               defaultValue=""
-              className="rounded-xl bg-black/[0.04] px-3 py-3 text-sm outline-none"
+              className="min-w-0 rounded-xl bg-black/[0.04] px-3 py-3 text-sm outline-none sm:max-w-[10rem]"
             >
               <option value="">Всички категории</option>
               {categories.map((c) => (
@@ -173,7 +173,7 @@ export default async function Home() {
             </select>
             <select
               name="city"
-              className="rounded-xl bg-black/[0.04] px-3 py-3 text-sm outline-none"
+              className="min-w-0 rounded-xl bg-black/[0.04] px-3 py-3 text-sm outline-none sm:max-w-[9rem]"
               defaultValue=""
             >
               <option value="">Цяла България</option>
@@ -185,7 +185,7 @@ export default async function Home() {
             </select>
             <button
               type="submit"
-              className="btn-press rounded-xl bg-cobble-600 px-6 py-3 font-medium text-white transition hover:bg-cobble-700"
+              className="btn-press shrink-0 rounded-xl bg-cobble-600 px-6 py-3 font-medium text-white transition hover:bg-cobble-700"
             >
               Търси
             </button>

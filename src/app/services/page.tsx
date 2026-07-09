@@ -195,7 +195,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           name="category"
           defaultValue={activeCategory ?? ""}
           aria-label="Каква услуга ви трябва?"
-          className="flex-1 cursor-pointer rounded-xl bg-transparent px-3 py-2.5 text-sm outline-none transition hover:bg-black/[0.03]"
+          className="min-w-0 flex-1 cursor-pointer rounded-xl bg-transparent px-3 py-2.5 text-sm outline-none transition hover:bg-black/[0.03]"
         >
           <option value="">Какво трябва да се свърши?</option>
           {categories.map((c) => (
@@ -208,7 +208,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           name="city"
           defaultValue={sp.city ?? ""}
           aria-label="Град"
-          className="rounded-xl bg-black/[0.04] px-3 py-2.5 text-sm outline-none transition hover:bg-black/[0.07]"
+          className="min-w-0 rounded-xl bg-black/[0.04] px-3 py-2.5 text-sm outline-none transition hover:bg-black/[0.07] sm:max-w-[9rem]"
         >
           <option value="">Цяла България</option>
           {CITIES.map((c) => (
@@ -218,7 +218,7 @@ export default async function ServicesPage({ searchParams }: { searchParams: Sea
           ))}
         </select>
         <NearMeButton params={carryParams} />
-        <button type="submit" className="btn-press rounded-xl bg-cobble-600 px-6 py-2.5 font-medium text-white transition hover:bg-cobble-700">
+        <button type="submit" className="btn-press shrink-0 rounded-xl bg-cobble-600 px-6 py-2.5 font-medium text-white transition hover:bg-cobble-700">
           Търси
         </button>
       </form>
