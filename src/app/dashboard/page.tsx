@@ -93,7 +93,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
               ? "✓ Обявата е обновена."
               : sp.deleted
                 ? "✓ Обявата е изтрита."
-                : "✓ Обявата е издигната за 7 дни."}
+                : "✓ Обявата е топ за 7 дни."}
         </p>
       )}
 
@@ -259,7 +259,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                   l.active &&
                   (l.featuredUntil && l.featuredUntil > new Date() ? (
                     <span className="rounded-lg bg-cobble-100 px-2 py-1 text-xs font-medium text-cobble-800 dark:bg-cobble-900/50 dark:text-cobble-300">
-                      ★ Издигната
+                      ★ Топ
                     </span>
                   ) : (
                     <BoostButton listingId={l.id} />

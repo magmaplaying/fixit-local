@@ -35,7 +35,7 @@ export function ListingCard({ l, eager = false }: { l: ListingCardData; eager?: 
         )}
         {l.featured && (
           <span className="absolute right-2 top-2 z-10 rounded-full bg-cobble-600 px-2.5 py-1 font-mono text-[11px] font-semibold text-white shadow-sm">
-            ★ Издигната
+            ★ Топ
           </span>
         )}
         {l.imageUrl ? (

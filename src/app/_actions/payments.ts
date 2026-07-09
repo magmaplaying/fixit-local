@@ -174,7 +174,7 @@ export async function startBoostCheckout(listingId: string): Promise<CheckoutRes
             // Stripe moved Bulgarian accounts to EUR (euro adoption); "bgn" is
             // rejected now. Boost is a fixed platform price.
             currency: "eur",
-            product_data: { name: `Издигане на „${listing.title}" (7 дни)` },
+            product_data: { name: `Топ обява „${listing.title}" (7 дни)` },
             unit_amount: 500, // €5.00
           },
           quantity: 1,
