@@ -321,7 +321,7 @@ function AcceptForm({
           min="0"
           step="0.01"
           defaultValue={defaultAmount ?? ""}
-          placeholder="лв."
+          placeholder="€"
           title="Сума за плащане"
           className="w-20 rounded-lg border border-black/10 px-2 py-1.5 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
         />

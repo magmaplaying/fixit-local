@@ -61,6 +61,7 @@ export async function requestBooking(formData: FormData): Promise<void> {
       message: note,
       scheduledFor: scheduledFor ? new Date(scheduledFor) : null,
       status: "REQUESTED",
+      currency: "EUR", // Bulgaria adopted the euro; Stripe rejects "bgn"
       withdrawalConsentAt: new Date(),
     },
   });

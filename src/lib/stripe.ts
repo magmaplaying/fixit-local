@@ -17,7 +17,7 @@ export function commissionFor(amount: number): number {
   return Math.round((amount * COMMISSION_BPS) / 10000);
 }
 
-/** Major → minor units, e.g. 25.5 BGN → 2550. */
+/** Major → minor units, e.g. 25.5 EUR → 2550. */
 export function toMinor(amountMajor: number): number {
   return Math.round(amountMajor * 100);
 }
@@ -27,9 +27,9 @@ export function fromMinor(amountMinor: number): number {
   return amountMinor / 100;
 }
 
-/** Format a minor-unit amount for display, e.g. 2550 → "25.50 лв.". */
-export function formatMoney(amountMinor: number, currency = "BGN"): string {
+/** Format a minor-unit amount for display, e.g. 2045 → "€20.45". Bulgaria has
+ *  adopted the euro; amounts are in EUR (legacy BGN rows keep their label). */
+export function formatMoney(amountMinor: number, currency = "EUR"): string {
   const major = fromMinor(amountMinor);
-  const suffix = currency === "BGN" ? " лв." : ` ${currency}`;
-  return `${major.toFixed(2)}${suffix}`;
+  return currency === "BGN" ? `${major.toFixed(2)} лв.` : `€${major.toFixed(2)}`;
 }

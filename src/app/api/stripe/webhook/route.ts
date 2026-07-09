@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { stripe, formatMoney } from "@/lib/stripe";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/log";
@@ -45,7 +45,7 @@ export async function POST(req: Request): Promise<Response> {
             include: { listing: { include: { provider: true } }, payment: true },
           });
           if (booking?.payment) {
-            const amountLabel = `${(booking.payment.amount / 100).toFixed(2)} лв.`;
+            const amountLabel = formatMoney(booking.payment.amount, booking.payment.currency);
             await notify({
               userId: booking.listing.provider.userId,
               ...paymentReceived({ listingTitle: booking.listing.title, amountLabel }),
