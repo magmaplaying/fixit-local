@@ -24,6 +24,18 @@ const CATEGORIES = [
   { name: "IT помощ", slug: "it", icon: "💻" },
   { name: "Автосервиз", slug: "auto", icon: "🚗" },
   { name: "Ключар", slug: "locksmith", icon: "🔑" },
+  { name: "Дърводелство", slug: "carpentry", icon: "🪚" },
+  { name: "Плочки и облицовки", slug: "tiling", icon: "🧱" },
+  { name: "Покриви", slug: "roofing", icon: "🏠" },
+  { name: "Дограма и стъкло", slug: "glazing", icon: "🪟" },
+  { name: "Ремонт на техника", slug: "appliance-repair", icon: "🔌" },
+  { name: "Заваряване", slug: "welding", icon: "🔥" },
+  { name: "ДДД и дезинсекция", slug: "pest-control", icon: "🐜" },
+  { name: "Пране на килими и мебели", slug: "upholstery", icon: "🛋️" },
+  { name: "Домашни любимци", slug: "pet-care", icon: "🐕" },
+  { name: "Фотография", slug: "photography", icon: "📷" },
+  { name: "Кетъринг", slug: "catering", icon: "🍽️" },
+  { name: "Масаж", slug: "massage", icon: "💆" },
 ];
 
 // photo: тематичен кадър от public/seed/ (локален, без външни CDN зависимости).
