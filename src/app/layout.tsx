@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { env } from "@/lib/env";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
+import { NavProgress } from "@/components/site/nav-progress";
 import { RefCapture } from "@/components/growth/ref-capture";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 
@@ -70,6 +72,9 @@ export default function RootLayout({
         >
           Към съдържанието
         </a>
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
         <RefCapture />
         <Navbar />
         <main id="main" className="flex-1">

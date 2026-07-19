@@ -318,10 +318,11 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
               <form action={requestBooking} className="space-y-3">
                 <input type="hidden" name="listingId" value={listing.id} />
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium">Кога ви трябва?</span>
+                  <span className="mb-1 block text-sm font-medium">Кога ви трябва? (дата и час)</span>
                   <input
-                    type="date"
+                    type="datetime-local"
                     name="scheduledFor"
+                    step={900}
                     className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
                   />
                 </label>

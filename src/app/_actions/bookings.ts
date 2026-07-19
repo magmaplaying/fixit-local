@@ -8,6 +8,7 @@ import { canTransitionBooking } from "@/lib/booking-status";
 import { logger } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
 import { bookingSchema } from "@/lib/validations";
+import { parseSchedule } from "@/lib/format";
 import { refundIfPaid } from "@/app/_actions/payments";
 import { notify } from "@/lib/notify";
 import { bookingRequested, bookingStatus, type StatusEvent } from "@/lib/notify-templates";
@@ -59,7 +60,7 @@ export async function requestBooking(formData: FormData): Promise<void> {
       listingId,
       customerId: user.id,
       message: note,
-      scheduledFor: scheduledFor ? new Date(scheduledFor) : null,
+      scheduledFor: parseSchedule(scheduledFor),
       status: "REQUESTED",
       currency: "EUR", // Bulgaria adopted the euro; Stripe rejects "bgn"
       withdrawalConsentAt: new Date(),

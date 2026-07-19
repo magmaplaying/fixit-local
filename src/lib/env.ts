@@ -45,6 +45,10 @@ const schema = z.object({
   // Sender identity for outgoing email. Resend's onboarding@resend.dev works for
   // testing; swap for a verified domain (no-reply@podruka.bg) in production.
   EMAIL_FROM: z.string().min(1).default("Podruka <onboarding@resend.dev>"),
+  // Optional: shared secret for the lifecycle cron endpoint. Vercel Cron sends it
+  // as `Authorization: Bearer <CRON_SECRET>`. When set, the endpoint requires it;
+  // when unset the endpoint is open in dev but disabled in production (fail-closed).
+  CRON_SECRET: z.string().optional(),
 });
 
 const parsed = schema.safeParse({
@@ -60,6 +64,7 @@ const parsed = schema.safeParse({
   GOOGLE_SITE_VERIFICATION: process.env.GOOGLE_SITE_VERIFICATION,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   EMAIL_FROM: process.env.EMAIL_FROM,
+  CRON_SECRET: process.env.CRON_SECRET,
 });
 
 if (!parsed.success) {

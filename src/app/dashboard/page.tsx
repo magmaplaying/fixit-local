@@ -8,7 +8,7 @@ import { BoostButton } from "@/components/listing/boost-button";
 import { deleteListing } from "@/app/_actions/listings";
 import { StatusBadge } from "@/components/booking/status-badge";
 import { PAYMENT_LABELS } from "@/lib/booking-status";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, formatSchedule } from "@/lib/format";
 import { isStripeConfigured, formatMoney } from "@/lib/stripe";
 import { unreadInBooking } from "@/lib/unread";
 
@@ -167,7 +167,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
                 </div>
                 <p className="mt-0.5 text-sm text-black/55 dark:text-white/55">
                   {b.customer.name}
-                  {b.scheduledFor ? ` · ${b.scheduledFor.toLocaleDateString()}` : ""}
+                  {b.scheduledFor ? ` · ${formatSchedule(b.scheduledFor)}` : ""}
                   {b.message ? ` · „${b.message}“` : ""}
                 </p>
               </div>

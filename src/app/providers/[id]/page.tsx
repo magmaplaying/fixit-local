@@ -10,6 +10,7 @@ import { LocationMap } from "@/components/map/location-map";
 import { inCity } from "@/lib/cities";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ShareButtons } from "@/components/share/share-buttons";
 
 type Params = Promise<{ id: string }>;
 
@@ -132,6 +133,15 @@ export default async function ProviderProfilePage({ params }: { params: Params }
             lng={profile.longitude}
             className="mt-4 max-w-md"
           />
+          <div className="mt-5">
+            <p className="mb-1.5 text-xs font-medium text-black/40 dark:text-white/40">
+              Сподели този профил
+            </p>
+            <ShareButtons
+              url={`${SITE_URL}/providers/${profile.id}`}
+              title={`${profile.user.name} — услуги ${inCity(profile.city)} | ${SITE_NAME}`}
+            />
+          </div>
         </div>
       </div>
 

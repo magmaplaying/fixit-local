@@ -19,6 +19,34 @@ export function averageRating(reviews: { rating: number }[]): number | null {
   return reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 }
 
+/**
+ * Parse an <input type="date"> ("YYYY-MM-DD") or type="datetime-local"
+ * ("YYYY-MM-DDTHH:mm") value into a Date. The wall-clock is pinned to UTC via
+ * Date.UTC so the stored instant renders back identically regardless of the
+ * server's timezone (Vercel runs in UTC, local dev may not) — the whole app is
+ * single-timezone (Bulgaria), so a naive `new Date(str)` would shift the hour by
+ * the server offset. Pairs with formatSchedule. Returns null for empty/invalid.
+ */
+export function parseSchedule(input: string | null | undefined): Date | null {
+  if (!input) return null;
+  const m = input.match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/);
+  if (!m) return null;
+  const [, y, mo, d, h, min] = m;
+  return new Date(Date.UTC(+y, +mo - 1, +d, h ? +h : 0, min ? +min : 0));
+}
+
+/** Render a scheduled slot in Bulgarian: date, plus the time when one was picked. */
+export function formatSchedule(date: Date): string {
+  const hasTime = date.getUTCHours() !== 0 || date.getUTCMinutes() !== 0;
+  return date.toLocaleString("bg-BG", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    ...(hasTime ? { hour: "2-digit", minute: "2-digit" } : {}),
+    timeZone: "UTC",
+  });
+}
+
 /** Short Bulgarian relative time, e.g. "сега", "преди 5 мин", "преди 3 ч", "вчера". */
 export function timeAgo(date: Date): string {
   const s = Math.floor((Date.now() - date.getTime()) / 1000);

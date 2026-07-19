@@ -6,7 +6,7 @@ import { setBookingStatus } from "@/app/_actions/bookings";
 import { startBookingCheckout } from "@/app/_actions/payments";
 import { StatusBadge } from "@/components/booking/status-badge";
 import { ReviewForm } from "@/components/booking/review-form";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, formatSchedule } from "@/lib/format";
 import { formatMoney } from "@/lib/stripe";
 import { PAYMENT_LABELS } from "@/lib/booking-status";
 import { unreadInBooking } from "@/lib/unread";
@@ -81,7 +81,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Sea
                   </div>
                   <p className="mt-0.5 text-sm text-black/55 dark:text-white/55">
                     {b.listing.provider.user.name} · {formatPrice(b.listing.priceType, b.listing.price)}
-                    {b.scheduledFor ? ` · ${b.scheduledFor.toLocaleDateString()}` : ""}
+                    {b.scheduledFor ? ` · ${formatSchedule(b.scheduledFor)}` : ""}
                   </p>
                   <Link
                     href={`/chat/${b.id}`}
