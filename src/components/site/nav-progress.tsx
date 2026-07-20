@@ -120,9 +120,9 @@ export function NavProgress() {
   if (!visible) return null;
 
   return (
-    <div aria-hidden className="fixed left-0 top-0 z-[100] h-[3px] w-full bg-cobble-950/10">
+    <div aria-hidden className="fixed left-0 top-0 z-[100] h-px w-full bg-cobble-950/10">
       <div
-        className="h-full bg-gradient-to-r from-cobble-400 via-cobble-500 to-cobble-600 shadow-[0_0_8px_1px_rgba(224,160,25,0.65)] transition-[width] duration-200 ease-out"
+        className="h-full bg-gradient-to-r from-cobble-400 via-cobble-500 to-cobble-600 shadow-[0_0_6px_1px_rgba(224,160,25,0.55)] transition-[width] duration-200 ease-out"
         style={{ width: `${progress}%` }}
       />
     </div>
