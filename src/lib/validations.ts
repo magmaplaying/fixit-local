@@ -12,6 +12,11 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Въведете парола"),
 });
 
+export const profileSchema = z.object({
+  name: z.string().min(2, "Въведете вашето име"),
+  email: z.email("Въведете валиден имейл"),
+});
+
 export const PRICE_TYPES = ["HOURLY", "FIXED", "QUOTE"] as const;
 
 export const listingSchema = z

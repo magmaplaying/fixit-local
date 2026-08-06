@@ -70,7 +70,24 @@ export async function Navbar() {
                   </span>
                 )}
               </Link>
-              <span className="hidden text-black/45 sm:inline">Здравей, {user.name.split(" ")[0]}</span>
+              <NavLink href="/settings" className="inline-flex items-center gap-1.5">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span className="sr-only">Профил</span>
+                <span className="hidden sm:inline">{user.name.split(" ")[0]}</span>
+              </NavLink>
               <form action={logoutAction}>
                 <button className="rounded-lg px-3 py-1.5 text-black/70 hover:bg-black/[0.05]">Изход</button>
               </form>

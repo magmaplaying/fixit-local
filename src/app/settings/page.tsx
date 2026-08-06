@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { setEmailNotifications } from "@/app/_actions/settings";
+import Link from "next/link";
+import { setEmailNotifications, updateProfile } from "@/app/_actions/settings";
 import { deleteAccount } from "@/app/_actions/account";
 
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ delete?: string }>;
+  searchParams: Promise<{ delete?: string; profile?: string }>;
 }) {
   const sessionUser = await getCurrentUser();
   if (!sessionUser) redirect("/login?next=/settings");
@@ -19,11 +20,67 @@ export default async function SettingsPage({
   });
   const enabled = user?.emailNotifications ?? true;
 
+  const inputClass =
+    "w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:border-cobble-500 focus:ring-2 focus:ring-cobble-500/20";
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-bold tracking-tight">Настройки</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Профил и настройки</h1>
 
       <section className="mt-6 rounded-2xl border border-black/5 bg-white p-6">
+        <h2 className="font-medium">Данни на профила</h2>
+        <p className="mt-1 max-w-md text-sm text-black/55">
+          Името се вижда от хората, с които общувате. Имейлът се използва за вход и известия.
+        </p>
+
+        {sp.profile === "saved" && (
+          <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+            Промените са запазени.
+          </p>
+        )}
+        {sp.profile === "invalid" && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            Въведете име (поне 2 символа) и валиден имейл.
+          </p>
+        )}
+        {sp.profile === "taken" && (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            Вече съществува акаунт с този имейл.
+          </p>
+        )}
+
+        <form action={updateProfile} className="mt-4 space-y-4">
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium">Име</span>
+            <input name="name" defaultValue={sessionUser.name} className={inputClass} />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium">Имейл</span>
+            <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              defaultValue={sessionUser.email}
+              className={inputClass}
+            />
+          </label>
+          <button className="rounded-lg bg-cobble-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cobble-700">
+            Запази промените
+          </button>
+        </form>
+
+        {sessionUser.role === "PROVIDER" && (
+          <p className="mt-4 border-t border-black/5 pt-4 text-sm text-black/55">
+            Град, телефон, снимка и описание се редактират в{" "}
+            <Link href="/onboarding/provider" className="font-medium text-cobble-800 hover:underline">
+              профила на специалист
+            </Link>
+            .
+          </p>
+        )}
+      </section>
+
+      <section className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="font-medium">Известия по имейл</h2>

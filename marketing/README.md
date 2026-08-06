@@ -8,6 +8,7 @@
 |---|---|---|
 | 01 | [partnerships.md](01-partnerships.md) | Партньорства за дистрибуция (домоуправители, брокери, магазини, хостове) + готови съобщения |
 | 02 | [provider-recruitment.md](02-provider-recruitment.md) | Систематичен набор на 30 изпълнителя + скрипт и възражения |
+| 07 | [registration-invite-email.md](07-registration-invite-email.md) | Готов имейл (plain text + HTML) за покана на нови хора да се регистрират |
 | 06 | [facebook-lead-posts.md](06-facebook-lead-posts.md) | Готови FB постове за реални клиентски заявки (стъпка 1, преди обажданията) |
 | 03 | [price-guides.md](03-price-guides.md) | SEO ценови водачи „Колко струва X в София" |
 | 04 | [pr-kit.md](04-pr-kit.md) | Безплатен PR — ъгли, boilerplate, pitch, медии |
