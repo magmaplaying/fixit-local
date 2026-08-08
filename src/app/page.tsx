@@ -7,7 +7,6 @@ import { CITIES } from "@/lib/cities";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Reveal } from "@/components/motion/reveal";
-import { Counter } from "@/components/motion/counter";
 import { HeroParallax } from "@/components/motion/hero-parallax";
 import { PaveDivider } from "@/components/site/pave-divider";
 
@@ -71,7 +70,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 export default async function Home() {
-  const [categories, listings, providerCount, reviewCount, cityRows] = await Promise.all([
+  const [categories, listings] = await Promise.all([
     prisma.category.findMany({
       orderBy: { name: "asc" },
       include: { _count: { select: { listings: true } } },
@@ -86,17 +85,7 @@ export default async function Home() {
         reviews: { select: { rating: true } },
       },
     }),
-    prisma.providerProfile.count(),
-    prisma.review.count({ where: { hidden: false } }),
-    prisma.listing.findMany({ where: { active: true }, distinct: ["city"], select: { city: true } }),
   ]);
-
-  const stats = [
-    { value: providerCount, label: "майстори" },
-    { value: categories.length, label: "категории услуги" },
-    { value: cityRows.length, label: "града" },
-    { value: reviewCount, label: "отзива от клиенти" },
-  ];
 
   const cards: ListingCardData[] = listings.map((l) => ({
     id: l.id,
@@ -278,20 +267,6 @@ export default async function Home() {
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Community in numbers — live counts, counted up on scroll */}
-      <section aria-label="Платформата в числа" className="border-b border-black/5 bg-white/50">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-10 px-4 py-14 sm:grid-cols-4">
-          {stats.map((s, i) => (
-            <Reveal key={s.label} delay={i * 90} className="text-center">
-              <p className="font-display text-4xl font-bold text-cobble-700 sm:text-5xl">
-                <Counter value={s.value} />
-              </p>
-              <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-black/45">{s.label}</p>
-            </Reveal>
-          ))}
         </div>
       </section>
 
