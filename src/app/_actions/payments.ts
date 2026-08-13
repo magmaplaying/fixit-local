@@ -10,6 +10,7 @@ import { stripe, commissionFor, toMinor } from "@/lib/stripe";
 import { getBaseUrl } from "@/lib/url";
 import { notify } from "@/lib/notify";
 import { bookingStatus } from "@/lib/notify-templates";
+import { isSlotTaken } from "@/lib/schedule";
 
 /** Provider: create/continue a Stripe Connect Express account for payouts. */
 export async function startStripeOnboarding(): Promise<void> {
@@ -66,6 +67,16 @@ export async function acceptBookingWithPayment(formData: FormData): Promise<void
     return;
   }
   if (!canTransitionBooking(booking.status, "ACCEPTED", "PROVIDER")) return;
+
+  // Same slot guard as setBookingStatus — this is the path the dashboard's
+  // "Приеми" button actually takes, so it has to refuse a taken hour too.
+  if (
+    booking.scheduledFor &&
+    (await isSlotTaken(booking.listing.providerId, booking.scheduledFor, booking.id))
+  ) {
+    logger.warn("payment.accept.slot_taken", { userId: user.id, bookingId });
+    redirect("/dashboard?accept=taken");
+  }
 
   const provider = booking.listing.provider;
   const charge = stripe && provider.payoutsEnabled && Number.isFinite(amountMajor) && amountMajor > 0;

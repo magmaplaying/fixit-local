@@ -15,8 +15,22 @@ import { StickyRequestBar } from "@/components/listing/sticky-request-bar";
 import { ListingCard, type ListingCardData } from "@/components/listing/listing-card";
 import { PhotoGallery } from "@/components/listing/photo-gallery";
 import { Reveal } from "@/components/motion/reveal";
+import { SchedulePicker } from "@/components/booking/schedule-picker";
+import { getSchedule } from "@/lib/schedule";
 
 type Params = Promise<{ id: string }>;
+type SearchParams = Promise<{ error?: string }>;
+
+// requestBooking redirects back here with ?error=… on every refusal. Without
+// these the customer is bounced to an unchanged page and left guessing.
+const BOOKING_ERRORS: Record<string, string> = {
+  taken: "Този час вече е зает. Изберете друг свободен час.",
+  duplicate: "Вече имате активна заявка за тази обява.",
+  self: "Не можете да заявите собствената си обява.",
+  rate: "Твърде много заявки за кратко време. Опитайте пак след минута.",
+  unavailable: "Обявата вече не е активна.",
+  "1": "Проверете въведените данни и опитайте отново.",
+};
 
 // Cached so generateMetadata and the page share a single query per request.
 const getListing = cache((id: string) =>
@@ -54,8 +68,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-export default async function ListingDetailPage({ params }: { params: Params }) {
+export default async function ListingDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { id } = await params;
+  const bookingError = BOOKING_ERRORS[(await searchParams).error ?? ""];
 
   const listing = await getListing(id);
   if (!listing || !listing.active) notFound();
@@ -64,6 +85,9 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
   const rating = averageRating(listing.reviews);
   const isOwner = user != null && listing.provider.userId === user.id;
   const photos = parsePhotos(listing.photos);
+  // Slots belong to the provider, so every listing of theirs shows the same
+  // occupied hours.
+  const schedule = await getSchedule(listing.providerId);
 
   // Recovery path: 3 more listings from the category, same-city first — so a
   // near-miss listing is a fork in the road, not a dead end.
@@ -289,15 +313,18 @@ export default async function ListingDetailPage({ params }: { params: Params }) 
             ) : user ? (
               <form action={requestBooking} className="space-y-3">
                 <input type="hidden" name="listingId" value={listing.id} />
-                <label className="block">
-                  <span className="mb-1 block text-sm font-medium">Кога ви трябва? (дата и час)</span>
-                  <input
-                    type="datetime-local"
-                    name="scheduledFor"
-                    step={900}
-                    className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-cobble-500 dark:border-white/15 dark:bg-white/5"
-                  />
-                </label>
+                {bookingError && (
+                  <p
+                    role="alert"
+                    className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300"
+                  >
+                    {bookingError}
+                  </p>
+                )}
+                <div className="block">
+                  <span className="mb-1.5 block text-sm font-medium">Кога ви трябва?</span>
+                  <SchedulePicker days={schedule} />
+                </div>
                 <label className="block">
                   <span className="mb-1 block text-sm font-medium">Съобщение (по избор)</span>
                   <textarea

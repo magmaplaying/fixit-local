@@ -21,6 +21,7 @@ type SearchParams = Promise<{
   boost_session?: string;
   complete?: string;
   verify?: string;
+  accept?: string;
 }>;
 
 export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
@@ -110,6 +111,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
       {(sp.stripe === "error" || sp.stripe === "unconfigured") && (
         <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
           Свързването със Stripe не бе успешно. Уверете се, че Stripe Connect е активиран за платформата.
+        </p>
+      )}
+      {sp.accept === "taken" && (
+        <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+          Вече имате приета заявка за този час. Откажете я или се разберете с клиента за друг час
+          от чата.
         </p>
       )}
       {sp.verify === "required" && (

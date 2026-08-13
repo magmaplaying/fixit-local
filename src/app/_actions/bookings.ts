@@ -14,6 +14,7 @@ import { notify } from "@/lib/notify";
 import { bookingRequested, bookingStatus, type StatusEvent } from "@/lib/notify-templates";
 import { maskContacts } from "@/lib/contact-guard";
 import { track } from "@/lib/track";
+import { isSlotTaken } from "@/lib/schedule";
 
 /** Customer requests a booking against a listing. */
 export async function requestBooking(formData: FormData): Promise<void> {
@@ -53,6 +54,13 @@ export async function requestBooking(formData: FormData): Promise<void> {
   if (!parsed.success) redirect(`/listing/${listingId}?error=1`);
 
   const { message, scheduledFor } = parsed.data;
+  const when = parseSchedule(scheduledFor);
+  // The picker hides taken hours, but this action is callable directly — this
+  // is what actually stops two customers landing on the same slot.
+  if (when && (await isSlotTaken(listing.providerId, when))) {
+    redirect(`/listing/${listingId}?error=taken`);
+  }
+
   // The request note predates any payment — same contact masking as the chat.
   const note = message ? maskContacts(message).text : null;
   await prisma.booking.create({
@@ -60,7 +68,7 @@ export async function requestBooking(formData: FormData): Promise<void> {
       listingId,
       customerId: user.id,
       message: note,
-      scheduledFor: parseSchedule(scheduledFor),
+      scheduledFor: when,
       status: "REQUESTED",
       currency: "EUR", // Bulgaria adopted the euro; Stripe rejects "bgn"
       withdrawalConsentAt: new Date(),
@@ -110,6 +118,17 @@ export async function setBookingStatus(formData: FormData): Promise<void> {
       actor,
     });
     return;
+  }
+
+  // Two customers may request the same hour — only accepting claims it, so the
+  // second acceptance has to be refused or the provider is double-booked.
+  if (
+    status === "ACCEPTED" &&
+    booking.scheduledFor &&
+    (await isSlotTaken(booking.listing.providerId, booking.scheduledFor, booking.id))
+  ) {
+    logger.warn("booking.accept.slot_taken", { userId: user.id, bookingId });
+    redirect("/dashboard?accept=taken");
   }
 
   // A booking with an online payment in play can only be completed once the
