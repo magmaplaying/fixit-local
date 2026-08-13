@@ -8,6 +8,7 @@ import { listingSchema } from "@/lib/validations";
 import { parsePhotos } from "@/lib/format";
 import { deleteImage } from "@/lib/storage";
 import { geocodeArea } from "@/lib/geocode";
+import { ensureCanPublish } from "@/lib/provider-gate";
 
 export type ListingFormState = { error?: string };
 
@@ -40,6 +41,15 @@ export async function createListing(
   formData: FormData,
 ): Promise<ListingFormState> {
   const profile = await requireProvider();
+  // The gate lives here, not only in the page — a server action is callable
+  // directly, so the page redirect alone would not actually enforce anything.
+  if (!(await ensureCanPublish(profile))) {
+    return {
+      error:
+        "За да публикувате обява, първо потвърдете самоличност/фирма и банкова сметка от таблото.",
+    };
+  }
+
   const parsed = listingSchema.safeParse(readForm(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Невалидни данни" };
 

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { createListing } from "@/app/_actions/listings";
 import { ListingForm } from "@/components/listing/listing-form";
+import { ensureCanPublish } from "@/lib/provider-gate";
 
 export default async function NewListingPage() {
   const user = await getCurrentUser();
@@ -11,6 +12,9 @@ export default async function NewListingPage() {
 
   const profile = await prisma.providerProfile.findUnique({ where: { userId: user.id } });
   if (!profile) redirect("/onboarding/provider");
+  // Send unverified providers back rather than rendering a form the action
+  // would reject; the dashboard explains what's missing and links to Stripe.
+  if (!(await ensureCanPublish(profile))) redirect("/dashboard?verify=required");
 
   const categories = await prisma.category.findMany({ orderBy: { name: "asc" } });
 

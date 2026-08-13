@@ -46,6 +46,10 @@ model ProviderProfile {
   longitude Float?
   avatarUrl String?
   verified  Boolean  @default(false)
+  // Grandfathers providers who existed before listings required a verified
+  // Stripe account. Set for the accounts already on the platform at cutover;
+  // everyone created after must complete onboarding to publish.
+  verificationExempt Boolean @default(false)
   ratingAvg   Float?
   ratingCount Int      @default(0)
   stripeAccountId String?

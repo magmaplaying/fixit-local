@@ -11,6 +11,7 @@ import { PAYMENT_LABELS } from "@/lib/booking-status";
 import { formatPrice, formatSchedule } from "@/lib/format";
 import { isStripeConfigured, formatMoney } from "@/lib/stripe";
 import { unreadInBooking } from "@/lib/unread";
+import { ensureCanPublish } from "@/lib/provider-gate";
 
 type SearchParams = Promise<{
   created?: string;
@@ -19,6 +20,7 @@ type SearchParams = Promise<{
   stripe?: string;
   boost_session?: string;
   complete?: string;
+  verify?: string;
 }>;
 
 export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
@@ -77,6 +79,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const commissionMinor = paid.reduce((s, p) => s + p.commissionAmount, 0);
   const netMinor = grossMinor - commissionMinor;
   const showStripe = isStripeConfigured();
+  // Syncs from Stripe when onboarding finished but the webhook never landed,
+  // so a verified provider isn't left staring at a locked button.
+  const canPublish = await ensureCanPublish(profile);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -107,10 +112,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           Свързването със Stripe не бе успешно. Уверете се, че Stripe Connect е активиран за платформата.
         </p>
       )}
+      {sp.verify === "required" && (
+        <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+          Публикуването на обява изисква потвърдени данни за фирма/самоличност и банкова сметка.
+          Започнете проверката по-долу.
+        </p>
+      )}
       {sp.complete === "unpaid" && (
         <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
           Заявката се завършва след плащането от клиента през сайта. Напомнете му от чата, ако е
-          нужно — той вижда бутон „Плати" в своите заявки.
+          нужно — той вижда бутон „Плати“ в своите заявки.
         </p>
       )}
 
@@ -213,16 +224,55 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
       {/* Listings */}
       <div className="mt-10 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Моите обяви</h2>
-        <Link
-          href="/dashboard/listings/new"
-          className="rounded-lg bg-cobble-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700"
-        >
-          + Нова обява
-        </Link>
+        {canPublish ? (
+          <Link
+            href="/dashboard/listings/new"
+            className="rounded-lg bg-cobble-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-cobble-700"
+          >
+            + Нова обява
+          </Link>
+        ) : (
+          <span
+            title="Достъпно след потвърждаване на самоличност/фирма и банкова сметка"
+            className="cursor-not-allowed rounded-lg border border-dashed border-black/15 px-3.5 py-1.5 text-sm text-black/40 dark:border-white/20 dark:text-white/40"
+          >
+            🔒 Нова обява
+          </span>
+        )}
       </div>
+
+      {!canPublish && (
+        <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50/60 p-5 dark:border-amber-900/40 dark:bg-amber-950/20">
+          <h3 className="font-medium text-amber-900 dark:text-amber-200">
+            Потвърдете профила си, за да публикувате обяви
+          </h3>
+          <p className="mt-1 max-w-lg text-sm text-amber-900/75 dark:text-amber-200/70">
+            Проверката минава през Stripe — той събира документите за фирма или самоосигуряващо
+            се лице и банковата сметка, по която получавате парите. Клиентите виждат само че сте
+            потвърден; ние не съхраняваме тези документи.
+          </p>
+          <form action={startStripeOnboarding} className="mt-4">
+            <button className="btn-press rounded-lg bg-cobble-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cobble-700">
+              {profile.stripeAccountId ? "Продължи проверката" : "Започни проверката"}
+            </button>
+          </form>
+        </div>
+      )}
+
       {profile.listings.length === 0 ? (
         <p className="mt-3 text-black/50 dark:text-white/50">
-          No listings yet — <Link href="/dashboard/listings/new" className="font-medium text-cobble-600 hover:underline">създайте първата</Link>.
+          Още нямате обяви
+          {canPublish ? (
+            <>
+              {" — "}
+              <Link href="/dashboard/listings/new" className="font-medium text-cobble-600 hover:underline">
+                създайте първата
+              </Link>
+              .
+            </>
+          ) : (
+            "."
+          )}
         </p>
       ) : (
         <ul className="mt-3 grid gap-3 sm:grid-cols-2">
